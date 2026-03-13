@@ -2,7 +2,7 @@ const stats = require('simple-statistics');
 
 /**
  * Time Series Forecasting Service
- * Implements: Moving Average, Exponential Smoothing, Holt's Linear Trend, and ARIMA
+ * Implements: Moving Average, Exponential Smoothing, Holt's Linear Trend, and AR(p,d)
  */
 
 class ForecastService {
@@ -125,15 +125,18 @@ class ForecastService {
   }
 
   /**
-   * ARIMA Model (Simplified Autoregressive Implementation)
+   * AR(p,d) Model — Autoregressive with optional differencing
+   * Note: The MA (q) component of AR(p,d) is not implemented; q is accepted for
+   * API compatibility but has no effect. This model is AR(p) applied to the
+   * d-th differenced series.
    * @param {Array<number>} data - Historical time series data
    * @param {number} periods - Number of periods to forecast
-   * @param {Object} params - ARIMA parameters {p, d, q}
+   * @param {Object} params - Parameters {p, d, q} (q is unused)
    * @returns {Object} Forecast results
    */
   arima(data, periods, params = { p: 2, d: 1, q: 1 }) {
     if (!data || data.length < 10) {
-      throw new Error('Insufficient data for ARIMA. Need at least 10 data points.');
+      throw new Error('Insufficient data for AR(p,d). Need at least 10 data points.');
     }
 
     try {
@@ -173,14 +176,14 @@ class ForecastService {
       }
 
       return {
-        method: 'ARIMA',
+        method: 'AR(p,d)',
         forecast: finalForecast,
         fittedValues,
         parameters: params
       };
     } catch (error) {
-      // Fallback to Holt's method if ARIMA fails
-      console.warn('ARIMA failed, falling back to Holt\'s method:', error.message);
+      // Fallback to Holt's method if AR(p,d) fails
+      console.warn('AR(p,d) failed, falling back to Holt\'s method:', error.message);
       return this.holtsLinearTrend(data, periods);
     }
   }
@@ -272,6 +275,125 @@ class ForecastService {
       mae: mae / n,
       mape: (mape / n) * 100
     };
+  }
+
+  /**
+   * Time Series Decomposition (Additive)
+   * Extracts trend (centered MA), seasonal, and residual components
+   * @param {Array<number>} data - Time series data
+   * @param {number} period - Seasonal period (auto-detected if 0)
+   * @returns {Object} Decomposed components
+   */
+  decompose(data, period = 0) {
+    if (!data || data.length < 8) {
+      throw new Error('Need at least 8 data points for decomposition.');
+    }
+
+    // Auto-detect period if not provided
+    if (period === 0) {
+      period = this.detectPeriod(data);
+    }
+
+    const n = data.length;
+    const halfWindow = Math.floor(period / 2);
+
+    // 1. Trend: centered moving average
+    const trend = new Array(n).fill(null);
+    for (let i = halfWindow; i < n - halfWindow; i++) {
+      const window = data.slice(i - halfWindow, i + halfWindow + 1);
+      trend[i] = stats.mean(window);
+    }
+
+    // 2. Detrended series (additive model)
+    const detrended = data.map((v, i) =>
+      trend[i] !== null ? v - trend[i] : null
+    );
+
+    // 3. Seasonal component: average for each position in cycle
+    const seasonalAvg = new Array(period).fill(0);
+    const seasonalCount = new Array(period).fill(0);
+    detrended.forEach((v, i) => {
+      if (v !== null) {
+        seasonalAvg[i % period] += v;
+        seasonalCount[i % period]++;
+      }
+    });
+    const seasonalPattern = seasonalAvg.map((s, i) =>
+      seasonalCount[i] > 0 ? s / seasonalCount[i] : 0
+    );
+    // Normalize so seasonal averages to 0
+    const seasonalMean = stats.mean(seasonalPattern);
+    const normalizedPattern = seasonalPattern.map(s => s - seasonalMean);
+
+    const seasonal = data.map((_, i) => normalizedPattern[i % period]);
+
+    // 4. Residual
+    const residual = data.map((v, i) =>
+      trend[i] !== null ? v - trend[i] - seasonal[i] : null
+    );
+
+    return {
+      trend,
+      seasonal,
+      residual,
+      period,
+      original: data
+    };
+  }
+
+  /**
+   * Detect seasonal period using autocorrelation
+   * @param {Array<number>} data
+   * @returns {number} Detected period (default 4 or 7)
+   */
+  detectPeriod(data) {
+    const n = data.length;
+    const mean = stats.mean(data);
+    const centered = data.map(v => v - mean);
+    const variance = centered.reduce((s, v) => s + v * v, 0) / n;
+    if (variance === 0) return 4;
+
+    let bestLag = 4;
+    let bestAC = -Infinity;
+    const maxLag = Math.min(Math.floor(n / 2), 24);
+
+    for (let lag = 2; lag <= maxLag; lag++) {
+      let ac = 0;
+      for (let i = 0; i < n - lag; i++) {
+        ac += centered[i] * centered[i + lag];
+      }
+      ac = ac / (n * variance);
+      if (ac > bestAC) {
+        bestAC = ac;
+        bestLag = lag;
+      }
+    }
+    return bestLag;
+  }
+
+  /**
+   * Calculate confidence intervals for a forecast
+   * @param {Array<number>} forecast - Forecast values
+   * @param {number} rmse - Root mean squared error from model accuracy
+   * @param {number} confidence - Confidence level (default 0.95)
+   * @returns {Object} upper and lower bound arrays
+   */
+  confidenceIntervals(forecast, rmse, confidence = 0.95) {
+    // z-score for confidence level
+    const zScores = { 0.80: 1.282, 0.90: 1.645, 0.95: 1.960, 0.99: 2.576 };
+    const z = zScores[confidence] || 1.960;
+
+    const upper = forecast.map((v, i) => {
+      // Uncertainty grows with forecast horizon (sq root of steps)
+      const margin = z * rmse * Math.sqrt(i + 1);
+      return v + margin;
+    });
+    const lower = forecast.map((v, i) => {
+      const margin = z * rmse * Math.sqrt(i + 1);
+      return v - margin;
+    });
+
+    return { upper, lower, confidence };
   }
 }
 

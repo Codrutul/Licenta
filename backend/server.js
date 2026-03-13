@@ -12,10 +12,10 @@ console.log('Environment variables loaded:');
 console.log('PORT:', PORT);
 console.log('CORS_ORIGIN:', CORS_ORIGIN);
 
-// Middleware - Allow all origins for now
+// Middleware
 app.use(cors({
-  origin: '*',  // Allow all origins temporarily to fix CORS
-  credentials: false
+  origin: CORS_ORIGIN,
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,7 +69,7 @@ const server = app.listen(PORT, 'localhost', () => {
   console.log('  Time Series Forecast Visualizer API');
   console.log('═══════════════════════════════════════════════');
   console.log(`  Server running on http://localhost:${PORT}`);
-  console.log(`  CORS enabled for: *`);
+  console.log(`  CORS enabled for: ${CORS_ORIGIN}`);
   console.log(`  API Documentation: http://localhost:${PORT}/`);
   console.log('═══════════════════════════════════════════════');
   console.log('Server is listening and ready for requests...');

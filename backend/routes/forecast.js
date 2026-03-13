@@ -103,11 +103,18 @@ router.post('/calculate', async (req, res) => {
     const firstForecast = result.forecast[0];
     const growthRate = ((firstForecast - lastActual) / lastActual) * 100;
 
+    // Calculate confidence intervals using RMSE
+    let confidenceIntervals = null;
+    if (accuracy && accuracy.rmse > 0) {
+      confidenceIntervals = forecastService.confidenceIntervals(result.forecast, accuracy.rmse, 0.95);
+    }
+
     res.json({
       success: true,
       result: {
         ...result,
         accuracy,
+        confidenceIntervals,
         stats: {
           lastValue: lastActual,
           projectedValue: firstForecast,
@@ -120,6 +127,27 @@ router.post('/calculate', async (req, res) => {
     res.status(500).json({ 
       error: error.message || 'Failed to calculate forecast'
     });
+  }
+});
+
+/**
+ * POST /api/forecast/decompose
+ * Decompose time series into trend, seasonal, and residual components
+ */
+router.post('/decompose', async (req, res) => {
+  try {
+    const { data, period } = req.body;
+
+    if (!data || !Array.isArray(data) || data.length < 8) {
+      return res.status(400).json({ error: 'Need at least 8 data points for decomposition.' });
+    }
+
+    const result = forecastService.decompose(data, period || 0);
+
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('Decomposition error:', error);
+    res.status(500).json({ error: error.message || 'Failed to decompose time series' });
   }
 });
 

@@ -46,11 +46,24 @@ export interface ForecastResult {
         mae: number;
         mape: number;
     } | null;
+    confidenceIntervals: {
+        upper: number[];
+        lower: number[];
+        confidence: number;
+    } | null;
     stats: {
         lastValue: number;
         projectedValue: number;
         growthRate: string;
     };
+}
+
+export interface DecompositionResult {
+    trend: (number | null)[];
+    seasonal: number[];
+    residual: (number | null)[];
+    period: number;
+    original: number[];
 }
 
 export const uploadCSV = async (file: File): Promise<TimeSeriesData> => {
@@ -85,4 +98,12 @@ export const calculateForecast = async (
 export const healthCheck = async (): Promise<any> => {
     const response = await api.get('/health');
     return response.data;
+};
+
+export const decompose = async (
+    data: number[],
+    period?: number
+): Promise<DecompositionResult> => {
+    const response = await api.post('/decompose', { data, period });
+    return response.data.result;
 };
