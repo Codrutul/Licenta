@@ -4,6 +4,8 @@ interface ModelParameters {
     window?: number;
     alpha?: number;
     beta?: number;
+    gamma?: number;
+    seasonPeriod?: number;
     p?: number;
     d?: number;
     q?: number;
@@ -28,6 +30,7 @@ const modelDescriptions: Record<string, string> = {
     exponential_smoothing: 'Weighs recent observations more heavily than older ones using exponential decay.',
     holts_linear_trend: 'Extends exponential smoothing to capture both level and trend components.',
     arima: 'ARIMA(p,d,q) — Autoregressive Integrated Moving Average. Differences the series d times, fits AR(p) and MA(q) coefficients via OLS, then integrates back to the original scale.',
+    holts_winters: 'Triple Exponential Smoothing — captures level, trend, and seasonal patterns. Ideal for economic data with quarterly or monthly seasonality (e.g. GDP, unemployment).',
 };
 
 const ForecastControls: React.FC<ForecastControlsProps> = ({
@@ -140,6 +143,15 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                         {renderSelect('MA Order (q)', 'q', [0, 1, 2, 3], 1)}
                     </>
                 );
+            case 'holts_winters':
+                return (
+                    <>
+                        {renderSlider('Alpha (α) — Level', 'alpha', 0.01, 0.99, 0.01, 0.3)}
+                        {renderSlider('Beta (β) — Trend', 'beta', 0.01, 0.99, 0.01, 0.1)}
+                        {renderSlider('Gamma (γ) — Seasonal', 'gamma', 0.01, 0.99, 0.01, 0.2)}
+                        {renderSelect('Season Period', 'seasonPeriod', [0, 4, 6, 12, 24], 0)}
+                    </>
+                );
             default:
                 return null;
         }
@@ -211,6 +223,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                                         <option value="moving_average">Moving Average</option>
                                         <option value="exponential_smoothing">Exponential Smoothing</option>
                                         <option value="holts_linear_trend">Holt's Linear Trend</option>
+                                        <option value="holts_winters">Holt-Winters (Triple ES)</option>
                                         <option value="arima">ARIMA</option>
                                     </select>
                                 </div>

@@ -125,6 +125,82 @@ class ForecastService {
   }
 
   /**
+   * Holt-Winters Triple Exponential Smoothing
+   * Handles level + trend + seasonal components (additive model).
+   * @param {Array<number>} data - Historical data (length >= 2 * seasonPeriod)
+   * @param {number} periods - Number of periods to forecast
+   * @param {number} alpha - Level smoothing (0–1), default 0.3
+   * @param {number} beta  - Trend smoothing (0–1), default 0.1
+   * @param {number} gamma - Seasonal smoothing (0–1), default 0.2
+   * @param {number} seasonPeriod - Length of one seasonal cycle (e.g. 4 for quarterly, 12 for monthly)
+   */
+  holtsWinters(data, periods, alpha = 0.3, beta = 0.1, gamma = 0.2, seasonPeriod = 0) {
+    if (!data || data.length < 4) {
+      throw new Error('Insufficient data for Holt-Winters.');
+    }
+
+    // Auto-detect seasonal period if not provided
+    const m = seasonPeriod > 0 ? seasonPeriod : this.detectPeriod(data);
+
+    if (data.length < 2 * m) {
+      // Fall back to Holt's if not enough data for seasonality
+      return this.holtsLinearTrend(data, periods, alpha, beta);
+    }
+
+    // ── Initialisation (classical approach) ───────────────────────
+    // Level: mean of first season
+    let L = 0;
+    for (let i = 0; i < m; i++) L += data[i];
+    L /= m;
+
+    // Trend: average slope across first two seasons
+    let T = 0;
+    for (let i = 0; i < m; i++) T += (data[m + i] - data[i]) / m;
+    T /= m;
+
+    // Seasonal indices: each position relative to its season average
+    const S = new Array(m).fill(0);
+    for (let i = 0; i < m; i++) {
+      const seasonMean = data.slice(i, data.length, m)
+        .filter((_, k) => (i + k * m) < data.length)
+        .reduce((acc, v) => acc + v, 0);
+      // We use a simpler approach: average over complete seasons only
+      const numCompleteSeasons = Math.floor(data.length / m);
+      let sum = 0;
+      for (let s = 0; s < numCompleteSeasons; s++) sum += data[s * m + i];
+      const overallMean = data.slice(0, numCompleteSeasons * m).reduce((a, b) => a + b, 0) / (numCompleteSeasons * m);
+      S[i] = sum / numCompleteSeasons - overallMean;
+    }
+
+    // ── Update equations ──────────────────────────────────────────
+    const fittedValues = [];
+    for (let t = 0; t < data.length; t++) {
+      const sIdx = ((t - m) % m + m) % m; // seasonal index (stays non-negative)
+      const fitted = L + T + S[t % m];
+      fittedValues.push(fitted);
+
+      const prevL = L;
+      L = alpha * (data[t] - S[t % m]) + (1 - alpha) * (L + T);
+      T = beta * (L - prevL) + (1 - beta) * T;
+      S[t % m] = gamma * (data[t] - L) + (1 - gamma) * S[t % m];
+    }
+
+    // ── Forecast ──────────────────────────────────────────────────
+    const forecast = [];
+    for (let h = 1; h <= periods; h++) {
+      const sIdx = ((data.length - m + h - 1) % m + m) % m;
+      forecast.push(L + h * T + S[sIdx]);
+    }
+
+    return {
+      method: 'Holt-Winters',
+      forecast,
+      fittedValues,
+      parameters: { alpha, beta, gamma, seasonPeriod: m }
+    };
+  }
+
+  /**
    * ARIMA(p,d,q) — Autoregressive Integrated Moving Average
    * @param {Array<number>} data - Historical time series data
    * @param {number} periods - Number of periods to forecast

@@ -330,10 +330,18 @@ class ChangePointService {
         return forecastService.exponentialSmoothing(slice, periods, parameters?.alpha || null);
       case 'holts_linear_trend':
         return forecastService.holtsLinearTrend(slice, periods, parameters?.alpha || 0.2, parameters?.beta || 0.1);
+      case 'holts_winters':
+        return forecastService.holtsWinters(
+          slice, periods,
+          parameters?.alpha       ?? 0.3,
+          parameters?.beta        ?? 0.1,
+          parameters?.gamma       ?? 0.2,
+          parameters?.seasonPeriod ?? 0
+        );
       case 'arima':
         return forecastService.arima(slice, periods, parameters || { p: 2, d: 1, q: 1 });
       default:
-        return forecastService.movingAverage(slice, periods, 3);
+        throw new Error(`Unknown model: ${model}`);
     }
   }
 }

@@ -45,6 +45,7 @@ const ChangePointPanel: React.FC<ChangePointPanelProps> = ({
         moving_average: 'Moving Average',
         exponential_smoothing: 'Exp. Smoothing',
         holts_linear_trend: "Holt's Linear",
+        holts_winters: 'Holt-Winters',
         arima: 'ARIMA',
     };
 
@@ -131,8 +132,12 @@ const ChangePointPanel: React.FC<ChangePointPanelProps> = ({
                                                 ? "Structural breaks must be detected before running a segment forecast."
                                                 : `Fit ${modelLabel[currentModel] ?? currentModel} independently on each segment`
                                     }
+                                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px' }}
                                 >
-                                    Run Segment Forecast
+                                    <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>Run Segment Forecast</span>
+                                    <span style={{ fontSize: '0.68rem', opacity: 0.65, fontWeight: 400 }}>
+                                        using {modelLabel[currentModel] ?? currentModel}
+                                    </span>
                                 </button>
                             </div>
                         )}

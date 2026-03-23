@@ -10,6 +10,7 @@ import DataTable from './components/DataTable';
 import AnnotationsPanel, { type Annotation } from './components/AnnotationsPanel';
 import ComparisonControls, { type ComparisonEntry } from './components/ComparisonControls';
 import ChangePointPanel from './components/ChangePointPanel';
+import SampleDatasets from './components/SampleDatasets';
 import {
     uploadCSV,
     calculateForecast,
@@ -326,6 +327,7 @@ function App() {
                             </button>
                         )}
                         <FileUpload onFileUpload={handleFileUpload} loading={uploadLoading} />
+                        <SampleDatasets onLoad={handleFileUpload} loading={uploadLoading} />
                         {timeSeriesData && (
                             <ForecastControls
                                 model={selectedModel}

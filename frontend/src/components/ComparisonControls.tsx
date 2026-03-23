@@ -22,6 +22,7 @@ const MODEL_LABELS: Record<string, string> = {
     moving_average: 'Moving Avg',
     exponential_smoothing: 'Exp Smoothing',
     holts_linear_trend: "Holt's Trend",
+    holts_winters: 'Holt-Winters',
     arima: 'ARIMA',
 };
 
@@ -29,6 +30,7 @@ const MODEL_NAMES: Record<string, string> = {
     moving_average: 'Moving Average',
     exponential_smoothing: 'Exponential Smoothing',
     holts_linear_trend: "Holt's Linear Trend",
+    holts_winters: 'Holt-Winters',
     arima: 'ARIMA',
 };
 

@@ -88,6 +88,14 @@ router.post('/calculate', async (req, res) => {
         const arimaParams = parameters || { p: 1, d: 1, q: 1 };
         result = forecastService.arima(data, forecastPeriods, arimaParams);
         break;
+
+      case 'holts_winters':
+        const hwAlpha = parameters?.alpha ?? 0.3;
+        const hwBeta  = parameters?.beta  ?? 0.1;
+        const hwGamma = parameters?.gamma ?? 0.2;
+        const hwPeriod = parameters?.seasonPeriod ?? 0;
+        result = forecastService.holtsWinters(data, forecastPeriods, hwAlpha, hwBeta, hwGamma, hwPeriod);
+        break;
       
       default:
         return res.status(400).json({ error: 'Invalid model type' });
