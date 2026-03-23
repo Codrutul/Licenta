@@ -44,7 +44,12 @@ const AnnotationsPanel: React.FC<AnnotationsPanelProps> = ({
     return (
         <div className="annotations-panel">
             <button className="annotations-toggle" onClick={() => setExpanded(!expanded)}>
-                <span>📌</span>
+                <span style={{ display: 'flex', alignItems: 'center', color: 'var(--color-accent-primary)' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter" style={{ width: 14, height: 14 }}>
+                        <line x1="12" y1="3" x2="12" y2="21" strokeDasharray="3 2" />
+                        <rect x="9" y="3" width="6" height="5" />
+                    </svg>
+                </span>
                 <span>Annotation Markers</span>
                 {annotations.length > 0 && (
                     <span className="ann-count-badge">{annotations.length}</span>

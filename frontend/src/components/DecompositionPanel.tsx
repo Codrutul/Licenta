@@ -117,14 +117,19 @@ const DecompositionPanel: React.FC<DecompositionPanelProps> = ({
                 className="decomposition-toggle"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <span className="decomp-toggle-icon">📉</span>
+                <span className="decomp-toggle-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter">
+                        <path d="M3 3v18h18" />
+                        <polyline points="7 8 11 13 15 10 19 16" />
+                    </svg>
+                </span>
                 <span>Time Series Decomposition</span>
                 <span className="decomp-toggle-badge">
                     {decomposition ? `Period: ${decomposition.period}` : ''}
                 </span>
                 {crosshairLabel && isExpanded && (
                     <span className="decomp-crosshair-label">
-                        🎯 {crosshairLabel}
+                        x = {crosshairLabel}
                     </span>
                 )}
                 <span className="decomp-chevron">{isExpanded ? '▲' : '▼'}</span>

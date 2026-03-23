@@ -22,14 +22,14 @@ const MODEL_LABELS: Record<string, string> = {
     moving_average: 'Moving Avg',
     exponential_smoothing: 'Exp Smoothing',
     holts_linear_trend: "Holt's Trend",
-    arima: 'AR(p,d)',
+    arima: 'ARIMA',
 };
 
 const MODEL_NAMES: Record<string, string> = {
     moving_average: 'Moving Average',
     exponential_smoothing: 'Exponential Smoothing',
     holts_linear_trend: "Holt's Linear Trend",
-    arima: 'AR(p,d)',
+    arima: 'ARIMA',
 };
 
 const ALL_MODELS = Object.keys(MODEL_NAMES);

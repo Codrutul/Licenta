@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface ModelParameters {
     window?: number;
@@ -19,13 +19,15 @@ interface ForecastControlsProps {
     onCalculate: () => void;
     disabled: boolean;
     loading: boolean;
+    forecastMethodLabel?: string;
 }
+
 
 const modelDescriptions: Record<string, string> = {
     moving_average: 'Averages recent data points to smooth out short-term fluctuations and highlight trends.',
     exponential_smoothing: 'Weighs recent observations more heavily than older ones using exponential decay.',
     holts_linear_trend: 'Extends exponential smoothing to capture both level and trend components.',
-    arima: 'Autoregressive model with differencing AR(p,d) — applies autoregression on the d-th differenced series. Note: the MA (q) term is not implemented.',
+    arima: 'ARIMA(p,d,q) — Autoregressive Integrated Moving Average. Differences the series d times, fits AR(p) and MA(q) coefficients via OLS, then integrates back to the original scale.',
 };
 
 const ForecastControls: React.FC<ForecastControlsProps> = ({
@@ -38,29 +40,23 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
     onCalculate,
     disabled,
     loading,
+    forecastMethodLabel,
 }) => {
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [showAdvanced, setShowAdvanced] = useState(false);
+    const [open, setOpen] = useState(false);
+    const backdropRef = useRef<HTMLDivElement>(null);
+
+    // Close on Escape
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+        if (open) window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [open]);
 
     const handlePeriodsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        if (value === '') {
-            onPeriodsChange(0);
-        } else {
-            const parsed = parseInt(value);
-            if (!isNaN(parsed)) onPeriodsChange(parsed);
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const currentValue = e.currentTarget.value;
-        if (e.key === 'ArrowUp' && currentValue === '') {
-            e.preventDefault();
-            onPeriodsChange(1);
-        } else if (e.key === 'ArrowDown' && currentValue === '') {
-            e.preventDefault();
-            onPeriodsChange(0);
-        }
+        if (value === '') { onPeriodsChange(0); return; }
+        const parsed = parseInt(value);
+        if (!isNaN(parsed)) onPeriodsChange(parsed);
     };
 
     const setParam = (key: keyof ModelParameters, value: number) => {
@@ -89,7 +85,6 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                     step={step}
                     value={val}
                     onChange={(e) => setParam(key, parseFloat(e.target.value))}
-                    disabled={disabled}
                     className="param-slider"
                 />
                 <div className="param-range-labels">
@@ -116,7 +111,6 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                 <select
                     value={val}
                     onChange={(e) => setParam(key, parseInt(e.target.value))}
-                    disabled={disabled}
                     className="param-select-small"
                 >
                     {options.map(o => <option key={o} value={o}>{o}</option>)}
@@ -125,14 +119,12 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
         );
     };
 
-    const renderAdvancedParams = () => {
+    const renderParams = () => {
         switch (model) {
             case 'moving_average':
                 return renderSlider('Window Size', 'window', 2, 20, 1, 3);
-
             case 'exponential_smoothing':
                 return renderSlider('Alpha (α)', 'alpha', 0.01, 0.99, 0.01, 0.3);
-
             case 'holts_linear_trend':
                 return (
                     <>
@@ -140,7 +132,6 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                         {renderSlider('Beta (β) — Trend', 'beta', 0.01, 0.99, 0.01, 0.1)}
                     </>
                 );
-
             case 'arima':
                 return (
                     <>
@@ -149,77 +140,25 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                         {renderSelect('MA Order (q)', 'q', [0, 1, 2, 3], 1)}
                     </>
                 );
-
             default:
                 return null;
         }
     };
 
+    const handleRun = async () => {
+        setOpen(false);
+        onCalculate();
+    };
+
+
     return (
         <>
-            <div className="control-group">
-                <label>Forecasting Model</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <select
-                        value={model}
-                        onChange={(e) => { onModelChange(e.target.value); setShowAdvanced(false); }}
-                        disabled={disabled}
-                    >
-                        <option value="moving_average">Moving Average</option>
-                        <option value="exponential_smoothing">Exponential Smoothing</option>
-                        <option value="holts_linear_trend">Holt's Linear Trend</option>
-                        <option value="arima">AR(p,d)</option>
-                    </select>
-                    <div
-                        className="model-tooltip"
-                        onMouseEnter={() => setShowTooltip(true)}
-                        onMouseLeave={() => setShowTooltip(false)}
-                    >
-                        <span className="tooltip-icon">?</span>
-                        {showTooltip && (
-                            <div className="tooltip-content">
-                                {modelDescriptions[model]}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="control-group">
-                <label>Forecast Horizon</label>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <input
-                        type="number"
-                        value={periods || ''}
-                        onChange={handlePeriodsChange}
-                        onKeyDown={handleKeyDown}
-                        disabled={disabled}
-                        min={1}
-                        max={365}
-                    />
-                    <span className="unit">Periods</span>
-                </div>
-            </div>
-
-            {/* Advanced parameters toggle */}
-            {!disabled && (
-                <div className="control-group">
-                    <label style={{ opacity: 0 }}>Params</label>
-                    <button
-                        className={`btn-advanced${showAdvanced ? ' btn-advanced--open' : ''}`}
-                        onClick={() => setShowAdvanced(!showAdvanced)}
-                        type="button"
-                    >
-                        <span>⚙ Parameters</span>
-                        <span className="adv-chevron">{showAdvanced ? '▲' : '▼'}</span>
-                    </button>
-                </div>
-            )}
-
+            {/* ── Trigger button in the toolbar ── */}
             <button
                 className="btn btn-primary"
-                onClick={onCalculate}
+                onClick={() => setOpen(true)}
                 disabled={disabled || loading}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '1px', padding: '0.45rem 1rem' }}
             >
                 {loading ? (
                     <>
@@ -227,17 +166,94 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                         <span>Calculating...</span>
                     </>
                 ) : (
-                    <span>Calculate Forecast</span>
+                    <>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 600, letterSpacing: '0.02em' }}>Calculate Forecast</span>
+                        {forecastMethodLabel && (
+                            <span style={{ fontSize: '0.66rem', opacity: 0.6, fontWeight: 400 }}>{forecastMethodLabel}</span>
+                        )}
+                    </>
                 )}
             </button>
 
-            {/* Advanced params panel */}
-            {showAdvanced && !disabled && (
-                <div className="advanced-params-panel">
-                    <div className="advanced-params-title">
-                        ⚙ {model.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Parameters
+            {/* ── Modal overlay ── */}
+            {open && (
+                <div
+                    ref={backdropRef}
+                    className="forecast-modal-backdrop"
+                    onClick={(e) => { if (e.target === backdropRef.current) setOpen(false); }}
+                >
+                    <div className="forecast-modal">
+                        {/* Header */}
+                        <div className="forecast-modal-header">
+                            <div>
+                                <div className="forecast-modal-title">Configure Forecast</div>
+                                <div className="forecast-modal-subtitle">Select model, horizon, and parameters</div>
+                            </div>
+                            <button className="forecast-modal-close" onClick={() => setOpen(false)} aria-label="Close">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" style={{ width: 16, height: 16 }}>
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="forecast-modal-body">
+                            {/* Model selector */}
+                            <div className="forecast-modal-section">
+                                <label className="forecast-modal-label">Forecasting Model</label>
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <select
+                                        value={model}
+                                        onChange={(e) => onModelChange(e.target.value)}
+                                        className="forecast-modal-select"
+                                    >
+                                        <option value="moving_average">Moving Average</option>
+                                        <option value="exponential_smoothing">Exponential Smoothing</option>
+                                        <option value="holts_linear_trend">Holt's Linear Trend</option>
+                                        <option value="arima">ARIMA</option>
+                                    </select>
+                                </div>
+                                <p className="forecast-modal-desc">{modelDescriptions[model]}</p>
+                            </div>
+
+                            {/* Forecast horizon */}
+                            <div className="forecast-modal-section">
+                                <label className="forecast-modal-label">Forecast Horizon</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <input
+                                        type="number"
+                                        value={periods || ''}
+                                        onChange={handlePeriodsChange}
+                                        min={1}
+                                        max={365}
+                                        className="forecast-modal-number"
+                                    />
+                                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>periods ahead</span>
+                                </div>
+                            </div>
+
+                            {/* Parameters */}
+                            <div className="forecast-modal-section">
+                                <label className="forecast-modal-label">Model Parameters</label>
+                                <div className="advanced-params-panel" style={{ marginTop: '0.5rem' }}>
+                                    {renderParams()}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="forecast-modal-footer">
+                            <button className="btn btn-secondary" onClick={() => setOpen(false)}>Cancel</button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={handleRun}
+                                disabled={!periods || periods < 1}
+                            >
+                                Run Forecast
+                            </button>
+                        </div>
                     </div>
-                    {renderAdvancedParams()}
                 </div>
             )}
         </>

@@ -8,15 +8,19 @@ import AIAnalysis from './components/AIAnalysis';
 import DecompositionPanel from './components/DecompositionPanel';
 import DataTable from './components/DataTable';
 import AnnotationsPanel, { type Annotation } from './components/AnnotationsPanel';
-
 import ComparisonControls, { type ComparisonEntry } from './components/ComparisonControls';
+import ChangePointPanel from './components/ChangePointPanel';
 import {
     uploadCSV,
     calculateForecast,
     decompose,
+    detectChangePoints,
+    runSegmentForecast,
     type TimeSeriesData,
     type ForecastResult,
     type DecompositionResult,
+    type ChangePointResult,
+    type SegmentForecastResult,
 } from './services/api';
 
 // ---------------------------------------------------------------------------
@@ -76,6 +80,11 @@ function App() {
     const [decomposeLoading, setDecomposeLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Change-point detection — persisted
+    const [cpResult, setCpResult] = useSessionState<ChangePointResult | null>('ts_cp_result', null);
+    const [segmentForecastResult, setSegmentForecastResult] = useSessionState<SegmentForecastResult | null>('ts_seg_forecast', null);
+    const [cpLoading, setCpLoading] = useState(false);
+
     // Sidebar tab
     const [sidebarTab, setSidebarTab] = useState<'stats' | 'table'>('stats');
 
@@ -103,6 +112,8 @@ function App() {
         setComparisons([]);
         setDecomposition(null);
         setAnnotations([]);
+        setCpResult(null);
+        setSegmentForecastResult(null);
 
         try {
             const data = await uploadCSV(file);
@@ -125,12 +136,23 @@ function App() {
             setUploadLoading(false);
         }
     };
+    const handleClearData = () => {
+        setTimeSeriesData(null);
+        setForecastResult(null);
+        setComparisons([]);
+        setDecomposition(null);
+        setAnnotations([]);
+        setCpResult(null);
+        setSegmentForecastResult(null);
+        setError(null);
+    };
 
     const handleCalculateForecast = async () => {
         if (!timeSeriesData) return;
         setCalculateLoading(true);
         setError(null);
         setComparisons([]);
+        setSegmentForecastResult(null); // Clear segment forecast when recalculating global forecast
         try {
             const result = await calculateForecast(
                 timeSeriesData.values,
@@ -178,6 +200,51 @@ function App() {
 
     const handleClearComparisons = () => setComparisons([]);
 
+    // ── Change-point handlers ──────────────────────────────────────────────────
+    const handleDetectChangePoints = async (penaltyMultiplier: number) => {
+        if (!timeSeriesData) return;
+        setCpLoading(true);
+        setError(null);
+        setSegmentForecastResult(null);
+        try {
+            // Send the raw multiplier — the backend PELT will apply it as:
+            // beta = penaltyMultiplier × log(n) × σ²
+            const result = await detectChangePoints(timeSeriesData.values, timeSeriesData.dates, penaltyMultiplier);
+            setCpResult(result);
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Change-point detection failed');
+        } finally {
+            setCpLoading(false);
+        }
+    };
+
+
+    const handleSegmentForecast = async () => {
+        if (!timeSeriesData || !cpResult) return;
+        setCpLoading(true);
+        setError(null);
+        try {
+            const result = await runSegmentForecast(
+                timeSeriesData.values,
+                timeSeriesData.dates,
+                cpResult.changePoints,
+                selectedModel,
+                forecastPeriods,
+                modelParameters
+            );
+            setSegmentForecastResult(result);
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Segment forecast failed');
+        } finally {
+            setCpLoading(false);
+        }
+    };
+
+    const handleClearChangePoints = () => {
+        setCpResult(null);
+        setSegmentForecastResult(null);
+    };
+
     const handleExportCSV = () => {
         if (!forecastResult || !timeSeriesData) return;
         const rows: string[] = ['Index,Date,Value,Type'];
@@ -191,7 +258,8 @@ function App() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `forecast_${selectedModel}_${new Date().toISOString().split('T')[0]}.csv`;
+        const modelLabel = selectedModel.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ /g, '_');
+        a.download = `forecast_${modelLabel}_${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -213,7 +281,8 @@ function App() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `forecast_${selectedModel}_${new Date().toISOString().split('T')[0]}.json`;
+        const modelLabel = selectedModel.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ /g, '_');
+        a.download = `forecast_${modelLabel}_${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -223,17 +292,41 @@ function App() {
     return (
         <div className="app-container">
             <header className="app-header">
-                <div className="app-logo">📈</div>
-                <h1>Forecast Engine — Bachelor's Thesis · Afloarei Codrin</h1>
+                <div className="app-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter">
+                        <path d="M3 3v18h18" />
+                        <polyline points="7 14 11 9 14 12 19 6" />
+                    </svg>
+                </div>
+                <div className="app-header-text">
+                    <h1>Forecast Engine — Bachelor's Thesis · Afloarei Codrin</h1>
+                    <span className="app-header-subtitle">Time Series Analysis &amp; Forecasting</span>
+                </div>
             </header>
 
             <main>
                 {/* Control panel */}
                 <div className="control-panel">
-                    <FileUpload onFileUpload={handleFileUpload} loading={uploadLoading} />
-
-                    {timeSeriesData && (
-                        <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        {timeSeriesData && (
+                            <button 
+                                className="btn btn-secondary" 
+                                onClick={handleClearData}
+                                title="Clear imported data and reset application"
+                                style={{ height: '36px', padding: '0 0.5rem' }}
+                            >
+                                <span className="btn-icon" style={{ margin: 0 }}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                    </svg>
+                                </span>
+                            </button>
+                        )}
+                        <FileUpload onFileUpload={handleFileUpload} loading={uploadLoading} />
+                        {timeSeriesData && (
                             <ForecastControls
                                 model={selectedModel}
                                 periods={forecastPeriods}
@@ -244,25 +337,40 @@ function App() {
                                 onCalculate={handleCalculateForecast}
                                 disabled={!timeSeriesData || uploadLoading}
                                 loading={calculateLoading}
+                                forecastMethodLabel={forecastResult?.method}
                             />
-                            {forecastResult && (
-                                <div className="export-group">
-                                    <span className="export-label">Export</span>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button className="btn btn-secondary" onClick={handleExportCSV}>
-                                            <span className="btn-icon">📋</span><span>CSV</span>
-                                        </button>
-                                        <button className="btn btn-secondary" onClick={handleExportJSON}>
-                                            <span className="btn-icon">💾</span><span>JSON</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </>
-                    )}
+                        )}
+                        {forecastResult && (
+                            <>
+                                <button className="btn btn-secondary" onClick={handleExportCSV} title="Export forecast as CSV">
+                                    <span className="btn-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                    </span>
+                                    <span>Export CSV</span>
+                                </button>
+                                <button className="btn btn-secondary" onClick={handleExportJSON} title="Export forecast as JSON">
+                                    <span className="btn-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="12" y1="18" x2="12" y2="12" />
+                                            <line x1="9" y1="15" x2="15" y2="15" />
+                                        </svg>
+                                    </span>
+                                    <span>Export JSON</span>
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                {error && <div className="error-banner">❌ {error}</div>}
+                {error && <div className="error-banner">Error: {error}</div>}
 
                 <div className="main-content">
                     {/* Left: Chart + tools */}
@@ -276,6 +384,8 @@ function App() {
                             futureDates={futureDates}
                             annotations={annotations}
                             onCrosshairMove={setCrosshairLabel}
+                            changePoints={cpResult?.changePoints || []}
+                            segmentForecastResult={segmentForecastResult}
                         />
 
                         {/* Decomposition */}
@@ -309,6 +419,19 @@ function App() {
                                 disabled={!timeSeriesData || uploadLoading}
                             />
                         )}
+
+                        {/* Change-point detection */}
+                        <ChangePointPanel
+                            hasData={!!timeSeriesData}
+                            currentModel={selectedModel}
+                            cpResult={cpResult}
+                            segmentResult={segmentForecastResult}
+                            onDetect={handleDetectChangePoints}
+                            onSegmentForecast={handleSegmentForecast}
+                            onClear={handleClearChangePoints}
+                            loading={cpLoading}
+                            hasGlobalForecast={!!forecastResult}
+                        />
                     </div>
 
                     {/* Right sidebar */}
@@ -318,13 +441,13 @@ function App() {
                                 className={`sidebar-tab${sidebarTab === 'stats' ? ' sidebar-tab--active' : ''}`}
                                 onClick={() => setSidebarTab('stats')}
                             >
-                                📊 Statistics
+                                Statistics
                             </button>
                             <button
                                 className={`sidebar-tab${sidebarTab === 'table' ? ' sidebar-tab--active' : ''}`}
                                 onClick={() => setSidebarTab('table')}
                             >
-                                📋 Data Table
+                                Data Table
                             </button>
                         </div>
 

@@ -107,3 +107,79 @@ export const decompose = async (
     const response = await api.post('/decompose', { data, period });
     return response.data.result;
 };
+
+// ── Change-Point Detection ────────────────────────────────────────────────────
+
+export interface SegmentStats {
+    index: number;
+    startIndex: number;
+    endIndex: number;
+    startDate: string;
+    endDate: string;
+    n: number;
+    mean: number;
+    stdDev: number;
+    min: number;
+    max: number;
+    slope: number;
+    trend: string;
+}
+
+export interface ChangePointResult {
+    changePoints: number[];   // indices of first point of each new segment
+    segments: SegmentStats[];
+    penalty: number;
+    cost: number;
+    n: number;
+}
+
+export interface SegmentResult {
+    segmentIndex: number;
+    startIndex: number;
+    endIndex: number;
+    startDate: string;
+    endDate: string;
+    n: number;
+    method: string;
+    parameters: any;
+    accuracy: { mse: number; rmse: number; mae: number; mape: number } | null;
+    forecast: number[];
+    confidenceIntervals: { upper: number[]; lower: number[]; confidence: number } | null;
+    isLastSegment: boolean;
+}
+
+export interface SegmentForecastResult {
+    segments: SegmentResult[];
+    forecast: number[];
+    confidenceIntervals: { upper: number[]; lower: number[]; confidence: number } | null;
+    fittedValues: (number | null)[];
+    method: string;
+    parameters: any;
+    stats: { lastValue: number; projectedValue: number | null; growthRate: string };
+    baselineAccuracy: { mse: number; rmse: number; mae: number; mape: number } | null;
+    changePoints: number[];
+}
+
+export const detectChangePoints = async (
+    data: number[],
+    dates: string[],
+    penalty?: number
+): Promise<ChangePointResult> => {
+    const response = await api.post('/changepoints', { data, dates, penalty });
+    return response.data.result;
+};
+
+export const runSegmentForecast = async (
+    data: number[],
+    dates: string[],
+    changePoints: number[],
+    model: string,
+    periods: number,
+    parameters?: any
+): Promise<SegmentForecastResult> => {
+    const response = await api.post('/segment-forecast', {
+        data, dates, changePoints, model, periods, parameters,
+    });
+    return response.data.result;
+};
+

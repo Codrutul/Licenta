@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const forecastService = require('../services/forecastService');
 const dataProcessor = require('../utils/dataProcessor');
+const changePointService = require('../services/changePointService');
+
 
 const router = express.Router();
 
@@ -148,6 +150,82 @@ router.post('/decompose', async (req, res) => {
   } catch (error) {
     console.error('Decomposition error:', error);
     res.status(500).json({ error: error.message || 'Failed to decompose time series' });
+  }
+});
+
+/**
+ * POST /api/forecast/changepoints
+ * Detect change points using the PELT algorithm.
+ * Body: { data: number[], dates: string[], penalty?: number }
+ * penalty is a multiplier on BIC × σ² — if omitted, defaults to 1.0.
+ * Lower values → more detected breakpoints.
+ */
+router.post('/changepoints', async (req, res) => {
+  try {
+    const { data, dates, penalty } = req.body;
+
+    if (!data || !Array.isArray(data) || data.length < 8) {
+      return res.status(400).json({ error: 'At least 8 data points required for change-point detection.' });
+    }
+
+    const safeDates = dates || data.map((_, i) => String(i));
+
+    // penalty is treated as a multiplier: beta = penalty × log(n) × σ²
+    // If penalty is provided, interpret it directly as the multiplier.
+    // PELT handles null (= default multiplier of 1.0).
+    const penaltyMultiplier = (penalty !== undefined && penalty !== null) ? penalty : null;
+
+    // Run PELT — service computes beta internally as multiplier × log(n) × σ²
+    const { changePoints, cost } = changePointService.pelt(data, penaltyMultiplier);
+
+    // Per-segment statistics
+    const segments = changePointService.segmentStats(data, safeDates, changePoints);
+
+    res.json({
+      success: true,
+      result: {
+        changePoints,
+        segments,
+        penalty: penaltyMultiplier ?? 1.0,
+        cost,
+        n: data.length,
+      }
+    });
+  } catch (error) {
+    console.error('Change-point detection error:', error);
+    res.status(500).json({ error: error.message || 'Change-point detection failed' });
+  }
+});
+
+
+/**
+ * POST /api/forecast/segment-forecast
+ * Fit the chosen model independently on each segment and forecast from the last segment.
+ * Body: { data, dates, changePoints, model, periods, parameters? }
+ */
+router.post('/segment-forecast', async (req, res) => {
+  try {
+    const { data, dates, changePoints, model, periods, parameters } = req.body;
+
+    if (!data || !Array.isArray(data) || data.length < 4) {
+      return res.status(400).json({ error: 'Insufficient data for segment forecasting.' });
+    }
+    if (!model) {
+      return res.status(400).json({ error: 'Model type is required.' });
+    }
+
+    const safeDates     = dates        || data.map((_, i) => String(i));
+    const safeCPs       = changePoints || [];
+    const forecastPeriods = parseInt(periods) || 6;
+
+    const result = changePointService.segmentForecast(
+      data, safeDates, safeCPs, model, forecastPeriods, parameters || {}
+    );
+
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('Segment forecast error:', error);
+    res.status(500).json({ error: error.message || 'Segment forecasting failed' });
   }
 });
 

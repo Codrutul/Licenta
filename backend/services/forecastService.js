@@ -125,68 +125,200 @@ class ForecastService {
   }
 
   /**
-   * AR(p,d) Model — Autoregressive with optional differencing
-   * Note: The MA (q) component of AR(p,d) is not implemented; q is accepted for
-   * API compatibility but has no effect. This model is AR(p) applied to the
-   * d-th differenced series.
+   * ARIMA(p,d,q) — Autoregressive Integrated Moving Average
    * @param {Array<number>} data - Historical time series data
    * @param {number} periods - Number of periods to forecast
-   * @param {Object} params - Parameters {p, d, q} (q is unused)
+   * @param {Object} params - Parameters {p, d, q}
    * @returns {Object} Forecast results
    */
   arima(data, periods, params = { p: 2, d: 1, q: 1 }) {
     if (!data || data.length < 10) {
-      throw new Error('Insufficient data for AR(p,d). Need at least 10 data points.');
+      throw new Error('Insufficient data for ARIMA. Need at least 10 data points.');
     }
 
     try {
-      const { p, d } = params;
-      
-      // Apply differencing
-      let workingData = [...data];
+      const p = Number(params.p) || 2;
+      const d = Number(params.d) || 1;
+      const q = Number(params.q) || 1;
+
+      // ── Step 1: Difference the series d times ──────────────────
+      let diffData = [...data];
+      const diffHistory = []; // store each level for undifferencing
       for (let i = 0; i < d; i++) {
-        workingData = this.difference(workingData);
+        diffHistory.push([...diffData]);
+        diffData = this.difference(diffData);
       }
 
-      // Simple autoregressive forecast
-      const forecast = [];
-      const fittedValues = [];
-      
-      // Fit autoregressive model
-      for (let i = p; i < workingData.length; i++) {
-        const window = workingData.slice(i - p, i);
-        const predicted = stats.mean(window);
-        fittedValues.push(predicted);
+      const n = diffData.length;
+      if (n < p + q + 2) {
+        throw new Error('Not enough data after differencing for the chosen (p,d,q).');
       }
 
-      // Generate forecast
-      let forecastData = [...workingData];
-      for (let i = 0; i < periods; i++) {
-        const window = forecastData.slice(-p);
-        const predicted = stats.mean(window);
-        forecast.push(predicted);
-        forecastData.push(predicted);
+      // ── Step 2: Fit AR(p) coefficients via Yule-Walker OLS ─────
+      // Build design matrix X (each row = p lagged values) and response y
+      const numObs = n - p;
+      const X = [];
+      const y = [];
+      for (let i = p; i < n; i++) {
+        X.push(diffData.slice(i - p, i).reverse()); // [y_{t-1}, y_{t-2}, ..., y_{t-p}]
+        y.push(diffData[i]);
       }
 
-      // Integrate back if differenced
-      let finalForecast = forecast;
-      if (d > 0) {
-        const lastOriginal = data[data.length - 1];
-        finalForecast = this.integrate(forecast, lastOriginal);
+      // OLS: phi = (X'X)^{-1} X'y
+      const arCoeffs = this._ols(X, y, p);
+
+      // ── Step 3: Compute AR residuals and fit MA(q) ─────────────
+      const arResiduals = [];
+      for (let i = 0; i < numObs; i++) {
+        const xRow = X[i];
+        let predicted = 0;
+        for (let j = 0; j < p; j++) predicted += arCoeffs[j] * xRow[j];
+        arResiduals.push(y[i] - predicted);
+      }
+
+      // Build MA design matrix from lagged residuals
+      const maStart = Math.max(p, q); // offset from start of diffData
+      const XmaList = [];
+      const ymaList = [];
+      for (let i = q; i < arResiduals.length; i++) {
+        XmaList.push(arResiduals.slice(i - q, i).reverse()); // [e_{t-1}, ..., e_{t-q}]
+        ymaList.push(arResiduals[i]);
+      }
+      const maCoeffs = q > 0 && XmaList.length > q
+        ? this._ols(XmaList, ymaList, q)
+        : new Array(q).fill(0);
+
+      // ── Step 4: Generate in-sample fitted values (differenced scale) ──
+      const diffFitted = [];
+      const fittedResiduals = [...arResiduals]; // reuse AR residuals for MA feed
+      for (let i = 0; i < numObs; i++) {
+        const xRow = X[i];
+        let val = 0;
+        for (let j = 0; j < p; j++) val += arCoeffs[j] * xRow[j];
+        // add MA component using already-computed residuals
+        for (let j = 0; j < q; j++) {
+          const resIdx = i - 1 - j;
+          if (resIdx >= 0) val += maCoeffs[j] * arResiduals[resIdx];
+        }
+        diffFitted.push(val);
+      }
+
+      // ── Step 5: Forecast on differenced scale ──────────────────
+      const diffForecast = [];
+      const forecastBuffer = [...diffData]; // grows as we forecast
+      const residualBuffer = [...arResiduals]; // grows (out-of-sample residuals = 0)
+
+      for (let h = 0; h < periods; h++) {
+        let val = 0;
+        // AR part
+        for (let j = 0; j < p; j++) {
+          val += arCoeffs[j] * forecastBuffer[forecastBuffer.length - 1 - j];
+        }
+        // MA part (out-of-sample residuals are 0 by convention)
+        for (let j = 0; j < q; j++) {
+          const resIdx = residualBuffer.length - 1 - j;
+          if (resIdx >= 0) val += maCoeffs[j] * residualBuffer[resIdx];
+        }
+        diffForecast.push(val);
+        forecastBuffer.push(val);
+        residualBuffer.push(0); // out-of-sample innovation = 0
+      }
+
+      // ── Step 6: Invert differencing ────────────────────────────
+      // Integrate forecast back to original scale
+      let finalForecast = [...diffForecast];
+      for (let i = d - 1; i >= 0; i--) {
+        const lastVal = diffHistory[i][diffHistory[i].length - 1];
+        finalForecast = this.integrate(finalForecast, lastVal);
+      }
+
+      // Reconstruct one-step-ahead fitted values on original scale.
+      // We anchor each fitted point to the ACTUAL observed data rather than
+      // chaining predictions together (which would compound errors over 100+ obs).
+      //   d=0: fitted[p+i]   = diffFitted[i]
+      //   d=1: fitted[p+1+i] = data[p+i]             + diffFitted[i]
+      //   d=2: fitted[p+2+i] = 2*data[p+1+i] - data[p+i] + diffFitted[i]
+      const fittedValues = new Array(data.length).fill(null);
+      for (let i = 0; i < diffFitted.length; i++) {
+        const origIdx = p + d + i;
+        if (origIdx >= data.length) break;
+        let reconValue = diffFitted[i];
+        if (d === 1) {
+          reconValue += data[origIdx - 1];
+        } else if (d === 2) {
+          reconValue += 2 * data[origIdx - 1] - data[origIdx - 2];
+        }
+        // d === 0: no undifferencing needed; d > 2: extremely rare, skip undiff
+        fittedValues[origIdx] = reconValue;
       }
 
       return {
-        method: 'AR(p,d)',
+        method: 'ARIMA',
         forecast: finalForecast,
         fittedValues,
-        parameters: params
+        parameters: { p, d, q }
       };
+
     } catch (error) {
-      // Fallback to Holt's method if AR(p,d) fails
-      console.warn('AR(p,d) failed, falling back to Holt\'s method:', error.message);
+      console.warn('ARIMA failed, falling back to Holt\'s method:', error.message);
       return this.holtsLinearTrend(data, periods);
     }
   }
+
+  /**
+   * Ordinary Least Squares solver: returns coefficients given design matrix X and response y.
+   * Uses the normal equations directly (safe for small p, q ≤ 5).
+   */
+  _ols(X, y, numCoeffs) {
+    // XtX: numCoeffs × numCoeffs,  Xty: numCoeffs × 1
+    const XtX = Array.from({ length: numCoeffs }, () => new Array(numCoeffs).fill(0));
+    const Xty = new Array(numCoeffs).fill(0);
+
+    for (let i = 0; i < X.length; i++) {
+      for (let j = 0; j < numCoeffs; j++) {
+        Xty[j] += X[i][j] * y[i];
+        for (let k = 0; k < numCoeffs; k++) {
+          XtX[j][k] += X[i][j] * X[i][k];
+        }
+      }
+    }
+
+    // Add small ridge regularisation to prevent singular matrix
+    for (let j = 0; j < numCoeffs; j++) XtX[j][j] += 1e-8;
+
+    return this._solveLinear(XtX, Xty, numCoeffs);
+  }
+
+  /**
+   * Solves a linear system Ax = b via Gaussian elimination with partial pivoting.
+   */
+  _solveLinear(A, b, n) {
+    // Augmented matrix [A|b]
+    const M = A.map((row, i) => [...row, b[i]]);
+
+    for (let col = 0; col < n; col++) {
+      // Partial pivot
+      let maxRow = col;
+      for (let row = col + 1; row < n; row++) {
+        if (Math.abs(M[row][col]) > Math.abs(M[maxRow][col])) maxRow = row;
+      }
+      [M[col], M[maxRow]] = [M[maxRow], M[col]];
+
+      const pivot = M[col][col];
+      if (Math.abs(pivot) < 1e-12) continue; // singular — skip
+
+      for (let row = 0; row < n; row++) {
+        if (row === col) continue;
+        const factor = M[row][col] / pivot;
+        for (let k = col; k <= n; k++) {
+          M[row][k] -= factor * M[col][k];
+        }
+      }
+    }
+
+    return M.map((row, i) => (Math.abs(M[i][i]) > 1e-12 ? row[n] / M[i][i] : 0));
+  }
+
 
   /**
    * Difference a time series

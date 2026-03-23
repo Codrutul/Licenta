@@ -16,7 +16,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import type { ForecastResult } from '../services/api';
+import type { ForecastResult, SegmentForecastResult } from '../services/api';
 import type { Annotation } from './AnnotationsPanel';
 import { type ComparisonEntry } from './ComparisonControls';
 import ChartToolbar, { type ToolbarState } from './ChartToolbar';
@@ -57,6 +57,8 @@ interface ForecastChartProps {
     futureDates: string[];
     annotations: Annotation[];
     onCrosshairMove?: (xLabel: string | null) => void;
+    changePoints?: number[];          // indices of segment starts (from PELT)
+    segmentForecastResult?: SegmentForecastResult | null;
 }
 
 export const DEFAULT_TOOLBAR: ToolbarState = {
@@ -70,6 +72,7 @@ export const DEFAULT_TOOLBAR: ToolbarState = {
     showOutliers: true,
     comparisonEnabled: true,
     showAnnotations: true,
+    showChangePoints: true,
 };
 
 const ForecastChart: React.FC<ForecastChartProps> = ({
@@ -81,6 +84,8 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
     futureDates,
     annotations,
     onCrosshairMove,
+    changePoints = [],
+    segmentForecastResult = null,
 }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [toolbar, setToolbar] = useState<ToolbarState>(DEFAULT_TOOLBAR);
@@ -114,6 +119,7 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
             'Fitted': toolbar.showFitted,
             'CI Upper': toolbar.showCI,
             'CI Lower': toolbar.showCI,
+            'Segment Fitted': toolbar.showFitted,
         };
 
         chart.data.datasets.forEach((ds, i) => {
@@ -125,6 +131,10 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
             // comparison entries start with 'cmp:'
             if (label.startsWith('cmp:')) {
                 meta.hidden = !toolbar.comparisonEnabled;
+            }
+            // segment forecast dataset
+            if (label === 'Segment Forecast') {
+                meta.hidden = !toolbar.showForecast;
             }
         });
 
@@ -188,6 +198,15 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
         ]
         : [];
 
+    // Dataset: Segment Forecast
+    const segmentForecastData = segmentForecastResult && actualValues.length > 0
+        ? [
+            ...Array(actualValues.length - 1).fill(null),
+            actualValues[actualValues.length - 1],
+            ...segmentForecastResult.forecast,
+        ]
+        : [];
+
     // Dataset: Comparison models (one per entry)
     const comparisonDatasets = comparisons.map(c => {
         const data = actualValues.length > 0
@@ -207,32 +226,64 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
     const hasCI = ciUpperData.some(v => v !== null);
     const hasAnnotations = annotations.length > 0;
     const hasOutliers = outlierSet.size > 0;
+    const hasSegmentForecast = !!segmentForecastResult;
+    const hasSegmentFitted = segmentForecastResult?.fittedValues?.some(v => v !== null);
 
-    // Build annotation plugin config
+    // Build annotation plugin config (user annotations + change-point lines)
     const buildAnnotations = () => {
-        if (!toolbar.showAnnotations || !hasAnnotations) return {};
         const annConfig: Record<string, any> = {};
-        annotations.forEach(ann => {
-            annConfig[ann.id] = {
-                type: 'line',
-                xMin: ann.date,
-                xMax: ann.date,
-                borderColor: ann.color,
-                borderWidth: 2,
-                borderDash: [5, 4],
-                label: {
-                    display: true,
-                    content: ann.label,
-                    position: 'start',
-                    backgroundColor: ann.color + 'cc',
-                    color: '#fff',
-                    font: { size: 11 },
-                    padding: { x: 6, y: 3 },
-                    rotation: -90,
-                    xAdjust: 8,
-                },
-            };
-        });
+
+        // User annotation markers
+        if (toolbar.showAnnotations && hasAnnotations) {
+            annotations.forEach(ann => {
+                annConfig[ann.id] = {
+                    type: 'line',
+                    xMin: ann.date,
+                    xMax: ann.date,
+                    borderColor: ann.color,
+                    borderWidth: 2,
+                    borderDash: [5, 4],
+                    label: {
+                        display: true,
+                        content: ann.label,
+                        position: 'start',
+                        backgroundColor: ann.color + 'cc',
+                        color: '#fff',
+                        font: { size: 11 },
+                        padding: { x: 6, y: 3 },
+                        rotation: -90,
+                        xAdjust: 8,
+                    },
+                };
+            });
+        }
+
+        // Change-point vertical lines (PELT breakpoints)
+        if (toolbar.showChangePoints && changePoints.length > 0) {
+            changePoints.forEach((cpIdx, i) => {
+                const label = allDates[cpIdx] ?? String(cpIdx);
+                annConfig[`cp_${i}`] = {
+                    type: 'line',
+                    xMin: label,
+                    xMax: label,
+                    borderColor: 'rgba(212, 160, 23, 0.85)',
+                    borderWidth: 1.5,
+                    borderDash: [6, 3],
+                    label: {
+                        display: true,
+                        content: `CP ${i + 1}`,
+                        position: 'start',
+                        backgroundColor: 'rgba(212, 160, 23, 0.75)',
+                        color: '#fff',
+                        font: { size: 10, weight: 'bold' },
+                        padding: { x: 5, y: 2 },
+                        rotation: -90,
+                        xAdjust: 9,
+                    },
+                };
+            });
+        }
+
         return annConfig;
     };
 
@@ -265,7 +316,46 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                 hidden: !toolbar.showCI,
             } as any,
         ] : []),
-        // Fitted values
+        // Segment fitted values (from per-segment forecast)
+        ...(hasSegmentFitted ? [
+            {
+                label: 'Segment Fitted',
+                data: [
+                    ...segmentForecastResult!.fittedValues,
+                    ...Array(periods).fill(null),
+                ],
+                borderColor: 'rgba(212, 160, 23, 0.55)',
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                pointRadius: 0,
+                tension: 0.2,
+                fill: false,
+                spanGaps: true,
+                hidden: !toolbar.showFitted,
+            } as any,
+        ] : []),
+        // Segment Forecast
+        ...(hasSegmentForecast ? [
+            {
+                label: 'Segment Forecast',
+                data: segmentForecastData,
+                borderColor: 'rgba(212, 160, 23, 1)', // Solid amber for segment forecast
+                backgroundColor: 'rgba(212, 160, 23, 0.08)',
+                borderWidth: 2.5,
+                borderDash: [8, 4],
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: 'rgba(212, 160, 23, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1.5,
+                tension: 0.4,
+                fill: toolbar.fillMode,
+                spanGaps: true,
+                hidden: !toolbar.showForecast,
+            } as any,
+        ] : []),
+        // Standard fitted values
         ...(hasFitted ? [
             {
                 label: 'Fitted',
@@ -377,7 +467,7 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                             const entry = comparisons.find(c => `cmp:${c.id}` === label);
                             return `${entry?.label ?? label}: ${context.parsed.y.toFixed(2)}`;
                         }
-                        return `${label}: ${context.parsed.y.toFixed(2)}${isOutlier ? ' ⚠ outlier' : ''}`;
+                        return `${label}: ${context.parsed.y.toFixed(4)}${isOutlier ? ' [outlier]' : ''}`;
                     },
                 },
             },
@@ -434,7 +524,15 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                             onClick={() => setIsFullscreen(!inFullscreen)}
                             title={inFullscreen ? 'Exit fullscreen' : 'View fullscreen'}
                         >
-                            {inFullscreen ? '✕' : '⛶'}
+                            {inFullscreen ? (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" style={{ width: 14, height: 14 }}>
+                                    <polyline points="18 6 6 18" /><polyline points="6 6 18 18" />
+                                </svg>
+                            ) : (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" style={{ width: 14, height: 14 }}>
+                                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                                </svg>
+                            )}
                         </button>
                         <div>
                             <h2 className="chart-title">
@@ -462,11 +560,19 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                         </div>
                         {hasForecast && <div className="legend-item">
                             <span className="legend-dot forecast" />
-                            <span>Forecast</span>
+                            <span>Global Forecast</span>
                         </div>}
                         {hasFitted && <div className="legend-item">
                             <span className="legend-dot fitted" />
-                            <span>Fitted</span>
+                            <span>Global Fitted</span>
+                        </div>}
+                        {hasSegmentForecast && <div className="legend-item">
+                            <span className="legend-dot" style={{ background: 'rgba(212, 160, 23, 1)' }} />
+                            <span>Segment Forecast</span>
+                        </div>}
+                        {hasSegmentFitted && <div className="legend-item">
+                            <span className="legend-dot" style={{ background: 'rgba(212, 160, 23, 0.55)', border: '1px dashed rgba(212, 160, 23, 1)' }} />
+                            <span>Segment Fitted</span>
                         </div>}
                         {hasCI && <div className="legend-item">
                             <span className="legend-dot ci" />
@@ -510,9 +616,16 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                         />
                     ) : (
                         <div className="empty-state">
-                            <div className="empty-state-icon">📊</div>
-                            <h3>No Data Yet</h3>
-                            <p>Upload a CSV file to visualize your time series data</p>
+                            <div className="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter">
+                                    <path d="M3 3v18h18" />
+                                    <rect x="7" y="11" width="3" height="8" opacity="0.5" fill="currentColor" stroke="none" />
+                                    <rect x="12" y="7" width="3" height="12" opacity="0.5" fill="currentColor" stroke="none" />
+                                    <rect x="17" y="14" width="3" height="5" opacity="0.5" fill="currentColor" stroke="none" />
+                                </svg>
+                            </div>
+                            <h3>No Data Loaded</h3>
+                            <p>Import a CSV file to visualize your time series data</p>
                         </div>
                     )}
                 </div>
