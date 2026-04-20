@@ -1,0 +1,368 @@
+\documentclass[11pt, a4paper]{report}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{fontspec}
+\usepackage[english, bidi=basic, provide=*]{babel}
+
+\babelprovide[import, onchar=ids fonts]{english}
+\babelfont{rm}{Noto Sans}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{setspace}
+
+% hyperref must be the last package loaded
+\usepackage{hyperref}
+
+\setlist[itemize]{label=-}
+% One-and-a-half spacing is standard for academic theses
+\onehalfspacing 
+
+\begin{document}
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Macro-Environmental Context and Theoretical Motivation}
+Traditional macroeconometric forecasting relies heavily on foundational axioms regarding the behavior of time-series data, specifically the assumptions of weak stationarity and ergodicity. Under these strict mathematical assumptions, it is posited that the statistical properties of a given economic indicator—such as its mean, variance, and autocorrelation structure—remain relatively constant over time. However, the global economy is not a closed, sterile laboratory system; it is a highly dynamic, interconnected network constantly adjusting to exogenous shocks, monetary policy shifts, geopolitical conflicts, and rapid technological advancements \cite{ClementsHendry1998}. 
+
+The friction between these rigid mathematical prerequisites and the chaotic reality of global markets is profoundly highlighted during severe macroeconomic crises, such as the 2008 Global Financial Crisis, the European sovereign debt crisis, or the global supply chain collapse induced by the COVID-19 pandemic of 2020. During these periods of unprecedented volatility, historical time-series data suddenly loses its predictive forecasting power. Models trained on decades of stable, pre-crisis data will almost invariably fail to predict post-crisis trajectories because the underlying structural parameters of the economy have fundamentally shifted. This phenomenon is closely related to the famous Lucas Critique \cite{Lucas1976}, which argues that it is mathematically naive to predict the effects of a change in economic policy entirely on the basis of relationships observed in historical data, especially when that data is aggregated across different, incompatible economic regimes.
+
+Given these realities, modern econometricians face a daunting challenge: how to accurately model future economic states when the past is no longer a reliable indicator of the future. The solution necessitates a paradigm shift from static, overarching global models to dynamic, adaptive systems capable of identifying precisely when a regime change has occurred, and subsequently recalculating forecasts based only on the newly established economic reality \cite{Pesaran2004}.
+
+\section{The Universal Benefits of Adaptive Forecasting}
+While the primary focus of this thesis is rooted in macroeconomics and econometrics, the mathematical forecasting models and architectural pipelines developed herein have profound benefits that extend far beyond financial markets. Time-series forecasting is a universal mathematical language used to predict the future based on sequential historical data across a multitude of disciplines \cite{Makridakis1998}.
+
+In the field of \textbf{Economics and Finance}, accurate forecasting is the bedrock of fiscal policy, risk management, and algorithmic trading. Central banks rely on inflation and Gross Domestic Product (GDP) forecasts to set interest rates. However, traditional models often fail to account for "Black Swan" events. An adaptive model that can instantly recognize a structural break allows financial institutions to stop hemorrhaging capital by discarding pre-shock data and forecasting based solely on the new market volatility.
+
+In \textbf{Supply Chain Management and Logistics}, forecasting dictates inventory levels, shipping routes, and manufacturing schedules. A sudden disruption, such as a blocked international trade route or a pandemic-induced spike in demand for specific goods, introduces a massive structural break in retail data. An adaptive segmented forecasting system allows logistics companies to immediately identify the break and forecast future demand without the historical data dragging down the new, urgent supply requirements.
+
+In \textbf{Epidemiology and Public Health}, forecasting models are extensively used to predict the spread of infectious diseases. A structural break in epidemiology often corresponds to a viral mutation or the sudden implementation of strict lockdown measures. By detecting the exact point of intervention (the change point), health officials can generate a segmented forecast that proves mathematically whether the intervention successfully altered the exponential trajectory of the infection rate.
+
+In \textbf{Energy Grid Management}, predicting electricity consumption is vital for preventing rolling blackouts and optimizing renewable energy storage. Structural breaks occur due to extreme weather events or sudden shifts in industrial consumption patterns. The ability to detect these shifts and apply localized Moving Averages or Holt-Winters models ensures that the grid remains balanced even under unprecedented stress.
+
+\section{Problem Statement and the Architectural Software Gap}
+Despite the urgent cross-industry need for dynamic forecasting mechanisms, there remains a significant architectural gap in the current software ecosystem. Through extensive market research and competitive analysis conducted prior to the development of this project, it became evident that there is no unified product on the market that seamlessly integrates raw econometric modeling, autonomous structural break detection, interactive segmented forecasting, and deterministic Large Language Model (LLM) analytics into a single, decoupled web application.
+
+Existing software solutions generally fall into two disparate, highly polarized categories:
+\begin{itemize}
+    \item \textbf{Highly Technical Data Science Environments:} Tools such as Jupyter Notebooks, RStudio, and raw Python scripts offer unparalleled computational power. They can execute complex algorithms like the Pruned Exact Linear Time (PELT) algorithm for change point detection \cite{Killick2012} or fit advanced Autoregressive Integrated Moving Average (ARIMA) models \cite{BoxJenkins1970}. However, these environments are entirely inaccessible to non-technical executive stakeholders. They require extensive programming knowledge, strict library environment management, and a deep understanding of statistical theory, effectively trapping valuable insights within the silos of the data science department.
+    \item \textbf{Generic Business Intelligence (BI) Dashboards:} Commercial tools like Tableau, Microsoft PowerBI, and Looker excel in data visualization and democratizing access to interactive charts. Yet, they suffer from a severe deficiency in advanced, on-the-fly statistical modeling. These platforms lack the native, programmatic flexibility to perform automated structural break detection or dynamically calculate partitioned forecasting components without relying on clunky, highly engineered external data pipelines that take weeks for database administrators to deploy.
+\end{itemize}
+
+The application developed in this thesis directly addresses this precise market gap. By processing user-uploaded CSV data through an Express.js middleware server, transmitting raw matrices to an isolated Python sub-process for computationally intensive calculations, and rendering the results instantly via a React Virtual DOM, the architecture mitigates the traditional Node.js single-thread starvation issue while maintaining a highly responsive, executive-friendly interface.
+
+\section{Change Points and Segmented Forecasting}
+To address the issues of economic shocks highlighted by the Lucas Critique, the application utilizes the concept of Change Point Detection (CPD) \cite{BaiPerron1998} and Segmented Forecasting. 
+
+A \textbf{Change Point} (or structural break) is a specific temporal coordinate in a time series where the fundamental statistical properties of the data abruptly change. This could manifest as a shift in the mean (a sudden jump or drop in asset value), a shift in variance (a sudden period of extreme market volatility), or a shift in the overall trend direction. Identifying these points is critical because fitting a single mathematical model across a change point results in extreme forecasting bias and massive error rates.
+
+\textbf{Segmented Forecasting} is the architectural response to the detection of these change points. Instead of treating the entire history of an economic indicator as a single, sacred mathematical truth, the timeline is treated as a series of distinct "regimes" or segments. When a user interacts with the application, they can visually observe the algorithmically detected change points. If an economic shock is detected, the user can trigger a segmented forecast. The application mathematically truncates the array, permanently discarding the obsolete pre-shock data from memory. The forecasting algorithms are then re-initialized and trained exclusively on the data from the new economic regime. This highly localized approach ensures the forecast is not weighed down by the statistical inertia of a dead economy.
+
+\section{AI Interpretation: Semantic Context Beyond Mathematics}
+The final, and perhaps most innovative, component of this architecture is the integration of Artificial Intelligence to bridge the gap between raw mathematics and human contextual reasoning. Mathematical models are inherently syntactic; they understand the numbers, the variance, and the trajectory, but they have absolutely no understanding of \textit{why} the numbers are moving. A mathematical model does not know what a "pandemic," a "recession," or a "supply chain crisis" is. It only sees a structural break in the temporal variance.
+
+This is where the Large Language Model (LLM) becomes indispensable. By passing the mathematical results into an LLM, we grant the system \textbf{Semantic Understanding} \cite{Korinek2025}. The LLM can explain if the context makes sense beyond what the mathematical model alone can deduce. For example, if the PELT algorithm detects a massive structural break in GDP in Q1 2020, the mathematical model simply calculates a high error rate and adjusts the curve. The LLM, however, possesses vast training data regarding world history and macroeconomics. When prompted with the date of the structural break and the magnitude of the mathematical shift, the LLM can explicitly narrate the overarching economic paradigm to the user.
+
+However, generative AI models, built on probabilistic transformer architectures \cite{Vaswani2017}, are notorious for "hallucinations"—generating confident but factually incorrect mathematical statements. To prevent this, the architecture employs \textbf{Deterministic AI Prompt Engineering}. The AI is never allowed to look at the raw data and guess the forecast. Instead, the Python backend executes the strict mathematical proofs, calculates the exact improvement in accuracy (the delta in Root Mean Squared Error), and forcefully injects these pre-calculated, absolute truths into a hidden heuristic prompt. The LLM is strictly constrained to use the injected math as its baseline, ensuring that its semantic explanation of the context is permanently anchored to undeniable mathematical reality.
+
+\section{Structure of the Thesis}
+The remainder of this thesis is organized to provide a comprehensive breakdown of both the mathematical theories and the software engineering principles utilized in the project. Chapter 2 rigorously outlines the theoretical foundations, detailing the pure mathematics behind Moving Averages, Exponential Smoothing, ARIMA models, the PELT structural break detection algorithm, and the mathematical justification for Segmented Forecasting. Chapter 3 will dissect the software engineering architecture, including the decoupled Node.js and Python inter-process communication (IPC) pipelines. Chapter 4 presents the frontend visualization layer using Recharts and React state management protocols. Chapter 5 evaluates the deterministic AI integration via the Gemini API, and Chapter 6 concludes the research.
+
+
+\chapter{Theoretical Foundations}
+\label{ch:theoretical_foundations}
+
+This chapter provides the comprehensive mathematical proofs, formal logic, and statistical derivations for the time-series models and structural break detection algorithms utilized within the application's backend Python execution pipeline. A rigorous understanding of these econometric principles is necessary to comprehend how the software manipulates raw data structures into reliable predictive insights.
+
+\section{Time Series Fundamentals and Stationarity}
+A time series is defined mathematically as a sequence of random variables, $\{Y_t : t \in \mathbb{T}\}$, observed at discrete, equally spaced time intervals. The fundamental premise of linear time series forecasting is that the structural dependencies observed in the past will persist into the future. 
+
+To formalize this, we rely on Wold's Representation Theorem \cite{Wold1938}, which states that any covariance-stationary time series can be written as the sum of two orthogonal processes: a deterministic process (which can be perfectly predicted from past values) and a stochastic moving average process of infinite order.
+
+For a linear model to be statistically valid under Wold's theorem, the time series must generally exhibit weak (or second-order) stationarity. A stochastic process $Y_t$ is weakly stationary if it satisfies three strict mathematical conditions:
+\begin{enumerate}
+    \item \textbf{Constant Mean:} The expected value of the process is constant over time. For all $t$, $\mathbb{E}[Y_t] = \mu$. This implies the series does not exhibit a long-term upward or downward trend.
+    \item \textbf{Constant Variance:} The variance is finite and constant over time. For all $t$, $\text{Var}(Y_t) = \mathbb{E}[(Y_t - \mu)^2] = \sigma^2 < \infty$. This implies the volatility of the series does not increase or decrease.
+    \item \textbf{Autocovariance depends only on lag:} The covariance between any two observations depends strictly on the time lag $k$ between them, not on the actual chronological time $t$. The autocovariance function is defined as:
+    \begin{equation}
+        \gamma(k) = \text{Cov}(Y_t, Y_{t-k}) = \mathbb{E}[(Y_t - \mu)(Y_{t-k} - \mu)]
+    \end{equation}
+\end{enumerate}
+
+Consequently, the Autocorrelation Function (ACF), denoted as $\rho(k)$, is the normalized autocovariance used to identify trailing dependencies \cite{Hamilton1994}:
+\begin{equation}
+    \rho(k) = \frac{\gamma(k)}{\gamma(0)} = \frac{\text{Cov}(Y_t, Y_{t-k})}{\text{Var}(Y_t)}
+\end{equation}
+Furthermore, the Partial Autocorrelation Function (PACF) isolates the direct correlation between $Y_t$ and $Y_{t-k}$ by mathematically removing the linear dependence on the intermediate lags $Y_{t-1}, Y_{t-2}, \dots, Y_{t-k+1}$. Both the ACF and PACF are critical for diagnosing the mathematical structure of the data before modeling.
+
+\section{Moving Average Models}
+The most fundamental approach to smoothing volatile data, extracting underlying signals, and establishing a baseline forecast is the Moving Average. The application implements both Simple and Weighted Moving Averages to accommodate different temporal behaviors.
+
+\subsection{Simple Moving Average (SMA)}
+The Simple Moving Average of order $k$, denoted $SMA(k)$, computes the unweighted arithmetic mean of the previous $k$ data points. For a time series $y_t$, the smoothed value at time $t$, which also serves as the na\"ive forecast $\hat{y}_{t+1}$, is calculated as:
+\begin{equation}
+    \hat{y}_{t+1} = \frac{1}{k} \sum_{i=0}^{k-1} y_{t-i} = \frac{y_t + y_{t-1} + y_{t-2} + \dots + y_{t-k+1}}{k}
+\end{equation}
+
+To understand the smoothing effect mathematically, consider the variance of the SMA. If we assume the original series $y_t$ consists of a constant signal $\mu$ plus independent identically distributed (i.i.d.) white noise $\epsilon_t$ with variance $\sigma^2$ (i.e., $y_t = \mu + \epsilon_t$), the variance of the SMA is:
+\begin{equation}
+    \text{Var}(\hat{y}_{t+1}) = \text{Var}\left( \frac{1}{k} \sum_{i=0}^{k-1} y_{t-i} \right) = \frac{1}{k^2} \sum_{i=0}^{k-1} \text{Var}(y_{t-i}) = \frac{1}{k^2} (k \sigma^2) = \frac{\sigma^2}{k}
+\end{equation}
+This proof demonstrates that the SMA successfully reduces the variance (noise) of the original series by a factor of $k$. However, the primary limitation of the SMA is its equal weighting and the resulting mathematical lag. Because every point in the window is weighted equally at $\frac{1}{k}$, the "center of mass" of the SMA lags the actual data by precisely $\frac{k-1}{2}$ periods. This makes the SMA notoriously slow to respond to structural breaks or rapid trend reversals.
+
+\subsection{Weighted Moving Average (WMA)}
+To mathematically mitigate the lagging effect of the SMA, the Weighted Moving Average (WMA) assigns predefined, decreasing weights to historical data points, ensuring recent data heavily influences the forecast while distant data decays. Let $w_i$ represent the weight applied to the observation $i$ periods ago, where the sum of all weights strictly equals 1: $\sum_{i=1}^{k} w_i = 1$. The formula is:
+\begin{equation}
+    \hat{y}_{t+1} = \sum_{i=1}^{k} w_i y_{t-i+1}
+\end{equation}
+In a linearly weighted moving average, the weights decrease arithmetically. The most recent observation $y_t$ receives a weight of $k$, the previous $y_{t-1}$ receives $k-1$, down to a weight of $1$ for $y_{t-k+1}$. To ensure the weights sum to 1, each term is divided by the sum of the integers from 1 to $k$, which is $\frac{k(k+1)}{2}$. Thus, the specific weight $w_i$ is defined as:
+\begin{equation}
+    w_i = \frac{k - i + 1}{\frac{k(k+1)}{2}} = \frac{2(k - i + 1)}{k(k+1)}
+\end{equation}
+While the WMA is an improvement over the SMA in tracking active trends with less lag, defining the arbitrary window $k$ remains a subjective constraint.
+
+\section{Exponential Smoothing Methodologies}
+Exponential smoothing fundamentally resolves the arbitrary window limitation of moving averages by applying a continuous, geometrically decaying weight to all past observations \cite{Hyndman2008}. This ensures that the most recent data dictates the immediate trajectory of the forecast, while still maintaining the historical context of the entire time series dating back to the genesis point $t=0$.
+
+\subsection{Simple Exponential Smoothing (SES)}
+Simple Exponential Smoothing (SES) is utilized when the data, denoted as $y_t$, exhibits a relatively stationary mean with no distinct trend or seasonal pattern. The foundational equation for SES is defined recursively as:
+\begin{equation}
+    S_t = \alpha y_t + (1 - \alpha) S_{t-1}
+\end{equation}
+where:
+\begin{itemize}
+    \item $S_t$ is the smoothed statistic, representing the level of the series at time $t$, which serves as the flat forecast for all future periods: $\hat{y}_{t+h|t} = S_t$.
+    \item $y_t$ is the actual observation at time $t$.
+    \item $\alpha$ is the smoothing parameter, strictly bounded such that $0 \le \alpha \le 1$.
+\end{itemize}
+
+The exponential nature of this model is proven through recursive substitution. If we substitute the previous state $S_{t-1} = \alpha y_{t-1} + (1 - \alpha)S_{t-2}$ into the main equation, we get:
+\begin{equation}
+    S_t = \alpha y_t + (1 - \alpha)[\alpha y_{t-1} + (1 - \alpha)S_{t-2}] = \alpha y_t + \alpha(1-\alpha)y_{t-1} + (1-\alpha)^2 S_{t-2}
+\end{equation}
+Continuing this substitution backward to the first observation yields the infinite expansion:
+\begin{equation}
+    S_t = \alpha \sum_{i=0}^{t-1} (1-\alpha)^i y_{t-i} + (1-\alpha)^t S_0
+\end{equation}
+This mathematically proves that the weight assigned to past observations decays exponentially by a constant factor of $(1-\alpha)$ as the data ages. An $\alpha$ value approaching 1 heavily discounts older data (reacting rapidly to shocks), while an $\alpha$ value approaching 0 treats all historical data nearly equally (creating a highly smoothed, inert forecast). In practice, optimal initial states ($S_0$) and $\alpha$ are found by minimizing the Sum of Squared Errors (SSE) over the training data.
+
+\subsection{Holt's Linear Trend Model}
+When an economic time series possesses an underlying upward or downward trajectory, SES fails because its flat forecasts continuously lag behind the trend. To resolve this, Holt extended the model to explicitly estimate the slope of the trend over time.
+
+The dual recursive equations governing Holt's method are defined mathematically as the Level equation ($L_t$) and the Trend equation ($T_t$):
+\begin{align}
+    L_t &= \alpha y_t + (1 - \alpha)(L_{t-1} + T_{t-1}) \\
+    T_t &= \beta (L_t - L_{t-1}) + (1 - \beta)T_{t-1}
+\end{align}
+where $\alpha$ is the level smoothing parameter and $\beta$ is the trend smoothing parameter ($0 \le \alpha, \beta \le 1$). 
+
+The level equation updates the current base value by taking a weighted average of the actual observation $y_t$ and the previous level plus the expected trend $(L_{t-1} + T_{t-1})$. The trend equation updates the slope by taking a weighted average of the current perceived change in level $(L_t - L_{t-1})$ and the previously estimated slope $T_{t-1}$.
+
+The $h$-step-ahead forecast is generated by linearly projecting the estimated trend $T_t$ outward from the most recent estimated level $L_t$:
+\begin{equation}
+    \hat{y}_{t+h|t} = L_t + h T_t
+\end{equation}
+
+\subsection{Holt-Winters Multiplicative Method}
+To accurately forecast data exhibiting both a linear trend and repeating cyclical variations (seasonality), the Holt-Winters method incorporates a third seasonal parameter. In macroeconomics, as the level of a series increases (e.g., GDP or inflation volume), the amplitude of the seasonal fluctuations often increases proportionally. Therefore, the \textit{multiplicative} formulation is mathematically preferred over the additive version.
+
+The system state is updated iteratively across three equations: Level ($L_t$), Trend ($T_t$), and Seasonality ($S_t$):
+\begin{align}
+    L_t &= \alpha \left(\frac{y_t}{S_{t-m}}\right) + (1 - \alpha)(L_{t-1} + T_{t-1}) \\
+    T_t &= \beta (L_t - L_{t-1}) + (1 - \beta)T_{t-1} \\
+    S_t &= \gamma \left(\frac{y_t}{L_t}\right) + (1 - \gamma)S_{t-m}
+\end{align}
+Here, $\gamma$ is the seasonal smoothing parameter, and $m$ represents the period of the seasonality (e.g., $m=12$ for monthly data with annual cycles, or $m=4$ for quarterly GDP data). 
+
+In the Level equation, the data $y_t$ is dynamically "de-seasonalized" by dividing it by the seasonal index from the previous cycle ($S_{t-m}$). In the Seasonal equation, the current seasonal index is estimated by dividing the raw data by the current level $\left(\frac{y_t}{L_t}\right)$, representing the percentage deviation from the base trend.
+
+The $h$-step-ahead forecast equation projects the trend, and then scales the entire projection by multiplying it by the appropriate seasonal index isolated from the previous cycle:
+\begin{equation}
+    \hat{y}_{t+h|t} = (L_t + h T_t) S_{t-m+h_m^+}
+\end{equation}
+where the mathematical notation $h_m^+ = [(h-1) \mod m] + 1$ guarantees that the algorithm accurately cycles back to extract the correct corresponding seasonal multiplier regardless of how far into the future the forecast extends.
+
+
+\section{Autoregressive Integrated Moving Average (ARIMA)}
+The ARIMA$(p, d, q)$ framework, formally synthesized in the Box-Jenkins methodology \cite{BoxJenkins1970}, is one of the most robust and theoretically sound approaches for forecasting stationary and non-stationary linear time series. It structurally combines Autoregressive $AR(p)$ dynamics, differencing $I(d)$ for non-stationary integration, and Moving Average $MA(q)$ error smoothing into a unified predictive equation.
+
+The Box-Jenkins methodology outlines a rigorous three-step process:
+\begin{enumerate}
+    \item \textbf{Identification:} Determining the parameters $p, d, q$ by analyzing the ACF and PACF plots to identify unit roots and lag dependencies.
+    \item \textbf{Estimation:} Using Maximum Likelihood Estimation (MLE) to compute the exact coefficients for the autoregressive and moving average terms.
+    \item \textbf{Diagnostic Checking:} Ensuring the model residuals resemble white noise (via the Ljung-Box test), confirming that all systematic information has been successfully extracted by the model.
+\end{enumerate}
+
+\subsection{The Lag Operator and Autoregressive Processes}
+To formalize the mathematical derivations of the estimation phase, let $L$ represent the lag (or backshift) operator, defined such that applying $L$ to an observation shifts it back in time by one period: $L y_t = y_{t-1}$. By continuous application, $L^k y_t = y_{t-k}$.
+
+An Autoregressive process of order $p$, denoted $AR(p)$, models the current observation $y_t$ as a linear combination of its $p$ past observations plus a completely stochastic white noise error term $\epsilon_t$:
+\begin{equation}
+    y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + \dots + \phi_p y_{t-p} + \epsilon_t
+\end{equation}
+Utilizing the lag operator, we can move all $y$ terms to the left side and factor out $y_t$:
+\begin{equation}
+    \left(1 - \phi_1 L - \phi_2 L^2 - \dots - \phi_p L^p\right) y_t = c + \epsilon_t 
+\end{equation}
+\begin{equation}
+    \Phi(L) y_t = c + \epsilon_t
+\end{equation}
+where $\Phi(L)$ is the autoregressive characteristic polynomial of order $p$. The Yule-Walker equations can be derived from this formulation by multiplying by $y_{t-k}$ and taking the mathematical expectation, allowing for the precise estimation of the $\phi$ parameters based on sample autocorrelations.
+
+\subsection{Moving Average Processes}
+Conversely, a Moving Average process of order $q$, denoted $MA(q)$, models the current observation as the mean $\mu$ plus a linear combination of current and $q$ past white noise error terms (historical forecasting shocks):
+\begin{equation}
+    y_t = \mu + \epsilon_t + \theta_1 \epsilon_{t-1} + \dots + \theta_q \epsilon_{t-q}
+\end{equation}
+In polynomial lag notation, this is expressed as:
+\begin{equation}
+    y_t = \mu + \left(1 + \theta_1 L + \theta_2 L^2 + \dots + \theta_q L^q\right) \epsilon_t \implies y_t = \mu + \Theta(L) \epsilon_t
+\end{equation}
+
+\subsection{Integration and the Complete ARIMA Model}
+If the original economic time series is non-stationary (e.g., exhibiting stochastic drift or random walks), it must be differenced $d$ times to achieve stationarity. The first difference is calculated as $\Delta y_t = y_t - y_{t-1} = (1-L)y_t$. The $d$-th difference is denoted as $(1-L)^d y_t$. 
+
+Combining the Autoregressive polynomial, the differencing integration operator, and the Moving Average polynomial yields the formal, canonical definition of the $ARIMA(p, d, q)$ stochastic process:
+\begin{equation}
+    \Phi(L) (1-L)^d y_t = c + \Theta(L) \epsilon_t
+\end{equation}
+where $\epsilon_t \sim WN(0, \sigma^2)$ is strictly assumed to be a white noise process characterized by a mean of zero, constant variance $\sigma^2$, and zero covariance between distinct periods ($\text{Cov}(\epsilon_t, \epsilon_{t-k}) = 0$ for all $k \neq 0$).
+
+\subsection{Stationarity and Invertibility Roots}
+The theoretical viability of an ARIMA model depends explicitly on the complex roots of its characteristic polynomials. For the $AR(p)$ component of the model to represent a strictly stationary, non-explosive process, the roots of the characteristic equation $\Phi(z) = 0$ must lie strictly outside the unit circle in the complex plane. Mathematically:
+\begin{equation}
+    1 - \phi_1 z - \phi_2 z^2 - \dots - \phi_p z^p = 0
+\end{equation}
+For any complex root $z$ satisfying this polynomial, it is an absolute mathematical requirement that the modulus $|z| > 1$. If a root lies exactly on the unit circle ($|z| = 1$), the process exhibits a "unit root," indicating severe non-stationarity, and requires a higher degree of differencing (an increase in the $d$ hyper-parameter).
+
+Correspondingly, for the $MA(q)$ process to be "invertible"—meaning the unobservable error term $\epsilon_t$ can be mathematically inverted and rewritten as an infinite converging sum of past observable data $y_t$—all roots of the moving average polynomial $\Theta(z) = 1 + \theta_1 z + \dots + \theta_q z^q = 0$ must also fall strictly outside the unit circle ($|z| > 1$). Without invertibility, the moving average parameters cannot be uniquely identified from the autocorrelation function of the sample data.
+
+
+\section{Change Point Detection (CPD) Mathematics}
+As repeatedly established, economic time series are highly susceptible to structural breaks caused by systemic shocks. Fitting a single global model across these breaks violates stationarity assumptions and ruins forecast accuracy. The mathematical process of identifying these shifts is Change Point Detection (CPD).
+
+Formally, a time series $y_{1:n} = (y_1, y_2, \dots, y_n)$ contains $m$ change points if it can be split into $m+1$ segments, where the statistical properties within each segment are constant, but the properties between adjacent segments differ. Let the positions of these change points be denoted by $\tau = (\tau_1, \tau_2, \dots, \tau_m)$, where $0 = \tau_0 < \tau_1 < \tau_2 < \dots < \tau_m < \tau_{m+1} = n$.
+
+The goal of a multiple change point algorithm is to jointly estimate both the number of change points $m$ and their exact temporal locations $\tau_{1:m}$. This is formulated as an optimization problem minimizing a penalized objective function:
+\begin{equation}
+    \min_{m, \tau_{1:m}} \left\{ \sum_{i=1}^{m+1} \left[ \mathcal{C}(y_{(\tau_{i-1}+1):\tau_i}) \right] + \beta f(m) \right\}
+\end{equation}
+where:
+\begin{itemize}
+    \item $\mathcal{C}(\cdot)$ is a predefined cost function measuring the fit of the data within a specific segment. Common cost functions include the negative log-likelihood or the residual sum of squares (variance).
+    \item $\beta f(m)$ is a penalty term designed to guard against overfitting. Without a penalty ($\beta = 0$), the algorithm would trivially place a change point at every single data coordinate to drive the cost to zero. 
+\end{itemize}
+
+\section{The Pruned Exact Linear Time (PELT) Algorithm}
+To solve the CPD optimization problem, one could theoretically evaluate every possible combination of breakpoints. Early algorithms like Binary Segmentation attempted to solve this heuristically by finding a single change point, splitting the data in two, and recursively searching each half. However, this is an approximate method and does not guarantee a globally optimal solution. Conversely, evaluating all combinations via an exact brute-force search is computationally unfeasible, scaling at an exponential rate of $\mathcal{O}(2^n)$. 
+
+The Optimal Partitioning (OP) method, based on dynamic programming, reduces this complexity to $\mathcal{O}(n^2)$. It defines $F(t)$ as the absolute minimum optimal cost for data up to time $t$:
+\begin{equation}
+    F(t) = \min_{0 \le \tau < t} \left[ F(\tau) + \mathcal{C}(y_{(\tau+1):t}) + \beta \right]
+\end{equation}
+While $\mathcal{O}(n^2)$ is significantly better, it is still too slow for instantaneous, interactive web environments processing tens of thousands of data points. The solution implemented in this application is the Pruned Exact Linear Time (PELT) algorithm, formalized by Killick, Fearnhead, and Eckley \cite{Killick2012}.
+
+\subsection{Mathematical Proof of Pruning Logic}
+The brilliance of the PELT algorithm lies in its mathematical pruning condition, which safely discards candidate change points that can mathematically never be the optimal choice. This reduces the complexity to exact linear time, $\mathcal{O}(n)$.
+
+Theorem 3.1 of Killick et al. (2012) dictates the pruning rule. Assume there exists a constant $K$ such that the cost function satisfies the following inequality for all $\tau < t < T$:
+\begin{equation}
+    \mathcal{C}(y_{(\tau+1):t}) + \mathcal{C}(y_{(t+1):T}) + K \le \mathcal{C}(y_{(\tau+1):T})
+\end{equation}
+This condition simply requires that introducing a new change point at time $t$ reduces the total cost of the segment by at least $K$. For the negative log-likelihood cost function, $K=0$. 
+
+The theorem mathematically proves that if, at any given time $t$, there exists a previous time point $\tau$ that satisfies the inequality:
+\begin{equation}
+    F(\tau) + \mathcal{C}(y_{(\tau+1):t}) + K \ge F(t)
+\end{equation}
+then the point $\tau$ can never be the optimal most recent change point for any future time $T > t$. 
+
+Because this condition guarantees that $\tau$ is permanently suboptimal, the temporal index $\tau$ is forcefully pruned from the set of candidate change points. As the algorithm progresses forward through the time series, the list of potential previous change points remains incredibly small, resulting in $\mathcal{O}(n)$ linear computational performance. This extreme efficiency is what allows the Python sub-process in the application architecture to calculate structural breaks instantly and return data to the Node.js layer without UI thread starvation.
+
+\section{Derivation of the Bayesian Information Criterion (BIC)}
+To ensure the PELT algorithm accurately penalizes the addition of new change points, an optimal penalty constant $\beta$ must be calculated. The application defaults to the Bayesian Information Criterion (BIC), which is mathematically derived to approximate the true posterior probability of a model, aggressively penalizing complexity to find the true structural breaks \cite{Schwarz1978}.
+
+The derivation begins with the marginal likelihood of the data $y$ given a specific model structure $m$ (representing a specific set of change points):
+\begin{equation}
+    p(y | m) = \int p(y | \theta, m) p(\theta | m) d\theta
+\end{equation}
+where $\theta$ represents the parameters within the segments, $p(y | \theta, m)$ is the likelihood function, and $p(\theta | m)$ is the prior distribution of the parameters. 
+
+This integral is highly complex. However, applying Laplace's method for integral approximation, we assume that for large sample sizes, the posterior distribution $p(\theta | y, m)$ is highly peaked around its mode, which corresponds to the maximum likelihood estimator $\hat{\theta}$. 
+
+Taking a second-order Taylor series expansion of the log-posterior around the maximum $\hat{\theta}$, we obtain:
+\begin{equation}
+    \log p(y | m) \approx \log p(y | \hat{\theta}, m) + \log p(\hat{\theta} | m) + \frac{k}{2} \log(2\pi) - \frac{1}{2} \log |H|
+\end{equation}
+where $k$ is the number of free parameters in model $m$, and $H$ is the Hessian matrix (the matrix of second derivatives) of the negative log-likelihood function evaluated at $\hat{\theta}$. 
+
+As the sample size $n \to \infty$, the terms involving the prior distribution $p(\hat{\theta} | m)$ and the constant $\frac{k}{2} \log(2\pi)$ do not grow with $n$ and thus become asymptotically negligible. The determinant of the Hessian matrix, however, grows at a rate directly proportional to $n^k$. Therefore, we can approximate $\log |H| \approx k \log n$.
+
+Substituting this back into the expansion, we achieve the large-sample asymptotic approximation for the log marginal likelihood:
+\begin{equation}
+    \log p(y | m) \approx \log p(y | \hat{\theta}, m) - \frac{k}{2} \log n
+\end{equation}
+To convert this into a deviance metric (where smaller values indicate a better model fit), the entire equation is multiplied by $-2$:
+\begin{equation}
+    -2 \log p(y | m) \approx -2 \log p(y | \hat{\theta}, m) + k \log n
+\end{equation}
+This final expression corresponds precisely to the formal BIC equation:
+\begin{equation}
+    \text{BIC} = -2 \log(\hat{L}) + k \log n
+\end{equation}
+where $\hat{L} = p(y | \hat{\theta}, m)$ represents the maximized likelihood of the model. In the context of the PELT algorithm, utilizing the BIC implies setting the penalty parameter $\beta = \log n$. This mathematical derivation proves that the BIC scales the penalty directly logarithmically with the number of data points, fiercely protecting the forecast from identifying false-positive structural shifts caused by random noise.
+
+\section{Segmented Forecasting Mechanics and RMSE Validation}
+Once the PELT algorithm successfully identifies a valid change point $\tau_{break}$, the architecture relies on the mechanical execution of a Segmented Forecast.
+
+The logic dictates that the time series $y_{1:n}$ must be completely severed at $\tau_{break}$. All data points in the pre-shock regime, defined as $Y_{pre} = \{y_t : 1 \le t < \tau_{break}\}$, are strictly eliminated from the predictive arrays. The newly truncated dataset, $Y_{post} = \{y_t : t \ge \tau_{break}\}$, is designated as the new training matrix. This matrix is passed independently into the ARIMA or Holt-Winters execution blocks. 
+
+Because the non-stationary volatility of $Y_{pre}$ is permanently removed, the optimization functions calculating the internal parameters converge on entirely different, highly localized constants. This entirely eliminates the heavy lag bias that traditional global models suffer from during macroeconomic recoveries.
+
+To mathematically validate this architectural strategy to the end-user, the backend calculates the Root Mean Squared Error (RMSE) for both the global model and the segmented model. The RMSE is defined as the square root of the average of squared differences between prediction and actual observation:
+\begin{equation}
+    \text{RMSE} = \sqrt{ \frac{1}{N_{post}} \sum_{t=\tau_{break}}^{n} (y_t - \hat{y}_t)^2 }
+\end{equation}
+where $N_{post}$ is the number of observations in the post-break regime. Importantly, to ensure a statistically fair comparison, the RMSE for the global model is evaluated \textit{only} over the same out-of-sample post-break timeline $t \ge \tau_{break}$, measuring precisely how poorly the pre-shock data polluted the current recovery trend. 
+
+While Mean Absolute Error (MAE) could also be used, RMSE is chosen explicitly because squaring the residuals penalizes large errors exponentially, which is highly preferred when modeling chaotic financial markets. The ultimate measure of architectural success is the accuracy gain delta, calculated as:
+\begin{equation}
+    \Delta_{accuracy} = \left( \frac{\text{RMSE}_{global} - \text{RMSE}_{seg}}{\text{RMSE}_{global}} \right) \times 100\%
+\end{equation}
+
+\section{Deterministic AI Prompt Engineering and Execution}
+The final theoretical component of the application bridges the gap between raw statistical output and natural language business analytics. To achieve this, the architecture integrates the Google Gemini Large Language Model (LLM). 
+
+As previously established, standard LLMs inherently utilize probabilistic, next-token prediction algorithms governed by self-attention mechanisms \cite{Vaswani2017}. While excellent for generating natural language, this probabilistic nature makes them highly prone to mathematical hallucination when asked to independently analyze numerical data. To completely restrict the AI and force a deterministic outcome, the backend server utilizes a rigid "Heuristic Prompt Injection" methodology. 
+
+Rather than sending the raw data array to the LLM via an API call, the Python backend executes the mathematical formulas described above, calculates the exact $\Delta_{accuracy}$, and explicitly injects these constants into a rigid JSON template. The system prompts the LLM with instructions such as: 
+
+\begin{quote}
+\textit{"A structural break occurred at date X. The global forecast produced an error rate of $Y$. By segmenting the data and deleting obsolete history, the new error rate is $Z$, yielding a proven mathematical accuracy improvement of $W\%$. Acting as a strict econometrician, explain the semantic, macroeconomic events that occurred on date X that justify why discarding the historical data improved the mathematical fit."}
+\end{quote}
+
+Furthermore, the API call to the LLM is executed with the `temperature` parameter explicitly set to $0.0$. In LLM architecture, temperature governs the randomness of the softmax distribution across the output vocabulary. By forcing the temperature to zero, the LLM is restricted to purely greedy decoding, selecting only the most probable token at every step. 
+
+By denying the LLM the ability to calculate the numbers itself, forcing a temperature of zero, and compelling it to narrate pre-calculated, mathematically proven econometric variables, the architecture guarantees a deterministic, halluciation-free analytical output. This effectively hybridizes the rigorous statistical foundations of time-series mathematics with the vast, contextual intelligence of modern generative AI.
+
+
+\begin{thebibliography}{99}
+\bibitem{BaiPerron1998} Bai, J., \& Perron, P. (1998). "Estimating and Testing Linear Models with Multiple Structural Changes." \textit{Econometrica}, 66(1), 47-78.
+\bibitem{BoxJenkins1970} Box, G. E. P., \& Jenkins, G. M. (1970). \textit{Time Series Analysis: Forecasting and Control}. Holden-Day.
+\bibitem{ClementsHendry1998} Clements, M. P., \& Hendry, D. F. (1998). \textit{Forecasting Economic Time Series}. Cambridge University Press.
+\bibitem{Hamilton1994} Hamilton, J. D. (1994). \textit{Time Series Analysis}. Princeton University Press.
+\bibitem{Hyndman2008} Hyndman, R. J., Koehler, A. B., Ord, J. K., \& Snyder, R. D. (2008). \textit{Forecasting with Exponential Smoothing: The State Space Approach}. Springer.
+\bibitem{Killick2012} Killick, R., Fearnhead, P., \& Eckley, I. A. (2012). "Optimal detection of changepoints with a linear computational cost." \textit{Journal of the American Statistical Association}, 107(500), 1590-1598.
+\bibitem{Korinek2025} Korinek, A. (2025). "AI Agents for Economic Research." \textit{Journal of Economic Literature}.
+\bibitem{Lucas1976} Lucas, R. E. (1976). "Econometric Policy Evaluation: A Critique." \textit{Carnegie-Rochester Conference Series on Public Policy}, 1, 19-46.
+\bibitem{Makridakis1998} Makridakis, S., Wheelwright, S. C., \& Hyndman, R. J. (1998). \textit{Forecasting: Methods and Applications} (3rd ed.). John Wiley \& Sons.
+\bibitem{Pesaran2004} Pesaran, M. H., \& Timmermann, A. (2004). "Real Time Econometrics." \textit{IZA Discussion paper series}, No. 1108.
+\bibitem{Schwarz1978} Schwarz, G. E. (1978). "Estimating the dimension of a model." \textit{Annals of Statistics}, 6(2), 461-464.
+\bibitem{Vaswani2017} Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, \L., \& Polosukhin, I. (2017). "Attention Is All You Need." \textit{Advances in Neural Information Processing Systems}, 30, 5998-6008.
+\bibitem{Wold1938} Wold, H. (1938). \textit{A Study in the Analysis of Stationary Time Series}. Almqvist \& Wiksell.
+\end{thebibliography}
+
+\end{document}

@@ -24,8 +24,11 @@ const upload = multer({
 });
 
 /**
- * POST /api/forecast/upload
- * Upload and parse CSV file
+ * @route POST /api/forecast/upload
+ * @description Ingests a CSV file containing historical time series data. Expected CSV format: [date, value] columns.
+ * @access Public
+ * @param {Object} req.file - The uploaded CSV file buffer (multipart/form-data)
+ * @returns {Object} JSON object containing the extracted `{ data, values, dates, statistics }`
  */
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
@@ -48,8 +51,14 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 /**
- * POST /api/forecast/calculate
- * Calculate forecast using selected model
+ * @route POST /api/forecast/calculate
+ * @description Calculates future projections using a specified forecasting model.
+ * @access Public
+ * @param {number[]} req.body.data - Historical dataset values array
+ * @param {string} req.body.model - Name of the chosen model (e.g., 'exponential_smoothing', 'arima')
+ * @param {number} req.body.periods - Number of time steps to project into the future
+ * @param {Object} [req.body.parameters] - Custom hyperparameters for the selected mathematical model
+ * @returns {Object} JSON object containing `{ method, forecast, fittedValues, parameters, accuracy }`
  */
 router.post('/calculate', async (req, res) => {
   try {

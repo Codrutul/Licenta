@@ -91,6 +91,9 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
     const [toolbar, setToolbar] = useState<ToolbarState>(DEFAULT_TOOLBAR);
     const chartRef = useRef<ChartJS<'line'>>(null);
     const fullscreenChartRef = useRef<ChartJS<'line'>>(null);
+    // Store onCrosshairMove in a ref so it never appears in buildOptions deps
+    const onCrosshairMoveRef = useRef(onCrosshairMove);
+    useEffect(() => { onCrosshairMoveRef.current = onCrosshairMove; }, [onCrosshairMove]);
 
     const updateToolbar = (updates: Partial<ToolbarState>) =>
         setToolbar(prev => ({ ...prev, ...updates }));
@@ -108,7 +111,23 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
         };
     }, [isFullscreen]);
 
-    // Apply dataset visibility from toolbar
+    // Attach onHover imperatively so it never affects buildOptions deps.
+    // This fires after chart mount and keeps the ref-based callback current.
+    useEffect(() => {
+        const chart = isFullscreen ? fullscreenChartRef.current : chartRef.current;
+        if (!chart) return;
+        (chart.options as any).onHover = onCrosshairMoveRef.current
+            ? (_event: any, _elements: any, c: any) => {
+                const tooltip = c.tooltip;
+                if (tooltip?.dataPoints?.length > 0) {
+                    onCrosshairMoveRef.current?.(tooltip.dataPoints[0].label);
+                }
+            }
+            : undefined;
+    }, [isFullscreen]);
+
+    // Apply dataset visibility + pan state from toolbar imperatively.
+    // This avoids recreating the options object (which would reset zoom/pan state).
     useEffect(() => {
         const chart = isFullscreen ? fullscreenChartRef.current : chartRef.current;
         if (!chart) return;
@@ -128,11 +147,9 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
             if (label in visibilityMap) {
                 meta.hidden = !visibilityMap[label];
             }
-            // comparison entries start with 'cmp:'
             if (label.startsWith('cmp:')) {
                 meta.hidden = !toolbar.comparisonEnabled;
             }
-            // segment forecast dataset
             if (label === 'Segment Forecast') {
                 meta.hidden = !toolbar.showForecast;
             }
@@ -145,11 +162,22 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
             }
         });
 
+        // Toggle pan imperatively so the options object doesn't need to change
+        // (rebuilding options resets the current zoom/pan state)
+        const zoomOpts = (chart.options as any)?.plugins?.zoom;
+        if (zoomOpts?.pan) {
+            zoomOpts.pan.enabled = toolbar.panEnabled;
+        }
+
         chart.update('none');
     }, [toolbar, isFullscreen]);
 
-    // Outlier detection on actual values
-    const outlierSet = detectOutliers(actualValues);
+    // (Imperative annotation update removed — annotations are correctly handled
+    // by buildOptions dependencies now, preventing overwrite conflicts during pan/zoom)
+
+    // Outlier detection — memoized so it doesn't recreate a new Set on every render
+    // (a new Set reference causes buildOptions to fire and resets zoom state)
+    const outlierSet = React.useMemo(() => detectOutliers(actualValues), [actualValues]);
 
     // All labels (history + future)
     const allDates = [...dates, ...futureDates];
@@ -438,13 +466,8 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
             mode: 'index',
             intersect: false,
         },
-        onHover: onCrosshairMove ? (_event, _elements, chart) => {
-            // Emit hovered x label for sync
-            const tooltip = (chart as any).tooltip;
-            if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length > 0) {
-                onCrosshairMove(tooltip.dataPoints[0].label);
-            }
-        } : undefined,
+        // onHover is NOT in static options — attaching it imperatively in a
+        // separate useEffect so it never triggers an options rebuild + zoom reset
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -476,16 +499,15 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                     wheel: { enabled: true, speed: 0.08 },
                     pinch: { enabled: true },
                     mode: 'x',
-                    onZoomComplete: ({ chart }) => chart.update('none'),
+                    // No onZoomComplete — it triggered an extra chart.update() cycle
                 },
                 pan: {
-                    enabled: toolbar.panEnabled,
+                    // Always false in static options; toggled imperatively in the
+                    // toolbar useEffect to avoid creating a new options object
+                    enabled: false,
                     mode: 'x',
                 },
-                limits: {
-                    x: { min: 'original', max: 'original' },
-                    y: { min: 'original', max: 'original' as any },
-                },
+                // No limits — allows free panning into the forecast region
             },
             annotation: {
                 annotations: buildAnnotations(),
@@ -511,7 +533,7 @@ const ForecastChart: React.FC<ForecastChartProps> = ({
                 },
             },
         },
-    }), [toolbar, outlierSet, annotations, onCrosshairMove]);
+    }), [toolbar.logScale, annotations, changePoints, toolbar.showAnnotations, toolbar.showChangePoints]);
 
     const renderChart = (inFullscreen: boolean) => {
         const activeRef = inFullscreen ? fullscreenChartRef : chartRef;

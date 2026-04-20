@@ -1,0 +1,135 @@
+\documentclass[11pt]{report} 
+\usepackage{geometry} % Load geometry early to prevent clash 
+
+% Language may be romanian or english (default is english)
+% Type may be bachelor or master (default is bachelor)
+\usepackage[language=english, type=bachelor]{style}
+
+% --- OVERRIDING STYLE.STY HARDCODES ---
+\geometry{top=2cm, bottom=2cm, left=2.5cm, right=2cm}
+\linespread{1.15}
+% --------------------------------------
+
+% Controlling the appearance of your headers and footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.2pt}
+
+% ==========================================
+% CUSTOM THESIS DEPENDENCIES INCORPORATED
+% ==========================================
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc, backgrounds}
+
+% Define brand colors for code block aesthetics
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblue}{rgb}{0,0.2,0.6}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.95}
+
+% Define the structural style for \begin{lstlisting}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=10pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{black!30}
+}
+\lstset{style=mystyle}
+
+% Define TikZ Box Styles
+\tikzstyle{abstractbox} = [rectangle, rounded corners, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=blue!10, font=\sffamily\footnotesize]
+\tikzstyle{iobox} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!10, font=\sffamily\footnotesize]
+\tikzstyle{processbox} = [rectangle, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=orange!10, font=\sffamily\footnotesize]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{dashedarrow} = [thick,dashed,->,>=stealth]
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+% ==========================================
+
+\begin{document}
+
+\specialization{Computer Science}	
+\title{Time Series Forecasting Visualizer: A Decoupled Architecture for Econometric Analytics}					   
+\author{Codrut Afloarei}											
+\supervisor{[Degree, Title and Name of Supervisor]}				
+				
+\maketitle
+
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\pagenumbering{roman} 
+
+\cleardoublepage
+ABSTRACT
+\vspace{0.5cm}	
+\hrule
+\vspace{0.5cm}	
+%\cleardoublepage
+
+Abstract: This thesis introduces a high-performance, V8-native web application specializing in econometric time-series forecasting. By porting rigid mathematical matrix iterations and heavy Pruned Exact Linear Time (PELT) structural break detections directly into the Node.js native execution context, the architecture entirely eliminates cross-language IPC network bottlenecks and executes complex econometric data science natively in JavaScript. The presentation layer utilizes the React rendering lifecycle to rapidly calculate Chart.js HTML5 Canvas graphics at sub-millisecond latencies, prioritizing non-technical executive stakeholders. The terminal pipeline dynamically routes deterministic Root Mean Squared Error improvements through the Google Gemini Large Language Model, successfully translating raw programmatic datasets into readable economic insights via tightly restricted instructional heuristic prompts. This documentation details the Software Engineering choices governing API networking, State Management, and algorithmic V8 memory optimizations across these environments.
+
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+
+\input{chapters/chapter1_introduction}
+%\addcontentsline{toc}{chapter}{Introducere}
+%\addcontentsline{toc}{chapter}{Introduction}
+
+\input{chapters/chapter2}
+\input{chapters/chapter3}
+\input{chapters/chapter4}
+
+\input{chapters/chapter6_conclusions}
+%\addcontentsline{toc}{chapter}{Concluzii}
+%\addcontentsline{toc}{chapter}{Conclusions}
+
+\begin{thebibliography}{99}
+\bibitem{BaiPerron1998} Bai, J., \& Perron, P. (1998). "Estimating and Testing Linear Models with Multiple Structural Changes." \textit{Econometrica}, 66(1), 47-78.
+\bibitem{BoxJenkins1970} Box, G. E. P., \& Jenkins, G. M. (1970). \textit{Time Series Analysis: Forecasting and Control}. Holden-Day.
+\bibitem{ClementsHendry1998} Clements, M. P., \& Hendry, D. F. (1998). \textit{Forecasting Economic Time Series}. Cambridge University Press.
+\bibitem{Hamilton1994} Hamilton, J. D. (1994). \textit{Time Series Analysis}. Princeton University Press.
+\bibitem{Hyndman2008} Hyndman, R. J., Koehler, A. B., Ord, J. K., \& Snyder, R. D. (2008). \textit{Forecasting with Exponential Smoothing: The State Space Approach}. Springer.
+\bibitem{Killick2012} Killick, R., Fearnhead, P., \& Eckley, I. A. (2012). "Optimal detection of changepoints with a linear computational cost." \textit{Journal of the American Statistical Association}, 107(500), 1590-1598.
+\bibitem{Korinek2025} Korinek, A. (2025). "AI Agents for Economic Research." \textit{Journal of Economic Literature}.
+\bibitem{Lucas1976} Lucas, R. E. (1976). "Econometric Policy Evaluation: A Critique." \textit{Carnegie-Rochester Conference Series on Public Policy}, 1, 19-46.
+\bibitem{Makridakis1998} Makridakis, S., Wheelwright, S. C., \& Hyndman, R. J. (1998). \textit{Forecasting: Methods and Applications} (3rd ed.). John Wiley \& Sons.
+\bibitem{Pesaran2004} Pesaran, M. H., \& Timmermann, A. (2004). "Real Time Econometrics." \textit{IZA Discussion paper series}, No. 1108.
+\bibitem{Schwarz1978} Schwarz, G. E. (1978). "Estimating the dimension of a model." \textit{Annals of Statistics}, 6(2), 461-464.
+\bibitem{Vaswani2017} Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, \L., \& Polosukhin, I. (2017). "Attention Is All You Need." \textit{Advances in Neural Information Processing Systems}, 30, 5998-6008.
+\bibitem{Wold1938} Wold, H. (1938). \textit{A Study in the Analysis of Stationary Time Series}. Almqvist \& Wiksell.
+\end{thebibliography}
+
+\end{document}

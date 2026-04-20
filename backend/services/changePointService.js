@@ -42,69 +42,90 @@ class ChangePointService {
   /**
    * PELT algorithm — O(n) amortised optimal change-point detection.
    *
-   * Penalty scaling: the raw BIC penalty (log n) works well when σ² ≈ 1.
-   * For real-world data we scale it by the global variance so the penalty
-   * is expressed in the same units as the within-segment cost. This prevents
-   * over-detection on smooth series (where the cost is near zero everywhere)
-   * and under-detection on noisy ones.
+   * Cost function: OLS residuals (RSS from within-segment linear trend).
+   * This detects STRUCTURAL BREAKS IN TREND rather than mean shifts.
+   * For a steadily-growing GDP series, a mean-shift cost would split the
+   * trend into many flat pieces. An OLS cost only adds a break when a
+   * new slope/intercept fits significantly better — which is the standard
+   * econometric criterion (Bai & Perron 1998).
    *
-   * Minimum segment length: segments shorter than minLen points are rejected.
-   * Without this, a perfect monotonic series would be split at every point.
-   * Default is max(5, floor(n/10)) — at least 5 observations and at most
-   * 10% of the data per segment prevents spurious micro-segments.
+   * OLS in O(1) per segment using precomputed prefix sums of:
+   *   Σy, Σy², Σ(i·y)   (where i is the global index)
+   * For segment [s, e], local time t_k = k - s (k = s..e):
+   *   sum_t  = n*(n-1)/2          (closed form)
+   *   sum_t2 = n*(n-1)*(2n-1)/6  (closed form)
+   *   sum_ty = Σ(k·y[k]) for k∈[s,e]  minus  s·Σy
+   *   b = (n·sum_ty − sum_t·sum_y) / (n·sum_t2 − sum_t²)
+   *   a = (sum_y − b·sum_t) / n
+   *   RSS = sum_y2 − a·sum_y − b·sum_ty
+   *
+   * Penalty: variance-scaled BIC × user multiplier, same as before.
    *
    * @param {number[]} data      Time series values
-   * @param {number}   penalty   Per-change-point penalty β (default: BIC × σ²)
-   * @param {number}   minLen    Minimum segment length (default: max(5, n/10))
+   * @param {number}   penaltyMultiplier   Multiplier on BIC penalty (default 1.0)
+   * @param {number}   minLen    Minimum segment length (default max(5, n/10))
    * @returns {{ changePoints: number[], cost: number }}
    */
   pelt(data, penaltyMultiplier = null, minLen = null) {
     const n = data.length;
 
-    // Robust noise variance estimation (using first differences)
-    // Global variance incorporates the massive level shifts between segments, artificially
-    // inflating the penalty and suppressing valid break detection. The variance of the first
-    // differences is relatively unaffected by step changes.
-    // Var(diff) = Var(noise_t - noise_{t-1}) = 2 * Var(noise). So Var(noise) ≈ diffSqSum / (2*(n-1))
+    // Robust noise variance estimation using first differences
+    // (avoids inflating σ² with trend or level-shift variance)
     let diffSqSum = 0;
     for (let i = 1; i < n; i++) {
       const diff = data[i] - data[i - 1];
       diffSqSum += diff * diff;
     }
-    const variance = diffSqSum / (2 * Math.max(n - 1, 1));
-    const sigma2 = Math.max(variance, 1e-10);
+    const sigma2 = Math.max(diffSqSum / (2 * Math.max(n - 1, 1)), 1e-10);
 
-    // Variance-scaled BIC penalty × user multiplier
     const multiplier = penaltyMultiplier !== null ? penaltyMultiplier : 1.0;
-    const beta = multiplier * Math.log(n) * sigma2;
+    // Each segment uses 2 parameters (slope + intercept), so BIC penalty = 2·log(n)·σ²
+    const beta = multiplier * 2 * Math.log(n) * sigma2;
 
-    // Minimum segment length: at least 5 points, at most n/10
     const minSegLen = minLen !== null ? minLen : Math.max(5, Math.floor(n / 10));
 
-    // F[t] = minimum total cost for data[0..t]
-    // cp[t] = optimal last change point before t
-    const F = new Array(n + 1).fill(Infinity);
+    const F  = new Array(n + 1).fill(Infinity);
     const cp = new Array(n + 1).fill(-1);
-
-    F[0] = -beta; // cost of empty prefix (absorbed by first segment)
-
-    // Candidates: set of start positions still worth considering
+    F[0] = -beta;
     let candidates = [0];
 
-    // Precompute prefix sums and prefix sums of squares for O(1) segment cost
-    const prefixSum   = new Array(n + 1).fill(0);
-    const prefixSumSq = new Array(n + 1).fill(0);
+    // Prefix sums for O(1) OLS per segment
+    // prefixY[i]  = Σ y[0..i-1]
+    // prefixY2[i] = Σ y²[0..i-1]
+    // prefixIY[i] = Σ j·y[j] for j=0..i-1  (global index j)
+    const prefixY  = new Array(n + 1).fill(0);
+    const prefixY2 = new Array(n + 1).fill(0);
+    const prefixIY = new Array(n + 1).fill(0);
     for (let i = 0; i < n; i++) {
-      prefixSum[i + 1]   = prefixSum[i]   + data[i];
-      prefixSumSq[i + 1] = prefixSumSq[i] + data[i] * data[i];
+      prefixY[i + 1]  = prefixY[i]  + data[i];
+      prefixY2[i + 1] = prefixY2[i] + data[i] * data[i];
+      prefixIY[i + 1] = prefixIY[i] + i * data[i];
     }
 
-    // O(1) segment cost using prefix sums
+    // O(1) OLS-residual cost for segment [s, e] (inclusive)
     const fastCost = (s, e) => {
-      const count = e - s + 1;
-      const sum   = prefixSum[e + 1]   - prefixSum[s];
-      const sumSq = prefixSumSq[e + 1] - prefixSumSq[s];
-      return sumSq - (sum * sum) / count;
+      const count  = e - s + 1;           // n
+      const sumY   = prefixY[e + 1]  - prefixY[s];
+      const sumY2  = prefixY2[e + 1] - prefixY2[s];
+      // sum_ty = Σ (k-s)·y[k]  for k in [s,e]
+      //        = Σ k·y[k] - s·Σy[k]   (global-index form)
+      const sumTY  = (prefixIY[e + 1] - prefixIY[s]) - s * sumY;
+
+      // Closed-form sums for local t = 0..n-1
+      const sumT   = count * (count - 1) / 2;
+      const sumT2  = count * (count - 1) * (2 * count - 1) / 6;
+
+      const denom = count * sumT2 - sumT * sumT;
+      if (denom < 1e-12) {
+        // Degenerate segment (n=1 or perfectly collinear t) — use mean cost
+        return sumY2 - (sumY * sumY) / Math.max(count, 1);
+      }
+
+      const b   = (count * sumTY - sumT * sumY) / denom;
+      const a   = (sumY - b * sumT) / count;
+      // RSS = Σy² - a·Σy - b·Σ(t·y)
+      const rss = sumY2 - a * sumY - b * sumTY;
+      return Math.max(rss, 0);   // numerical guard against tiny negatives
     };
 
     for (let t = 1; t <= n; t++) {
@@ -285,13 +306,38 @@ class ChangePointService {
       });
     }
 
-    // Whole-series accuracy (reference baseline for comparison)
+    // ── Whole-series baseline RMSE, evaluated on the LAST SEGMENT only ──────
+    // We run the model on the full data, then extract the fitted values that
+    // correspond to the last segment's index range and compute RMSE there.
+    // This gives an apples-to-apples comparison:
+    //   baseline RMSE  = how well the whole-series model fits the last segment
+    //   segment RMSE   = how well the per-segment model fits the last segment
+    // Both are evaluated on the same window of data.
     let baselineAccuracy = null;
     try {
       const baselineResult = this._runModel(data, 0, model, parameters);
-      if (baselineResult.fittedValues && baselineResult.fittedValues.length > 0) {
-        const actualSubset = data.slice(data.length - baselineResult.fittedValues.length);
-        baselineAccuracy = forecastService.calculateAccuracy(actualSubset, baselineResult.fittedValues);
+      const fitted = baselineResult.fittedValues;
+
+      if (fitted && fitted.length > 0) {
+        // fitted values may be shorter than data (warm-up period)
+        const fittedOffset = data.length - fitted.length; // index in `data` where fitted[0] sits
+
+        const lastStart = lastSeg.startIndex;
+        const lastEnd   = lastSeg.endIndex; // inclusive
+
+        // Find the overlap between the fitted window and the last segment
+        const overlapStart = Math.max(lastStart, fittedOffset);
+        const overlapEnd   = Math.min(lastEnd, data.length - 1);
+
+        if (overlapEnd >= overlapStart) {
+          const actualSlice  = data.slice(overlapStart, overlapEnd + 1);
+          const fittedSlice  = fitted.slice(overlapStart - fittedOffset, overlapEnd - fittedOffset + 1)
+                                     .filter(v => v !== null && v !== undefined);
+
+          if (fittedSlice.length > 0 && fittedSlice.length === actualSlice.length) {
+            baselineAccuracy = forecastService.calculateAccuracy(actualSlice, fittedSlice);
+          }
+        }
       }
     } catch (_) {
       // baseline not critical
@@ -309,8 +355,8 @@ class ChangePointService {
       stats: {
         lastValue:      data[data.length - 1],
         projectedValue: lastSeg.forecast[0] ?? null,
-        growthRate: lastSeg.forecast[0] != null
-          ? (((lastSeg.forecast[0] - data[data.length - 1]) / data[data.length - 1]) * 100).toFixed(2)
+        growthRate: lastSeg.forecast.length > 0
+          ? (((lastSeg.forecast[lastSeg.forecast.length - 1] - data[data.length - 1]) / data[data.length - 1]) * 100).toFixed(2)
           : '0.00',
       },
       baselineAccuracy,   // whole-series RMSE for comparison

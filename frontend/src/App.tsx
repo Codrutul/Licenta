@@ -4,7 +4,7 @@ import FileUpload from './components/FileUpload';
 import ForecastControls from './components/ForecastControls';
 import ForecastChart from './components/ForecastChart';
 import QuickStats from './components/QuickStats';
-import AIAnalysis from './components/AIAnalysis';
+import AIAnalysisPanel from './components/AIAnalysisPanel';
 import DecompositionPanel from './components/DecompositionPanel';
 import DataTable from './components/DataTable';
 import AnnotationsPanel, { type Annotation } from './components/AnnotationsPanel';
@@ -87,7 +87,7 @@ function App() {
     const [cpLoading, setCpLoading] = useState(false);
 
     // Sidebar tab
-    const [sidebarTab, setSidebarTab] = useState<'stats' | 'table'>('stats');
+    const [sidebarTab, setSidebarTab] = useState<'ai' | 'stats' | 'table'>('ai');
 
 
     // Generate future dates
@@ -440,10 +440,20 @@ function App() {
                     <div className="sidebar">
                         <div className="sidebar-tabs">
                             <button
+                                className={`sidebar-tab${sidebarTab === 'ai' ? ' sidebar-tab--active' : ''}`}
+                                onClick={() => setSidebarTab('ai')}
+                                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: sidebarTab === 'ai' ? '#4F7FFF' : '' }}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg>
+                                AI Analyst
+                            </button>
+                            <button
                                 className={`sidebar-tab${sidebarTab === 'stats' ? ' sidebar-tab--active' : ''}`}
                                 onClick={() => setSidebarTab('stats')}
                             >
-                                Statistics
+                                Stats
                             </button>
                             <button
                                 className={`sidebar-tab${sidebarTab === 'table' ? ' sidebar-tab--active' : ''}`}
@@ -453,11 +463,25 @@ function App() {
                             </button>
                         </div>
 
+                        {sidebarTab === 'ai' && (
+                            <div className="ai-tab-content">
+                                <AIAnalysisPanel 
+                                    dataLength={timeSeriesData?.values.length || 0}
+                                    latestActualValue={timeSeriesData ? timeSeriesData.values[timeSeriesData.values.length - 1] : null}
+                                    hasChangePointsResult={!!cpResult}
+                                    numberOfChangePoints={cpResult?.changePoints.length || 0}
+                                    changePointDates={cpResult?.segments.slice(0, -1).map(s => s.endDate) || []}
+                                    selectedModel={selectedModel}
+                                    globalRMSE={forecastResult?.accuracy?.rmse || null}
+                                    globalForecastEnd={forecastResult?.forecast ? forecastResult.forecast[forecastResult.forecast.length - 1] : null}
+                                    segmentRMSE={segmentForecastResult?.segments?.[segmentForecastResult.segments.length - 1]?.accuracy?.rmse || null}
+                                    segmentForecastEnd={segmentForecastResult?.forecast ? segmentForecastResult.forecast[segmentForecastResult.forecast.length - 1] : null}
+                                    segmentGrowthRate={segmentForecastResult?.stats?.growthRate || null}
+                                />
+                            </div>
+                        )}
                         {sidebarTab === 'stats' && (
-                            <>
-                                <QuickStats forecastResult={forecastResult} timeSeriesData={timeSeriesData} />
-                                <AIAnalysis />
-                            </>
+                            <QuickStats forecastResult={forecastResult} timeSeriesData={timeSeriesData} />
                         )}
                         {sidebarTab === 'table' && (
                             <DataTable

@@ -211,14 +211,17 @@ const ChangePointPanel: React.FC<ChangePointPanelProps> = ({
                             {/* RMSE comparison box */}
                             {segmentResult && segmentResult.baselineAccuracy && (
                                 <div className="cp-rmse-comparison">
+                                    <div style={{ fontSize: '0.66rem', color: 'var(--color-text-muted)', marginBottom: '6px', fontStyle: 'italic' }}>
+                                        Both RMSE values are evaluated on the last segment's data only — a fair, apples-to-apples comparison.
+                                    </div>
                                     <div className="cp-rmse-row">
-                                        <span className="cp-rmse-label">Whole-series RMSE</span>
+                                        <span className="cp-rmse-label">Whole-series model on last segment</span>
                                         <span className="cp-rmse-value cp-rmse-baseline">
                                             {segmentResult.baselineAccuracy.rmse.toFixed(4)}
                                         </span>
                                     </div>
                                     <div className="cp-rmse-row">
-                                        <span className="cp-rmse-label">Last-segment RMSE</span>
+                                        <span className="cp-rmse-label">Segmented model on last segment</span>
                                         <span className="cp-rmse-value cp-rmse-segment">
                                             {segmentResult.segments.find(s => s.isLastSegment)?.accuracy?.rmse?.toFixed(4) ?? '—'}
                                         </span>

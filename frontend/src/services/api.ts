@@ -9,6 +9,12 @@ const api = axios.create({
     },
 });
 
+/**
+ * @interface TimeSeriesData
+ * @description Central data structure representing the fully parsed historical dataset.
+ * Contains both the raw coordinate arrays for plotting and computed statistical moments.
+ */
+
 export interface TimeSeriesData {
     data: Array<{ date: string; value: number }>;
     values: number[];
@@ -58,6 +64,10 @@ export interface ForecastResult {
     };
 }
 
+/**
+ * @interface DecompositionResult
+ * @description Represents the extraction of structural components (Trend, Seasonal, Residual) from the time series using Python's statsmodels.
+ */
 export interface DecompositionResult {
     trend: (number | null)[];
     seasonal: number[];
@@ -65,6 +75,11 @@ export interface DecompositionResult {
     period: number;
     original: number[];
 }
+
+/**
+ * @function uploadCSV
+ * @description Transmits the user's local CSV file to the Node.js backend for ingestion, structural validation, and base mathematical parsing.
+ */
 
 export const uploadCSV = async (file: File): Promise<TimeSeriesData> => {
     const formData = new FormData();
@@ -181,5 +196,28 @@ export const runSegmentForecast = async (
         data, dates, changePoints, model, periods, parameters,
     });
     return response.data.result;
+};
+
+export interface AIAnalysisPayload {
+    promptType: 'overview' | 'breakpoints' | 'trend';
+    context?: string;
+    dataLength: number;
+    latestActualValue: number;
+    numberOfChangePoints: number;
+    changePointDates: string[];
+    selectedModel: string;
+    globalRMSE: number | null;
+    globalForecastEnd: number | null;
+    segmentRMSE: number | null;
+    segmentForecastEnd: number | null;
+    segmentGrowthRate: string;
+}
+
+export const generateAIAnalysis = async (payload: AIAnalysisPayload): Promise<string> => {
+    const aiBaseUrl = API_BASE_URL.replace('/forecast', '');
+    const response = await axios.post(`${aiBaseUrl}/ai/analyze`, payload, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data.result.report;
 };
 
