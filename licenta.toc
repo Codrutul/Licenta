@@ -1,0 +1,71 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Macro-Environmental Context and Theoretical Motivation}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}The Universal Benefits of Adaptive Forecasting}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Problem Statement and the Architectural Software Gap}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Change Points and Segmented Forecasting}{3}{section.1.4}%
+\contentsline {section}{\numberline {1.5}AI Interpretation: Semantic Context Beyond Mathematics}{3}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Structure of the Thesis}{4}{section.1.6}%
+\contentsline {chapter}{\numberline {2}Theoretical Foundations}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Time Series Fundamentals and Stationarity}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Moving Average Models}{6}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Simple Moving Average (SMA)}{6}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Weighted Moving Average (WMA)}{6}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Exponential Smoothing Methodologies}{7}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Simple Exponential Smoothing (SES)}{7}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Holt's Linear Trend Model}{7}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Holt-Winters Multiplicative Method}{8}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Autoregressive Integrated Moving Average (ARIMA)}{9}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}The Lag Operator and Autoregressive Processes}{9}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Moving Average Processes}{9}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Integration and the Complete ARIMA Model}{10}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}Stationarity and Invertibility Roots}{10}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}Change Point Detection (CPD) Mathematics}{10}{section.2.5}%
+\contentsline {section}{\numberline {2.6}The Pruned Exact Linear Time (PELT) Algorithm}{11}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Mathematical Proof of Pruning Logic}{11}{subsection.2.6.1}%
+\contentsline {section}{\numberline {2.7}Derivation of the Bayesian Information Criterion (BIC)}{12}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Segmented Forecasting Mechanics and RMSE Validation}{13}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Deterministic AI Prompt Engineering and Execution}{13}{section.2.9}%
+\contentsline {chapter}{\numberline {3}Framework and Technology Stack}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Introduction to the Architectural Paradigm}{15}{section.3.1}%
+\contentsline {section}{\numberline {3.2}The Frontend Presentation Layer: React.js and TypeScript}{16}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}The React.js Framework and Virtual DOM Architecture}{16}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Static Type Enforcement via TypeScript Constructs}{17}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Ephemeral State Management Strategies and Persistent Sessions}{18}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}The Backend Framework: Node.js and Express.js}{19}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}The Asynchronous Event Loop Scalability Architecture}{19}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Enterprise Router-Service Separation of Analytical Concerns}{20}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Algorithmic Porting: The Native V8 PELT Mathematical Loop}{20}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Comprehensive Application Dependencies}{21}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Security Architecture and Environment Isolation}{22}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Development Tooling and The Vite Compilation Engine}{23}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Data Serialization Protocols: The JSON REST API Paradigm}{23}{section.3.8}%
+\contentsline {section}{\numberline {3.9}Justification of the Technological Stack}{24}{section.3.9}%
+\contentsline {chapter}{\numberline {4}The Application Design, Features, and Implementation}{25}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Requirements Elicitation and Objective Framework}{25}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Functional Operational Requirements}{25}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Ergonomic User Interface Construction}{26}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Physical Layout Topology}{26}{subsection.4.2.1}%
+\contentsline {section}{\numberline {4.3}Data Presentation and the HTML5 Canvas Visualization Paradigm}{28}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Backend Object-Oriented Service Architecture}{28}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Executing Mathematical Prediction Algorithms via Core JavaScript}{29}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Pruned Exact Linear Time (PELT) Boundary Shock Injections}{30}{section.4.6}%
+\contentsline {section}{\numberline {4.7}The Intelligent Segment Data Execution Layer}{31}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Google Gemini Integration Pipeline Mechanics}{32}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Prompt Engineering and Contextual Framing}{33}{subsection.4.8.1}%
+\contentsline {section}{\numberline {4.9}Extended Analytical Capabilities}{34}{section.4.9}%
+\contentsline {subsection}{\numberline {4.9.1}Time Series Decomposition}{34}{subsection.4.9.1}%
+\contentsline {subsection}{\numberline {4.9.2}Multi-Model Comparison}{35}{subsection.4.9.2}%
+\contentsline {subsection}{\numberline {4.9.3}Date Range Filtering}{35}{subsection.4.9.3}%
+\contentsline {subsection}{\numberline {4.9.4}Custom Annotation Markers}{36}{subsection.4.9.4}%
+\contentsline {subsection}{\numberline {4.9.5}Curated Sample Datasets}{36}{subsection.4.9.5}%
+\contentsline {subsection}{\numberline {4.9.6}Interactive Chart Toolbar}{36}{subsection.4.9.6}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Development}{38}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Summary of the Theoretical and Architectural Triumphs}{38}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Quantifiable Outcomes and System Efficacy}{39}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Future Research Vectors and Scalability Limits}{39}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Real-Time WebSocket Ingestion}{39}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Distributed Micro-Service Execution}{39}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Integration of Deep Learning Frameworks}{40}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}Final Remarks}{40}{section.5.4}%
+\contentsline {chapter}{Bibliography}{41}{chapter*.2}%

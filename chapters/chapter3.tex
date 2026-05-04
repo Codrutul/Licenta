@@ -1,3 +1,4 @@
+% !TEX root = ../licenta.tex
 \chapter{Framework and Technology Stack}
 \label{ch:framework_tech_stack}
 
@@ -204,19 +205,20 @@ To successfully intertwine rapid Virtual DOM manipulations, asynchronous server 
     \caption{Explicit Technological Dependencies Segregated by Execution Environment}
     \label{tab:dependencies}
     \vspace{0.2cm}
-    \begin{tabular}{@{}llp{8cm}@{}}
+    \begin{tabular}{@{}p{3.2cm}p{4.8cm}p{7.2cm}@{}}
         \toprule
         \textbf{Environment} & \textbf{Library Name} & \textbf{Architectural Justification} \\
         \midrule
         \textbf{Frontend (React)} 
         & \texttt{react-chartjs-2} & Declarative HTML5 Canvas Cartesian engine engineered specifically for rapid browser repainting. \\
         & \texttt{axios} & Promise-based HTTP client orchestrating JSON telemetry payloads between the client and the Node proxy. \\
-        & \texttt{lucide-react} & High-performance vector iconography. \\
+        & \texttt{react-markdown} & Renders the Gemini LLM analytical output from raw Markdown strings into structured HTML inside the AI panel. \\
+        & \texttt{chartjs-plugin-annotation} & Overlays vertical change point markers and regime boundary lines directly onto the Chart.js canvas. \\
         \midrule
         \textbf{Backend (Node.js)} 
         & \texttt{express} & Lightweight core networking middleware defining the structural API route logic. \\
         & \texttt{multer} & Multi-part memory-buffering ingestion mechanism strictly parsing raw user CSV payloads. \\
-        & \texttt{csv-parse} & Streams multidimensional raw string arrays into computable JSON floating-point matrices synchronously. \\
+        & \texttt{csv-parser} & Streams raw CSV byte buffers into computable JSON floating-point matrices synchronously. \\
         & \texttt{@google/genai} & The official Google HTTP protocol binding integrating the `gemini-2.5-flash` model. \\
         \midrule
         \textbf{Execution (Algorithms)} 
@@ -231,7 +233,7 @@ A structural vulnerability inherent to specialized processing architectures lies
 
 Foremost, the \textbf{\texttt{GEMINI\_API\_KEY}}—the absolute fundamental cryptographic token enabling access to Google's proprietary Large Language Model—is physically isolated from the client-side JavaScript bundle. Had this key been accidentally compiled into the React source code, passive network sniffers could aggressively scrape it and exhaust organizational computational limits. Instead, it is housed exclusively off-grid in a hidden \texttt{.env} file on the Node.js root server. The Express router functions as an impenetrable \textbf{Reverse Proxy}, accepting safe internal metrics and appending the cryptographic keys sequentially out of sight before broadcasting over the public Internet.
 
-Furthermore, the server strictly mandates explicit \textbf{Cross-Origin Resource Sharing (CORS)} protocol policies. By tightly locking the allowed header origins specifically to `localhost:3000`, the Node.js API definitively rejects all arbitrary HTTP requests originating from foreign, unauthorized web domains, securing the internal mathematical runtime layer from Remote Code Execution (RCE) via malicious ingestion payloads.
+Furthermore, the server strictly mandates explicit \textbf{Cross-Origin Resource Sharing (CORS)} protocol policies. By tightly locking the allowed header origins specifically to \texttt{localhost:5173} (the Vite development server port), the Node.js API definitively rejects all arbitrary HTTP requests originating from foreign, unauthorized web domains, securing the internal mathematical runtime layer from Remote Code Execution (RCE) via malicious ingestion payloads.
 
 \section{Development Tooling and The Vite Compilation Engine}
 Prior generations of React interfaces historically relied heavily upon the `Webpack` bundler ecosystem. Webpack mechanically crawls the entire codebase during development, concatenating hundreds of files into one massive JavaScript monolith payload before visually rendering it browser-side. This antiquated structure inherently causes severe compilation latencies, especially in a dense application requiring rapid iterative adjustments to SVG mathematical chart parameters.

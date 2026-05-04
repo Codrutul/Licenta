@@ -1,0 +1,34 @@
+{
+    "latex-workshop.latex.rootFile.doNotPrompt": true,
+    "latex-workshop.latex.rootFile.useSubFile": false,
+
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "%DOC%"
+            ],
+            "env": {}
+        }
+    ],
+
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk (pdflatex)",
+            "tools": [
+                "latexmk"
+            ]
+        }
+    ],
+
+    "latex-workshop.latex.recipe.default": "latexmk (pdflatex)",
+
+    "latex-workshop.latex.outDir": "%DIR%",
+
+    "latex-workshop.view.pdf.viewer": "tab"
+}

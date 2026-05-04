@@ -1,3 +1,4 @@
+% !TEX root = ../licenta.tex
 \chapter{Theoretical Foundations}
 \label{ch:theoretical_foundations}
 
@@ -272,4 +273,4 @@ Rather than sending the raw data array to the LLM via an API call, the Node.js b
 
 Furthermore, the API call to the LLM is executed with the `temperature` parameter explicitly set to $0.0$. In LLM architecture, temperature governs the randomness of the softmax distribution across the output vocabulary. By forcing the temperature to zero, the LLM is restricted to purely greedy decoding, selecting only the most probable token at every step. 
 
-By denying the LLM the ability to calculate the numbers itself, forcing a temperature of zero, and compelling it to narrate pre-calculated, mathematically proven econometric variables, the architecture guarantees a deterministic, halluciation-free analytical output. This effectively hybridizes the rigorous statistical foundations of time-series mathematics with the vast, contextual intelligence of modern generative AI.
+By denying the LLM the ability to calculate the numbers itself, forcing a temperature of zero, and compelling it to narrate pre-calculated, mathematically proven econometric variables, the architecture guarantees a deterministic, hallucination-free analytical output. This effectively hybridizes the rigorous statistical foundations of time-series mathematics with the vast, contextual intelligence of modern generative AI.

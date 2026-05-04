@@ -1,3 +1,4 @@
+% !TEX root = ../licenta.tex
 \chapter{The Application Design, Features, and Implementation}
 \label{ch:application_design}
 
@@ -59,13 +60,31 @@ This rigid physical layout topology drastically drops cognitive load. Operators 
 \centering
 \begin{tikzpicture}[node distance=1.5cm and 1cm, every node/.style={fill=white, font=\sffamily\footnotesize}, align=center]
 % Classes
-\node (app) [draw, rectangle, fill=blue!5, minimum width=4.5cm, minimum height=2cm] {\textbf{<<Root>> App::React.FC} \\ \hrule \vspace{1mm} - state: TimeSeriesData \\ - session: StorageCache \\ \hrule \vspace{1mm} + handleUpload() \\ + triggerAIAnalysis()};
+\node (app) [draw, rectangle, fill=blue!5, minimum width=4.5cm, minimum height=2cm, text width=4.1cm] {
+    \textbf{<<Root>> App::React.FC} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    - state: TimeSeriesData \\ - session: StorageCache \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + handleUpload() \\ + triggerAIAnalysis()
+};
 
-\node (nav) [draw, rectangle, fill=gray!5, minimum width=3.5cm, minimum height=1.5cm, below left=1.2cm and -1.5cm of app] {\textbf{NavigationPanel} \\ \hrule \vspace{1mm} + parseCSV() \\ + validateSchema()};
+\node (nav) [draw, rectangle, fill=gray!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below left=1.2cm and -1.5cm of app] {
+    \textbf{NavigationPanel} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + parseCSV() \\ + validateSchema()
+};
 
-\node (chart) [draw, rectangle, fill=green!5, minimum width=4cm, minimum height=1.5cm, below=2cm of app] {\textbf{ForecastChart} \\ \hrule \vspace{1mm} + renderSVGLines() \\ + calculateCoordinate()};
+\node (chart) [draw, rectangle, fill=green!5, minimum width=4cm, minimum height=1.5cm, text width=3.6cm, below=2cm of app] {
+    \textbf{ForecastChart} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + renderSVGLines() \\ + calculateCoordinate()
+};
 
-\node (ai) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=1.5cm, below right=1.2cm and -1.5cm of app] {\textbf{AIAnalysisPanel} \\ \hrule \vspace{1mm} + digestMarkdown() \\ + triggerHydration()};
+\node (ai) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below right=1.2cm and -1.5cm of app] {
+    \textbf{AIAnalysisPanel} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + digestMarkdown() \\ + triggerHydration()
+};
 
 % Associations (Composition/Aggregation arrows)
 \draw [{Diamond[open]}-, thick] (app) -| node[above left, font=\tiny] {1..1} (nav);
@@ -95,19 +114,47 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.5cm and 1cm, every node/.style={fill=white, font=\sffamily\footnotesize}, align=center]
-% Classes
-\node (router) [draw, rectangle, fill=orange!5, minimum width=5cm, minimum height=2cm] {\textbf{ForecastRouter :: Middleware} \\ \hrule \vspace{1mm} - upload: MulterInstance \\ \hrule \vspace{1mm} + post(/analyze) \\ + handleMultipartForm()};
+\begin{tikzpicture}[every node/.style={fill=white, font=\sffamily\scriptsize}, align=center]
+% Router node
+\node (router) [draw, rectangle, fill=orange!5, minimum width=12cm, minimum height=1.8cm, text width=11.5cm] {
+    \textbf{ForecastRouter :: Middleware} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    \textit{- upload: MulterInstance} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    \textit{+ post(/analyze)} \qquad \textit{+ handleMultipartForm()}
+};
 
-\node (forecastService) [draw, rectangle, fill=blue!5, minimum width=4cm, minimum height=1.5cm, below left=1.5cm and -1.5cm of router] {\textbf{ForecastService} \\ \hrule \vspace{1mm} + calculateHoltWinters() \\ + calculateNaive() \\ - formatOutputMatrix()};
+% Three service nodes below, total width = 12cm
+\node (forecastService) [draw, rectangle, fill=blue!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
+    below left=1.8cm and 4.1cm of router] {
+    \textbf{ForecastService} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + calculateHoltWinters() \\
+    + calculateNaive() \\
+    - formatOutputMatrix()
+};
 
-\node (peltService) [draw, rectangle, fill=red!5, minimum width=4cm, minimum height=1.5cm, below=2cm of router] {\textbf{ChangePointService} \\ \hrule \vspace{1mm} + calculatePeltNative() \\ + fastCost() O(1) \\ - pruneCandidates()};
+\node (peltService) [draw, rectangle, fill=red!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
+    below=1.8cm of router] {
+    \textbf{ChangePointService} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + calculatePeltNative() \\
+    + fastCost()~O(1) \\
+    - pruneCandidates()
+};
 
-\node (aiService) [draw, rectangle, fill=purple!5, minimum width=4cm, minimum height=1.5cm, below right=1.5cm and -1.5cm of router] {\textbf{AIService} \\ \hrule \vspace{1mm} + constructPrompt() \\ + generateContent() \\ - enforceDeterminism()};
+\node (aiService) [draw, rectangle, fill=purple!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
+    below right=1.8cm and 4.1cm of router] {
+    \textbf{AIService} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + constructPrompt() \\
+    + generateContent() \\
+    - enforceDeterminism()
+};
 
-% Associations
+% Dependency injection arrows
 \draw [{Diamond[open]}-, thick] (router) -| node[above left, font=\tiny] {Injects} (forecastService);
-\draw [{Diamond[open]}-, thick] (router) -- node[right, font=\tiny] {Injects} (peltService);
+\draw [{Diamond[open]}-, thick] (router) -- node[right,     font=\tiny] {Injects} (peltService);
 \draw [{Diamond[open]}-, thick] (router) -| node[above right, font=\tiny] {Injects} (aiService);
 \end{tikzpicture}
 \caption{UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes.}
@@ -239,7 +286,7 @@ const response = await this.ai.models.generateContent({
     arrays given to you. In exactly 2 sentences, explain the absolute numerical 
     differences. Crucially, strictly state if this trend is capable of existing 
     in reality. Warn the user of negative boundaries immediately.`,
-    temperature: 0.15, // Severe restriction of creativity loops
+    temperature: 0.0, // Full determinism: greedy decoding only
   }
 });
 \end{lstlisting}
@@ -263,7 +310,7 @@ const response = await this.ai.models.generateContent({
 \label{fig:ai_telemetry}
 \end{figure}
 
-Generating Language Models lacks default structural bounds, invoking significant hallucination probabilities. By deploying explicit React-layer disabling algorithms and fiercely locking the computational \texttt{temperature} matrix directly inside the request parameters to a minuscule $0.15$ (Figure \ref{lst:gemini_engine}), interacting operators are physically guaranteed to receive unyielding strict deterministic outputs throughout the entire execution session cycle.
+Generating Language Models lacks default structural bounds, invoking significant hallucination probabilities. By explicitly locking the \texttt{temperature} parameter to $0.0$ inside the request configuration (Listing~\ref{lst:gemini_engine}), the model is forced into purely greedy decoding, selecting only the highest-probability token at every step. This guarantees that interacting operators receive strictly deterministic outputs throughout the entire execution session cycle.
 
 \begin{figure}[H]
     \centering
@@ -285,4 +332,69 @@ Prompt Engineering is the architectural act of writing explicit, programmatic bo
     \item \textbf{The Segmented Trend Payload:} When the operator interactively slices the data to delete the obsolete pre-shock coordinates, the AI receives its most restrictive instruction: "\textit{Compare the Root Mean Squared Error (RMSE) of the original global forecast versus this new isolated segmented forecast. Explicitly calculate and state the percentage of accuracy gained.}" This forcefully commands the AI to validate the user's graphical decision quantitatively, providing absolute mathematical reassurance to a non-expert operator that recalculating the data was objectively correct.
 \end{itemize}
 
-By structurally embedding these invisible contextual frames securely on the backend server, the front-end operator is never forced to "chat" with the AI natively or learn how to write complex prompts themselves. The system autonomously acts as an impenetrable mediator, mathematically ensuring the Generative LLM functions exclusively as a focused, deterministic econometric calculator.
+By structurally embedding these invisible contextual frames securely on the backend server, the front-end operator is never forced to ``chat'' with the AI natively or learn how to write complex prompts themselves. The system autonomously acts as an impenetrable mediator, mathematically ensuring the Generative LLM functions exclusively as a focused, deterministic econometric calculator.
+
+\section{Extended Analytical Capabilities}
+Beyond the core forecasting and change-point pipeline, the application implements a suite of extended analytical tools that significantly broaden its utility for econometric research without increasing cognitive load on the operator. These features are deliberately accessible through collapsible panels and a persistent toolbar, ensuring the primary canvas always remains the visual focal point.
+
+\subsection{Time Series Decomposition}
+Classical time series analysis frequently requires isolating the individual structural components of a dataset before applying predictive models. The application exposes a fully interactive \textbf{Additive Decomposition} panel, implemented in the \texttt{DecompositionPanel} component, which decomposes any uploaded series into three mathematically distinct sub-signals rendered as synchronized mini-charts:
+
+\begin{itemize}
+    \item \textbf{Trend} ($T_t$): Extracted via a centered Moving Average of the auto-detected seasonal period $m$, isolating the long-run directional trajectory of the series. Rendered in blue.
+    \item \textbf{Seasonal} ($S_t$): The repeating cyclical deviation from the trend, computed by averaging the de-trended residuals across all complete seasons and normalizing to zero mean. Rendered in green.
+    \item \textbf{Residual} ($R_t$): The stochastic remainder after subtracting both trend and seasonal components, i.e., $R_t = y_t - T_t - S_t$, representing unmodeled noise. Rendered in amber.
+\end{itemize}
+
+The seasonal period $m$ is automatically detected by computing the sample autocorrelation function and identifying the dominant lag, defaulting to $m=4$ for quarterly data. The panel is collapsed by default and expands on demand, displaying the detected period in its header badge. A crosshair synchronization mechanism ties the tooltip position across all three sub-charts to the hovering position on the primary canvas, enabling precise multi-component inspection of any individual date.
+
+\subsection{Multi-Model Comparison}
+A key limitation of single-model dashboards is that practitioners cannot immediately assess which forecasting methodology best fits their specific dataset without switching between separate tool instances. The \textbf{Model Comparison} panel resolves this by allowing operators to overlay up to five independent forecast trajectories simultaneously on the primary canvas.
+
+Each comparison entry is computed by submitting the same historical dataset to the \texttt{POST /api/forecast/calculate} endpoint with a different model specification. The resulting forecast series is overlaid in a distinct auto-assigned color (from a pre-defined palette of orange, green, cyan, pink, and yellow) and can be toggled or removed individually. Inline parameter controls within the panel allow specifying model-specific hyper-parameters (smoothing alpha, window size, trend beta) before adding each entry, ensuring a scientifically fair comparison between calibrated models rather than default configurations.
+
+This feature enables operators to make evidence-based model selection decisions visually — directly observing, for example, whether an ARIMA projection diverges more aggressively from an Exponential Smoothing baseline during a structural break regime.
+
+\subsection{Date Range Filtering}
+To support analysis of specific sub-periods within a long historical series — such as isolating the post-2008 recovery or the COVID-19 shock window — the \textbf{Date Range Selector} component allows operators to constrain the active visualization window via two dropdown menus corresponding to the start and end dates of the loaded dataset.
+
+Importantly, the date range filter operates exclusively on the visualization layer: it re-slices the in-memory data array passed to the Chart.js canvas without triggering a new API request. This ensures sub-second responsiveness when panning across different temporal windows. A ``Full Range'' reset button re-appears automatically when a filter is active, allowing instant reversion to the complete dataset. The component enforces logical ordering, preventing the selection of an end date earlier than the start date.
+
+\subsection{Custom Annotation Markers}
+Beyond the algorithmically detected PELT change points, operators often need to mark specific exogenous events that are meaningful to their analysis but not mathematically detectable — such as policy announcements, central bank interventions, or geopolitical events. The \textbf{Annotation Markers} panel provides a simple form interface for adding labeled vertical line markers to any date coordinate in the dataset.
+
+Each annotation is defined by a date (selected from the actual dataset dates to guarantee alignment), a text label (up to 40 characters), and a color (chosen from a set of six preset swatches). Annotations are rendered via \texttt{chartjs-plugin-annotation} directly onto the Chart.js canvas as dashed vertical lines with floating labels. Multiple annotations can be active simultaneously and are individually removable. This feature transforms the application from a purely mathematical tool into an annotatable analytical workspace, supporting the kind of qualitative–quantitative hybrid analysis common in applied econometrics.
+
+\subsection{Curated Sample Datasets}
+To eliminate the barrier-to-entry associated with sourcing appropriately formatted CSV data, the application ships with three pre-loaded, production-quality economic datasets accessible through the \textbf{Sample Data} dropdown:
+
+\begin{table}[H]
+    \centering
+    \caption{Built-in Sample Datasets Available for Immediate Analysis}
+    \label{tab:sample_datasets}
+    \vspace{0.2cm}
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        \textbf{Dataset} & \textbf{Description} & \textbf{Frequency} & \textbf{Known Breaks} \\
+        \midrule
+        US GDP Index & Quarterly US GDP index (base 100) & Quarterly & 2008 Q4, 2020 Q1 \\
+        EU Unemployment Rate & EU-wide unemployment rate (\%) & Monthly & 2009, 2020 \\
+        Romania CPI Inflation & Romanian CPI inflation (\%) & Monthly & 2016, 2022 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+When selected, the component fetches the corresponding CSV file from the public directory, constructs a synthetic \texttt{File} object in memory, and passes it directly to the upload pipeline — making the experience indistinguishable from uploading a user's own dataset. Each dataset entry also displays its frequency and the approximate dates of known structural breaks, pre-priming the operator's expectation before even running the PELT algorithm.
+
+\subsection{Interactive Chart Toolbar}
+All visualization controls are consolidated within a persistent \textbf{Chart Toolbar} positioned above the primary canvas. The toolbar is organized into five logical control groups:
+
+\begin{enumerate}
+    \item \textbf{Zoom}: Three-button zoom in, zoom out, and reset functionality implemented via \texttt{chartjs-plugin-zoom}, allowing operators to inspect dense regions of a long time series without losing the global context.
+    \item \textbf{Navigate}: A toggleable pan mode enabling drag-to-scroll navigation across the time axis when the chart is zoomed in.
+    \item \textbf{Layers}: Context-aware toggle buttons for each active data series — actual data, forecast, fitted values, 95\% confidence intervals, comparison overlays, annotation markers, and statistical outlier highlighting ($\pm 2\sigma$ from the series mean). Buttons appear only when their corresponding data is available, preventing UI clutter.
+    \item \textbf{Style}: Toggle between a standard line rendering and an area fill mode, and between a linear and a logarithmic vertical scale — critical for analyzing exponentially growing indicators such as GDP or debt-to-GDP ratios.
+    \item \textbf{Export}: A one-click PNG export that calls Chart.js's \texttt{toBase64Image()} method, producing a high-resolution raster export of the current canvas state, automatically timestamped in the filename.
+\end{enumerate}
+
+The toolbar communicates exclusively via a \texttt{ToolbarState} interface managed in the root \texttt{App} component, ensuring that layer visibility changes propagate immediately to the \texttt{ForecastChart} via React's unidirectional state flow without any intermediate API calls.

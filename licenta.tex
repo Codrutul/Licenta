@@ -1,3 +1,4 @@
+% !TEX root = licenta.tex
 \documentclass[11pt]{report} 
 \usepackage{geometry} % Load geometry early to prevent clash 
 
@@ -22,6 +23,8 @@
 % CUSTOM THESIS DEPENDENCIES INCORPORATED
 % ==========================================
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{float}
@@ -60,6 +63,20 @@
 }
 \lstset{style=mystyle}
 
+% Define JavaScript as a language for lstlisting (not built-in)
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do,
+    else, finally, for, function, if, in, instanceof, new, return, switch,
+    this, throw, try, typeof, var, void, while, with, const, let, class,
+    export, import, extends, super, async, await, of, from, static},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`,
+  sensitive=true
+}
+
 % Define TikZ Box Styles
 \tikzstyle{abstractbox} = [rectangle, rounded corners, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=blue!10, font=\sffamily\footnotesize]
 \tikzstyle{iobox} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!10, font=\sffamily\footnotesize]
@@ -79,8 +96,8 @@
 
 \specialization{Computer Science}	
 \title{Time Series Forecasting Visualizer: A Decoupled Architecture for Econometric Analytics}					   
-\author{Codrut Afloarei}											
-\supervisor{[Degree, Title and Name of Supervisor]}				
+\author{Afloarei Codrin-Ionut}											
+\supervisor{Petrescu Manuela}				
 				
 \maketitle
 
