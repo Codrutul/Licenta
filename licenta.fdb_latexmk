@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1777723941.75521 "licenta.tex" "licenta.pdf" "licenta" 1777723944.38647 0
+["pdflatex"] 1777893565.15691 "licenta.tex" "licenta.pdf" "licenta" 1777893567.68952 0
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/courier/pcrb7t.tfm" 1136768653 960 4ab65358b8406f30ef5496c8c096d22b ""
@@ -217,14 +217,14 @@
   "/usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1777622909 3636771 80a98c625cbb9d90e5b37d0ffddb1f2a ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
   "chapters/chapter1_introduction.tex" 1777623870.46119 11827 46cd1174bc97aa62d37bb94ee2f66080 ""
-  "chapters/chapter2.tex" 1777723861.15053 28726 000e59dd897c5563e03514dfe3c81c3d ""
+  "chapters/chapter2.tex" 1777893063.36447 28706 326f14e0110a8cdbf92aefd5f25138b1 ""
   "chapters/chapter3.tex" 1777723871.34169 25315 3ebf36dffd2e148d5159117e4ed8bfac ""
   "chapters/chapter4.tex" 1777626646.62572 34518 0545b08fed11d241b51a018761f49bbc ""
   "chapters/chapter6_conclusions.tex" 1777723867.33692 7618 8fcc8e12b0ee434c83d013686d5c57f4 ""
-  "licenta.aux" 1777723944.27583 22404 dc544407a41cc8db726ec5ed3a970a1f "pdflatex"
-  "licenta.out" 1777723944.27745 18686 673471178f4710b8cb5634e9d021f2e9 "pdflatex"
-  "licenta.tex" 1777723873.35848 7301 c1012509abb44cb4fb65ce693553a25f ""
-  "licenta.toc" 1777723944.27763 7288 8bf99f9a30e49ed58366578bb42d077f "pdflatex"
+  "licenta.aux" 1777893567.57629 22397 988708827e98a416ba7827ddaaab41f7 "pdflatex"
+  "licenta.out" 1777893567.57815 18656 0405ae4106da4b070a30c771bd2beec2 "pdflatex"
+  "licenta.tex" 1777893547.00861 8148 50c3b8d7f454203835ffe2b41a189ba3 ""
+  "licenta.toc" 1777893567.57835 7281 f4284e8b588857a594a4f12213520921 "pdflatex"
   "style.sty" 1777624460.82005 3009 254cf1aa1f7ee43df8efd2c12a433706 ""
   "thesis_images/ai_drawer.png" 1777563128.53328 310298 e4235bc71b8d2b4c5a017a7f032a1f9b ""
   "thesis_images/change_points.png" 1777563128.53435 210205 a180df0b17dd756581b3998b4dd0edc8 ""

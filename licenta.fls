@@ -298,13 +298,6 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/vf/adobe/palatino/pplri7t.vf
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplri8r.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/vf/adobe/palatino/pplr7t.vf
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplr8r.tfm
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplro7t.tfm
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/vf/adobe/palatino/pplr7t.vf
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplr8r.tfm
-INPUT ./licenta.toc
-INPUT ./licenta.toc
-INPUT licenta.toc
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplb7t.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
@@ -328,6 +321,13 @@ INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplro7t.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/vf/adobe/palatino/pplr7t.vf
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplr8r.tfm
+INPUT ./licenta.toc
+INPUT ./licenta.toc
+INPUT licenta.toc
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplb7t.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/vf/adobe/palatino/pplb7t.vf
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm
 OUTPUT licenta.toc
