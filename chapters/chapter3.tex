@@ -11,7 +11,7 @@ To bridge this operational and computational divide, the architecture of this ap
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=2.5cm]
+\begin{tikzpicture}[node distance=2cm and 1cm, align=center]
 \node (client) [abstractbox] {React Frontend (Vite)};
 \node (express) [processbox, below=of client] {Node.js Express API};
 \node (python) [abstractbox, left=of express] {V8 Native Math (PELT)};
@@ -19,12 +19,12 @@ To bridge this operational and computational divide, the architecture of this ap
 \node (user) [iobox, above=of client] {Executive Operator};
 
 \draw [arrow] (user) -- node[anchor=west, font=\scriptsize] {CSV Upload} (client);
-\draw [arrow] (client) -- node[anchor=west, font=\scriptsize] {JSON Matrix / Axios} (express);
-\draw [arrow] (express) -- node[anchor=south, font=\scriptsize] {Native Call} (python);
-\draw [arrow] (express) -- node[anchor=south, font=\scriptsize] {HTTPS Payload} (gemini);
-\draw [dashedarrow] (python) edge[bend right=40] node[anchor=north, font=\scriptsize] {Computed Array} (express);
-\draw [dashedarrow] (gemini) edge[bend left=40] node[anchor=north, font=\scriptsize] {Generated Text} (express);
-\draw [dashedarrow] (express) edge[bend right=40] node[anchor=west, font=\scriptsize] {SVG Coordinates} (client);
+\draw [arrow] (client) to[bend right=20] node[left, font=\scriptsize] {JSON Matrix / Axios} (express);
+\draw [arrow] (express) -- node[above, font=\scriptsize] {Native Call} (python);
+\draw [arrow] (express) -- node[above, font=\scriptsize] {HTTPS Payload} (gemini);
+\draw [dashedarrow] (python) to[bend right=40] node[below, font=\scriptsize] {Computed Array} (express);
+\draw [dashedarrow] (gemini) to[bend left=40] node[below, font=\scriptsize] {Generated Text} (express);
+\draw [dashedarrow] (express) to[bend right=20] node[right, font=\scriptsize] {SVG Coordinates} (client);
 \end{tikzpicture}
 \caption{The Integrated Native System Architecture. The Node.js Server acts as the central orchestrator executing pure mathematical data natively and receiving analytical strings from Generative AI.}
 \label{fig:sys_arch}
@@ -47,17 +47,17 @@ React circumvents this performance degradation entirely via its proprietary \tex
 \centering
 \begin{tikzpicture}[
     box/.style={draw, rectangle, minimum width=2.5cm, minimum height=1cm, align=center, fill=blue!5, font=\sffamily\scriptsize},
-    level 1/.style={sibling distance=5cm},
-    level 2/.style={sibling distance=2.5cm},
+    level 1/.style={sibling distance=5.5cm},
+    level 2/.style={sibling distance=3.2cm},
     edge from parent/.style={draw, -latex}
 ]
 \node[box, fill=blue!20, font=\sffamily\small\bfseries] {App.tsx (Root Provider)}
-    child {node[box] {Data Ingestion \\ \textit{<NavigationPanel>}}}
-    child {node[box] {Active Visualization \\ \textit{<ForecastChart>}}
-        child {node[box] {Chart.js \texttt{<Line>} \\ \textit{Global Forecast}}}
+    child {node[box] {Data Ingestion \\ \textit{$\langle$NavigationPanel$\rangle$}}}
+    child {node[box] {Active Visualization \\ \textit{$\langle$ForecastChart$\rangle$}}
+        child {node[box] {Chart.js \texttt{$\langle$Line$\rangle$} \\ \textit{Global Forecast}}}
         child {node[box] {Chart.js \textit{Plugin} \\ \textit{PELT Annotations}}}
     }
-    child {node[box] {Controller Matrix \\ \textit{<AIAnalysisPanel>}}};
+    child {node[box] {Controller Matrix \\ \textit{$\langle$AIAnalysisPanel$\rangle$}}};
 \end{tikzpicture}
 \caption{The React Component Tree Architecture. State changes cascade downwards strictly unidirectionally, utilizing the reconciliation algorithm to isolate coordinate renders specifically to the \texttt{<ForecastChart>} without breaking the root.}
 \label{fig:react_tree}
@@ -163,9 +163,9 @@ To definitively ensure the highest possible level of academic and enterprise cod
 % UML Class Nodes
 \node (route) [draw, rectangle, minimum width=4cm, minimum height=1.5cm, fill=black!5] {\textbf{ForecastRouter} \\ \textit{Express.js Middleware} \\ Receives HTTP Post};
 
-\node (forecastService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below left=2cm and -1.5cm of route, fill=blue!5] {\textbf{ForecastService} \\ \textit{+ calculateHoltWinters()}};
+\node (forecastService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below left=2cm and 0.5cm of route, fill=blue!5] {\textbf{ForecastService} \\ \textit{+ calculateHoltWinters()}};
 \node (peltService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below=2cm of route, fill=orange!5] {\textbf{ChangePointService} \\ \textit{+ detectRuptures()}};
-\node (aiService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below right=2cm and -1.5cm of route, fill=green!5] {\textbf{AIService} \\ \textit{+ generator()}};
+\node (aiService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below right=2cm and 0.5cm of route, fill=green!5] {\textbf{AIService} \\ \textit{+ generator()}};
 
 \draw [->, thick] (route) edge[bend right=20] (forecastService);
 \draw [->, thick] (route) -- (peltService);
@@ -180,6 +180,7 @@ As modeled in the Unified Modeling Language (UML) structural diagram (Figure \re
 \section{Algorithmic Porting: The Native V8 PELT Mathematical Loop}
 Rather than connecting standard web platforms to bloated external analytical environments via laggy Inter-Process Communication (IPC) pipelines, the true innovation of this architectural system is natively porting state-of-the-art Bayesian \textbf{Pruned Exact Linear Time (PELT)} logic explicitly into the JavaScript language. By rewriting standard Python arrays into aggressive, low-level looping arrays internally stored inside V8 memory scopes, the mathematical computation becomes exponentially faster.
 
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Native V8 Execution Loop for PELT Math Validation, label=lst:js_ipc]
 const analyzeChangePoints = (data) => {
   return new Promise((resolve) => {
@@ -194,6 +195,7 @@ const analyzeChangePoints = (data) => {
   });
 };
 \end{lstlisting}
+\end{minipage}
 
 Node.js instantly converts the massive multi-thousand coordinate temporal matrix into an array struct, iterating natively inside memory without paying the extreme penalty of serializing payloads as JSON strings across external runtime pipelines. V8 dynamically computes the exceptionally heavy detection logic and immediately resolves the Promise boundary straight back directly to the HTTP handler.
 

@@ -61,26 +61,26 @@ This rigid physical layout topology drastically drops cognitive load. Operators 
 \begin{tikzpicture}[node distance=1.5cm and 1cm, every node/.style={fill=white, font=\sffamily\footnotesize}, align=center]
 % Classes
 \node (app) [draw, rectangle, fill=blue!5, minimum width=4.5cm, minimum height=2cm, text width=4.1cm] {
-    \textbf{<<Root>> App::React.FC} \\
+    \textbf{$\langle\langle$Root$\rangle\rangle$ App::React.FC} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     - state: TimeSeriesData \\ - session: StorageCache \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     + handleUpload() \\ + triggerAIAnalysis()
 };
 
-\node (nav) [draw, rectangle, fill=gray!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below left=1.2cm and -1.5cm of app] {
+\node (nav) [draw, rectangle, fill=gray!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below left=1.5cm and 0cm of app] {
     \textbf{NavigationPanel} \\
-    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + parseCSV() \\ + validateSchema()
+    \rule{\linewidth}{0.4pt}
+    + uploadCSV() \\ + selectColumns()
 };
 
 \node (chart) [draw, rectangle, fill=green!5, minimum width=4cm, minimum height=1.5cm, text width=3.6cm, below=2cm of app] {
     \textbf{ForecastChart} \\
-    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + renderSVGLines() \\ + calculateCoordinate()
+    \rule{\linewidth}{0.4pt}
+    + renderCanvas() \\ + plotPeltBoundaries()
 };
 
-\node (ai) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below right=1.2cm and -1.5cm of app] {
+\node (ai) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below right=1.5cm and 0cm of app] {
     \textbf{AIAnalysisPanel} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     + digestMarkdown() \\ + triggerHydration()
@@ -116,7 +116,7 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
 \centering
 \begin{tikzpicture}[every node/.style={fill=white, font=\sffamily\scriptsize}, align=center]
 % Router node
-\node (router) [draw, rectangle, fill=orange!5, minimum width=12cm, minimum height=1.8cm, text width=11.5cm] {
+\node (router) [draw, rectangle, fill=orange!5, minimum width=10cm, minimum height=1.8cm, text width=9.5cm] {
     \textbf{ForecastRouter :: Middleware} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     \textit{- upload: MulterInstance} \\
@@ -124,18 +124,9 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
     \textit{+ post(/analyze)} \qquad \textit{+ handleMultipartForm()}
 };
 
-% Three service nodes below, total width = 12cm
-\node (forecastService) [draw, rectangle, fill=blue!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
-    below left=1.8cm and 4.1cm of router] {
-    \textbf{ForecastService} \\
-    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + calculateHoltWinters() \\
-    + calculateNaive() \\
-    - formatOutputMatrix()
-};
-
-\node (peltService) [draw, rectangle, fill=red!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
-    below=1.8cm of router] {
+% Three service nodes below
+\node (peltService) [draw, rectangle, fill=red!5, minimum width=3.5cm, minimum height=2cm, text width=3.1cm,
+    below=1.5cm of router] {
     \textbf{ChangePointService} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     + calculatePeltNative() \\
@@ -143,8 +134,17 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
     - pruneCandidates()
 };
 
-\node (aiService) [draw, rectangle, fill=purple!5, minimum width=3.8cm, minimum height=2cm, text width=3.4cm,
-    below right=1.8cm and 4.1cm of router] {
+\node (forecastService) [draw, rectangle, fill=blue!5, minimum width=3.5cm, minimum height=2cm, text width=3.1cm,
+    left=0.5cm of peltService] {
+    \textbf{ForecastService} \\
+    \rule{\linewidth}{0.4pt}\vspace{0.5mm}
+    + calculateHoltWinters() \\
+    + calculateNaive() \\
+    - formatOutputMatrix()
+};
+
+\node (aiService) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=2cm, text width=3.1cm,
+    right=0.5cm of peltService] {
     \textbf{AIService} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     + constructPrompt() \\
@@ -153,9 +153,9 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
 };
 
 % Dependency injection arrows
-\draw [{Diamond[open]}-, thick] (router) -| node[above left, font=\tiny] {Injects} (forecastService);
-\draw [{Diamond[open]}-, thick] (router) -- node[right,     font=\tiny] {Injects} (peltService);
-\draw [{Diamond[open]}-, thick] (router) -| node[above right, font=\tiny] {Injects} (aiService);
+\draw [{Diamond[open]}-, thick] (router.south -| forecastService.north) -- node[left, fill=none, font=\tiny] {Injects} (forecastService.north);
+\draw [{Diamond[open]}-, thick] (router.south) -- node[right, fill=none, font=\tiny] {Injects} (peltService.north);
+\draw [{Diamond[open]}-, thick] (router.south -| aiService.north) -- node[right, fill=none, font=\tiny] {Injects} (aiService.north);
 \end{tikzpicture}
 \caption{UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes.}
 \label{fig:uml_backend_classes}
@@ -166,6 +166,7 @@ By rigidly enforcing this \textbf{Router-Service implementation}, the operationa
 \section{Executing Mathematical Prediction Algorithms via Core JavaScript}
 To thoroughly defend critical architectural application latency standards against severe computational bottleneck degradation, multiple routine linear forecasting sub-operations were explicitly coded straight into the core local Node.js compilation context.
 
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Physical For-Loop Computation Execution for Simple Exponential Smoothing, label=lst:ses_loop]
 exponentialSmoothing(data, periods, alpha) {
   const fittedValues = [];
@@ -185,12 +186,14 @@ exponentialSmoothing(data, periods, alpha) {
   return { method: 'SES', forecast, fittedValues };
 }
 \end{lstlisting}
+\end{minipage}
 
 Guaranteeing foundational equations (Listing \ref{lst:ses_loop}) natively resolve securely and dynamically utilizing the aggressively optimized Google Chrome V8 interpreter definitively enables real-time capability. When frontend browser operators forcefully yank digital slide controllers dynamically sliding quantitative parameters across variable axis thresholds, iterative recalculations rapidly traverse hundreds of integrated matrices practically instantaneously.
 
 \section{Pruned Exact Linear Time (PELT) Boundary Shock Injections}
 Standard macroscopic analytical global evaluation architectures inextricably share a devastating central defect: toxic temporal data contamination feedback loops. To definitively resolve mathematical data pollution, the software infrastructure integrated external bindings bridging toward the empirically verified \textbf{Pruned Exact Linear Time (PELT)} detection method structure. 
 
+\noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=The Native JavaScript PELT Optimization Algorithm executed natively by V8, label=lst:js_pelt]
 // O(1) OLS-residual cost for segment [s, e] via prefix sums
 const fastCost = (s, e) => {
@@ -215,6 +218,7 @@ for (let t = 1; t <= n; t++) {
   candidates = newCandidates;
 }
 \end{lstlisting}
+\end{minipage}
 
 The explicit logic inside Listing \ref{lst:js_pelt} tests millions of hypothetical coordinate division fragments natively until absolute statistical divergence margins are undeniably verified utilizing advanced \textbf{Bayesian Information Criterion (BIC)} parameters. 
 
@@ -229,7 +233,7 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=2.5cm, y=-1.3cm, every node/.style={font=\sffamily\scriptsize}]
+\begin{tikzpicture}[x=2.2cm, y=-1.3cm, every node/.style={font=\sffamily\scriptsize}]
 % Actor / Lifelines
 \node (client) at (0,0) [draw, rectangle, fill=blue!10, minimum width=2cm, minimum height=0.6cm] {React Client};
 \node (server) at (2,0) [draw, rectangle, fill=orange!10, minimum width=2cm, minimum height=0.6cm] {Node.js Express};
@@ -293,18 +297,18 @@ const response = await this.ai.models.generateContent({
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.5cm, every node/.style={fill=white, font=\sffamily\small}, align=center]
+\begin{tikzpicture}[node distance=2.5cm and 3.5cm, every node/.style={fill=white, font=\sffamily\small}, align=center]
 % Nodes
 \node (nodeAPI) [draw, circle, fill=orange!10, minimum size=2.5cm] {Node.js \\ Express};
 \node (buffer) [draw, rectangle, fill=gray!10, minimum width=3cm, minimum height=1cm, right=of nodeAPI] {Formatted Metrics \\ + \textbf{System Prompt}};
-\node (gemini) [draw, diamond, aspect=2, fill=blue!10, minimum width=3cm, right=of buffer] {Google Cloud \\ \texttt{Gemini LLM}};
-\node (react) [draw, rectangle, rounded corners=5pt, fill=green!10, below=2cm of buffer] {React.js \\ Analysis Viewer};
+\node (react) [draw, rectangle, rounded corners=5pt, fill=green!10, below=of nodeAPI] {React.js \\ Analysis Viewer};
+\node (gemini) [draw, diamond, aspect=2, fill=blue!10, minimum width=3cm, below=of buffer] {Google Cloud \\ \texttt{Gemini LLM}};
 
 % Edges
 \draw [->, thick] (nodeAPI) -- (buffer);
 \draw [->, thick] (buffer) -- (gemini);
-\draw [->, thick, dashed] (gemini) |- node[below right, font=\scriptsize] {Deterministic Markdown Transmission} (react);
-\draw [<-, thick] (nodeAPI) |- node[above left, font=\scriptsize] {User HTTPS Trigger} (react);
+\draw [->, thick, dashed] (gemini) -- node[below=0.1cm, fill=none, font=\scriptsize, align=center] {Deterministic \\ Markdown} (react);
+\draw [<-, thick] (nodeAPI) -- node[left=0.1cm, fill=none, font=\scriptsize, align=center] {User HTTPS \\ Trigger} (react);
 \end{tikzpicture}
 \caption{The Generative AI Telemetry Pipeline forcing extreme systematic adherence to mathematical constraints prior to rendering conclusions back to the operator.}
 \label{fig:ai_telemetry}
