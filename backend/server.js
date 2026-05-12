@@ -65,8 +65,8 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Start server - bind to localhost to avoid permission issues
-const server = app.listen(PORT, 'localhost', () => {
+// Start server - binds to 0.0.0.0 (all interfaces) for cloud compatibility
+const server = app.listen(PORT, () => {
   console.log('═══════════════════════════════════════════════');
   console.log('  Time Series Forecast Visualizer API');
   console.log('═══════════════════════════════════════════════');
