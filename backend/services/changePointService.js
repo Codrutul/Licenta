@@ -82,7 +82,7 @@ class ChangePointService {
     // Each segment uses 2 parameters (slope + intercept), so BIC penalty = 2·log(n)·σ²
     const beta = multiplier * 2 * Math.log(n) * sigma2;
 
-    const minSegLen = minLen !== null ? minLen : Math.max(5, Math.floor(n / 10));
+    const minSegLen = minLen !== null ? minLen : Math.max(4, Math.floor(n / 20));
 
     const F  = new Array(n + 1).fill(Infinity);
     const cp = new Array(n + 1).fill(-1);

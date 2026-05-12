@@ -89,6 +89,9 @@ function App() {
     // Sidebar tab
     const [sidebarTab, setSidebarTab] = useState<'ai' | 'stats' | 'table'>('ai');
 
+    // Increment to force-remount AIAnalysisPanel (clears all its internal state)
+    const [aiResetKey, setAiResetKey] = useState(0);
+
 
     // Generate future dates
     const generateFutureDates = useCallback((lastDate: string, count: number): string[] => {
@@ -146,6 +149,7 @@ function App() {
         setCpResult(null);
         setSegmentForecastResult(null);
         setError(null);
+        setAiResetKey(k => k + 1); // remounts AIAnalysisPanel, clearing reports & context
     };
 
     const handleCalculateForecast = async () => {
@@ -465,7 +469,8 @@ function App() {
 
                         {sidebarTab === 'ai' && (
                             <div className="ai-tab-content">
-                                <AIAnalysisPanel 
+                                <AIAnalysisPanel
+                                    key={aiResetKey}
                                     dataLength={timeSeriesData?.values.length || 0}
                                     latestActualValue={timeSeriesData ? timeSeriesData.values[timeSeriesData.values.length - 1] : null}
                                     hasChangePointsResult={!!cpResult}
