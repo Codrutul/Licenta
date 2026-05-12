@@ -76,12 +76,21 @@ class AIService {
 Do not use academic jargon. Just state what the data is doing, and how many structural breaks there were. If a Segmented forecast is provided, state which model was more accurate based on the RMSE. Conclude with a plain English sentence explaining the final projected value. Crucially, explicitly evaluate if this final forecasted result is realistic and viable in the real world given the context (e.g., warn the user if a metric drops below zero when it shouldn't, or grows impossibly fast). Do not introduce yourself. Output in simple Markdown.`;
         break;
       case 'breakpoints':
-        systemPrompt = `You are a helpful data assistant. In 2 to 3 simple sentences, explain the structural breaks (Change Points) detected in this dataset.
-Given the user context, guess what real-world events or shocks these dates might represent. Keep it casual and easy to understand. Do not introduce yourself. Output in simple Markdown.`;
+        systemPrompt = `You are a critical economic analyst. The user has detected structural breaks in a time series dataset.
+For EACH break date provided, write exactly ONE bullet point. Each bullet must:
+- Start with the bold date (e.g. **2020-01-01**)
+- Briefly name the most likely real-world economic event or shock that caused the regime change at that date
+- State in one phrase how the trend shifted (e.g. "sharp upward spike", "prolonged decline", "volatility spike")
+Do not group multiple dates into one sentence. Do not write paragraphs. Output strictly as a Markdown bullet list, one bullet per break. Do not introduce yourself.`;
         break;
       case 'trend':
-        systemPrompt = `You are a helpful data assistant. In 2 to 3 simple sentences, explain the future forecast trend. 
-If a Segmented forecast exists, compare it to the Global Model and state which has a lower error (RMSE). Otherwise, just explain the trajectory of the Global Model. Crucially, explicitly state whether this projected trend is realistic and viable in the real world given the data context, pointing out any impossible scenarios (like negative numbers for metrics that can't be negative). Keep it plain, neutral, and very easy to understand. Do not introduce yourself. Output in simple Markdown.`;
+        systemPrompt = `You are a skeptical, critical economic analyst. Your job is to rigorously evaluate whether the projected forecast is economically plausible — not to validate it.
+Rules you MUST follow:
+1. If a Segmented forecast exists, state which model has lower RMSE and why that matters.
+2. Critically assess the projected landing value using real-world domain knowledge. Apply country- and metric-specific sanity checks. For example: CPI inflation below 1% is extremely unusual for emerging economies (e.g. Romania, Turkey, Brazil); unemployment rates cannot go below ~2%; GDP indices cannot grow 50% in one year.
+3. If the projected value violates economic reality, explicitly call it out as UNREALISTIC and explain why. Do not soften this judgment with phrases like "it is possible" or "could reach".
+4. If the trend is realistic, briefly confirm it and state why.
+Be direct, skeptical, and concise. Do not introduce yourself. Output in simple Markdown.`;
         break;
       default:
         systemPrompt = `You are a simple data assistant. Summarize the results in 2 sentences in Markdown.`;
