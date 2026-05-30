@@ -3,26 +3,26 @@
 \label{ch:framework_tech_stack}
 
 \section{Introduction to the Architectural Paradigm}
-The development of a robust, production-grade Time Series Forecasting Visualizer presents a unique intersection of software engineering and econometric challenges. Historically, the domain of time series analysis has been monopolized by procedural, script-based environments---most notably R-Studio, MATLAB, and localized Python kernels (such as Jupyter Notebooks). While these environments excel at executing dense mathematical matrix operations and generating static visualizations historically, they fundamentally lack the infrastructure required to deploy scalable, interactive, and responsive web-based User Interfaces (UIs) accessible to non-technical executive stakeholders. 
+The development of a robust, production-grade Time Series Forecasting Visualizer presents a unique intersection of software engineering and econometric challenges. Historically, the domain of time series analysis has been dominated by procedural, script-based environments---most notably R-Studio, MATLAB, and localized Python kernels (such as Jupyter Notebooks). While these environments excel at executing dense mathematical matrix operations and generating static visualizations historically, they fundamentally lack the infrastructure required to deploy scalable, interactive, and responsive web-based User Interfaces (UIs) accessible to non-technical end users. 
 
 Conversely, traditional monolithic web application stacks (such as LAMP—Linux, Apache, MySQL, PHP, or Java Spring Boot architectures) excel at rapid interface rendering and database queries but lack the native, open-source, peer-reviewed mathematical libraries capable of executing complex linear algebra, seasonal decompositions, or Bayesian change-point detections efficiently. 
 
-To bridge this operational and computational divide, the architecture of this application was designed utilizing a highly optimized, native JavaScript paradigm. Rather than relying on clunky cross-language IPC bridges, the system forcefully ports complex econometric math directly into the Node.js V8 execution engine.
+To bridge this operational and computational divide, the architecture of this application was designed utilizing a highly optimized, native JavaScript paradigm. Rather than relying on cross-language IPC bridges, the system implements complex econometric algorithms directly within the Node.js V8 execution engine.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=2cm and 1cm, align=center]
 \node (client) [abstractbox] {React Frontend (Vite)};
 \node (express) [processbox, below=of client] {Node.js Express API};
-\node (python) [abstractbox, left=of express] {V8 Native Math (PELT)};
+\node (mathModule) [abstractbox, left=of express] {Internal V8 Math Module};
 \node (gemini) [abstractbox, right=of express] {Google Gemini API};
 \node (user) [iobox, above=of client] {Executive Operator};
 
 \draw [arrow] (user) -- node[anchor=west, font=\scriptsize] {CSV Upload} (client);
 \draw [arrow] (client) to[bend right=20] node[left, font=\scriptsize] {JSON Matrix / Axios} (express);
-\draw [arrow] (express) -- node[above, font=\scriptsize] {Native Call} (python);
+\draw [arrow] (express) -- node[above, font=\scriptsize] {Function Call} (mathModule);
 \draw [arrow] (express) -- node[above, font=\scriptsize] {HTTPS Payload} (gemini);
-\draw [dashedarrow] (python) to[bend right=40] node[below, font=\scriptsize] {Computed Array} (express);
+\draw [dashedarrow] (mathModule) to[bend right=40] node[below, font=\scriptsize] {Computed Array} (express);
 \draw [dashedarrow] (gemini) to[bend left=40] node[below, font=\scriptsize] {Generated Text} (express);
 \draw [dashedarrow] (express) to[bend right=20] node[right, font=\scriptsize] {SVG Coordinates} (client);
 \end{tikzpicture}
@@ -73,11 +73,11 @@ As quantitatively analyzed via the component flow (Figure \ref{fig:react_tree}),
 \end{figure}
 
 \subsection{Static Type Enforcement via TypeScript Constructs}
-JavaScript, the native and ubiquitous language of web browsers, is inherently \textit{dynamically typed}. Variables can silently transmute from floating-point integers to string references, or worse, to undefined null-states without provoking explicit compiler warnings. In standard web applications (e.g., e-commerce product dashboards), this flexibility historically accelerates the development prototyping cycle. However, in an econometric forecasting tool processing literal floating-point arrays, abstract dynamic typing represents a catastrophic algorithmic liability. 
+JavaScript, the native and ubiquitous language of web browsers, is inherently \textit{dynamically typed}. Variables can silently change from numeric values to string references, or worse, to undefined null-states without provoking explicit compiler warnings. In standard web applications (e.g., e-commerce product dashboards), this flexibility historically accelerates the development prototyping cycle. However, in an econometric forecasting tool processing literal floating-point arrays, abstract dynamic typing represents a significant algorithmic risk. 
 
 Forecasting architecture involves continuously migrating multidimensional matrices, precision arrays, and deeply nested statistical moments (such as Seasonal Decompositions or detailed Root Mean Squared Error vectors) back and forth between the frontend client components and the Node.js backend server. If a JavaScript array transmission accidentally coerces a numerical forecasting projection into an abstract \texttt{NaN} string, the visualization math engine will crash entirely, producing a fatal blank screen.
 
-To eradicate this class of runtime errors, \textbf{TypeScript} was deployed as a strict syntactic superset layer hovering over the JavaScript baseline. Before the application is ever served structurally to the client locally, the TypeScript compiler rigorously scans the entire physical codebase to ensure the mathematical network contracts are obeyed flawlessly.
+To prevent this class of runtime errors, \textbf{TypeScript} was deployed as a strict syntactic superset layer over the JavaScript baseline. Before the application is served to the client, the TypeScript compiler scans the entire codebase to ensure the mathematical data contracts are respected.
 
 \begin{lstlisting}[language=JavaScript, caption=Formal TypeScript Interface Dictating Network Transfer Protocols, label=lst:ts_interface]
 export interface TimeSeriesData {
@@ -102,10 +102,10 @@ export interface TimeSeriesData {
 }
 \end{lstlisting}
 
-By forcefully binding the functional React components strictly to the interfaces represented above in Listing \ref{lst:ts_interface}, the internal Integrated Development Environment (IDE) mechanically prevents the developer from referencing non-existent computational properties during authoring. 
+By binding the functional React components to the interfaces represented above in Listing \ref{lst:ts_interface}, the internal Integrated Development Environment (IDE) prevents the developer from referencing non-existent computational properties during authoring. 
 
 \subsection{Ephemeral State Management Strategies and Persistent Sessions}
-To solve the critical vulnerability of raw memory destruction upon accidental page refreshes (which, if unmitigated, would aggressively force targeted researchers to re-upload massive server datasets and brutally re-calculate computationally expensive baseline forecasts from scratch), a bespoke, ingenious architectural pattern was engineered: the \texttt{useSessionState} abstraction.
+To solve the problem of state loss upon accidental page refreshes (which would require users to re-upload datasets and re-compute baseline forecasts from scratch), a custom architectural pattern was implemented: the \texttt{useSessionState} abstraction.
 
 \begin{lstlisting}[language=JavaScript, caption=Engineering the useSessionState Abstract React Hook, label=lst:use_session]
 function useSessionState<T>(key: string, initial: T): 
@@ -143,7 +143,7 @@ Through the pattern demonstrated physically in Listing \ref{lst:use_session}, JS
 While the declarative React DOM completely dominates the client's localized graphical browser, the raw, heavy calculating power, file-system manipulation privileges, and Application Programming Interface (API) gateways reside exclusively remotely on the backend server architecture. The backend server was constructed using \textbf{Node.js}, utilizing the flexible, lightweight \textbf{Express.js} middleware framework structure.
 
 \subsection{The Asynchronous Event Loop Scalability Architecture}
-Deploying a traditional, obsolete synchronous server architecture (such as Python's standard WSGI servers or antiquated Java Thread-per-Request models) utilizes heavily blocking Input/Output (I/O). Under heavy corporate load (e.g. 50 analysts calculating Holt-Winters arrays simultaneously), this model rapidly and violently exhausts available server RAM, leading invariably to catastrophic application crashes via Thread Starvation.
+Deploying a traditional synchronous server architecture (such as Python's standard WSGI servers or Java Thread-per-Request models) utilizes blocking Input/Output (I/O). Under heavy concurrent load (e.g. 50 analysts calculating Holt-Winters arrays simultaneously), this model quickly exhausts available server RAM, leading to application crashes via Thread Starvation.
 
 Node.js, conversely, operates organically on an inherently \textbf{Asynchronous Event Loop} utilizing a single primary main thread execution environment. When the Express API receives a computationally heavy internal request (such as seamlessly transmitting a matrix over HTTPS to Google Gemini or executing a massive mathematical PELT loop natively), the Event Loop does not freeze. It instantly delegates the payload strictly out to the OS thread pool natively, returning dynamically to listen to new incoming web traffic.
 
@@ -155,7 +155,7 @@ Node.js, conversely, operates organically on an inherently \textbf{Asynchronous 
 \end{figure}
 
 \subsection{Enterprise Router-Service Separation of Analytical Concerns}
-To definitively ensure the highest possible level of academic and enterprise code maintainability, the application codebase flawlessly respects and implements the \textbf{Router-Service Architecture Pattern}.
+To ensure a high level of code maintainability, the application codebase follows the \textbf{Router-Service Architecture Pattern}.
 
 \begin{figure}[H]
 \centering
@@ -178,7 +178,7 @@ To definitively ensure the highest possible level of academic and enterprise cod
 As modeled in the Unified Modeling Language (UML) structural diagram (Figure \ref{fig:uml_backend}), the \texttt{ForecastRouter} handles networking boundaries (CORS, file buffers). The three massive isolated singleton instances underneath (Forecast, PELT, AI) contain the raw numerical iteration operations, completely ignorant of the overall web framework.
 
 \section{Algorithmic Porting: The Native V8 PELT Mathematical Loop}
-Rather than connecting standard web platforms to bloated external analytical environments via laggy Inter-Process Communication (IPC) pipelines, the true innovation of this architectural system is natively porting state-of-the-art Bayesian \textbf{Pruned Exact Linear Time (PELT)} logic explicitly into the JavaScript language. By rewriting standard Python arrays into aggressive, low-level looping arrays internally stored inside V8 memory scopes, the mathematical computation becomes exponentially faster.
+Rather than connecting standard web platforms to external analytical environments via Inter-Process Communication (IPC) pipelines, the key design decision of this architecture is natively porting \textbf{Pruned Exact Linear Time (PELT)} logic directly into JavaScript. By reimplementing Python-based array operations as native V8 loops stored inside the same process memory, the mathematical computation avoids serialization overhead entirely.
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Native V8 Execution Loop for PELT Math Validation, label=lst:js_ipc]
@@ -197,10 +197,10 @@ const analyzeChangePoints = (data) => {
 \end{lstlisting}
 \end{minipage}
 
-Node.js instantly converts the massive multi-thousand coordinate temporal matrix into an array struct, iterating natively inside memory without paying the extreme penalty of serializing payloads as JSON strings across external runtime pipelines. V8 dynamically computes the exceptionally heavy detection logic and immediately resolves the Promise boundary straight back directly to the HTTP handler.
+Node.js instantly converts the massive multi-thousand coordinate temporal matrix into an array struct, iterating natively inside memory without paying the extreme penalty of serializing payloads as JSON strings across external runtime pipelines. V8 computes the detection logic and resolves the Promise back to the HTTP handler.
 
 \section{Comprehensive Application Dependencies}
-To successfully intertwine rapid Virtual DOM manipulations, asynchronous server orchestration, and dense mathematical modeling, the application explicitly locks its versions to rigorously vetted open-source dependencies. Table \ref{tab:dependencies} strictly categorizes the external libraries orchestrated across the physical server environments.
+To successfully intertwine rapid Virtual DOM manipulations, asynchronous server orchestration, and dense mathematical modeling, the application locks its versions to tested open-source dependencies. Table \ref{tab:dependencies} categorizes the external libraries used across both environments.
 
 \begin{table}[H]
     \centering
@@ -213,7 +213,7 @@ To successfully intertwine rapid Virtual DOM manipulations, asynchronous server 
         \midrule
         \textbf{Frontend (React)} 
         & \texttt{react-chartjs-2} & Declarative HTML5 Canvas Cartesian engine engineered specifically for rapid browser repainting. \\
-        & \texttt{axios} & Promise-based HTTP client orchestrating JSON telemetry payloads between the client and the Node proxy. \\
+        & \texttt{axios} & Promise-based HTTP client for sending JSON request payloads between the client and the Node proxy. \\
         & \texttt{react-markdown} & Renders the Gemini LLM analytical output from raw Markdown strings into structured HTML inside the AI panel. \\
         & \texttt{chartjs-plugin-annotation} & Overlays vertical change point markers and regime boundary lines directly onto the Chart.js canvas. \\
         \midrule
@@ -231,27 +231,22 @@ To successfully intertwine rapid Virtual DOM manipulations, asynchronous server 
 \end{table}
 
 \section{Security Architecture and Environment Isolation}
-A structural vulnerability inherent to specialized processing architectures lies in the exposed network surface area. To rigorously preempt malicious external hijacking attempts (especially regarding unauthorized access to the underlying computational execution stacks and the costly Generative AI pipelines), explicit security mechanisms were hard-coded into the operational infrastructure.
+A structural vulnerability inherent to specialized processing architectures lies in the exposed network surface area. To preempt potential unauthorized access to the underlying computational execution stacks and the Generative AI pipelines, explicit security mechanisms were incorporated into the operational infrastructure.
 
-Foremost, the \textbf{\texttt{GEMINI\_API\_KEY}}—the absolute fundamental cryptographic token enabling access to Google's proprietary Large Language Model—is physically isolated from the client-side JavaScript bundle. Had this key been accidentally compiled into the React source code, passive network sniffers could aggressively scrape it and exhaust organizational computational limits. Instead, it is housed exclusively off-grid in a hidden \texttt{.env} file on the Node.js root server. The Express router functions as an impenetrable \textbf{Reverse Proxy}, accepting safe internal metrics and appending the cryptographic keys sequentially out of sight before broadcasting over the public Internet.
+Foremost, the \textbf{\texttt{GEMINI\_API\_KEY}}---the cryptographic token enabling access to Google's Large Language Model---is isolated from the client-side JavaScript bundle. Had this key been accidentally compiled into the React source code, network attackers could extract it and exhaust the project's API quota. Instead, it is stored in a hidden \texttt{.env} file on the Node.js server. The Express router functions as a secure \textbf{Reverse Proxy}, accepting internal requests and appending the API key server-side before forwarding them to the external service.
 
-Furthermore, the server strictly mandates explicit \textbf{Cross-Origin Resource Sharing (CORS)} protocol policies. By tightly locking the allowed header origins specifically to \texttt{localhost:5173} (the Vite development server port), the Node.js API definitively rejects all arbitrary HTTP requests originating from foreign, unauthorized web domains, securing the internal mathematical runtime layer from Remote Code Execution (RCE) via malicious ingestion payloads.
+Furthermore, the server strictly mandates explicit \textbf{Cross-Origin Resource Sharing (CORS)} protocol policies. By locking the allowed header origins specifically to \texttt{localhost:5173} (the Vite development server port), the Node.js API rejects HTTP requests originating from unauthorized web domains, securing the internal mathematical runtime layer from potential Remote Code Execution (RCE) via malicious ingestion payloads.
 
-\section{Development Tooling and The Vite Compilation Engine}
-Prior generations of React interfaces historically relied heavily upon the `Webpack` bundler ecosystem. Webpack mechanically crawls the entire codebase during development, concatenating hundreds of files into one massive JavaScript monolith payload before visually rendering it browser-side. This antiquated structure inherently causes severe compilation latencies, especially in a dense application requiring rapid iterative adjustments to SVG mathematical chart parameters.
+\section{Cloud Infrastructure and CI/CD Deployment}
+To ensure the application is globally accessible without requiring local environment configuration, the architecture was extended to support automated cloud deployment. This infrastructure relies on a decoupled Continuous Integration and Continuous Deployment (CI/CD) pipeline, splitting the application across two specialized hosting environments.
 
-To circumvent this legacy roadblock, the entire frontend compilation lifecycle is governed by \textbf{Vite}. Vite fundamentally flips the Webpack logic by utilizing native \textit{ES Modules}. Instead of scanning the entire architecture initially, Vite maps the logical routing statically and only compiles literal components as the web browser explicitly requests them. This \textit{Hot Module Replacement (HMR)} ensures that when developers modify complex HTML5 Canvas topological variables, the new code flashes onto the screen in under 100 milliseconds without losing cached structural data matrices.
+The \textbf{React Frontend} is deployed on \textbf{Vercel}, a platform highly optimized for static site generation and React Virtual DOM delivery. Vercel's global Edge Network ensures sub-millisecond latency for delivering the compiled HTML5 Canvas rendering engine to international operators. During deployment, Vercel automatically ingests environment variables (such as the production API URL), compiles the frontend artifacts natively, and invalidates global cache nodes to push updates instantly.
 
-Regarding package orchestration, the system strictly separates environmental domains. Node.js relies unequivocally on the \texttt{npm} dependency resolver guaranteeing reproducible \texttt{package-lock.json} builds. The backend ecosystem strictly manages deterministic algorithms natively relying on hyper-optimized JavaScript math dependencies like \texttt{simple-statistics}, guaranteeing that algorithmically intensive operations run directly within the fast V8 environment rather than crossing heavy process bridges.
-
-\section{Data Serialization Protocols: The JSON REST API Paradigm}
-At the core of client-server telemetry lies the necessity for a universally traversable transmission format bridging the frontend visualization client and the backend proxies. Rather than relying on intrinsically heavy legacy enterprise formats such as the Extensible Markup Language (XML), Simple Object Access Protocol (SOAP), or even modern binary buffers like Google Protocol Buffers (gRPC), this architecture exclusively standardizes on \textbf{JavaScript Object Notation (JSON)} executing over classical HTTP REST boundaries. 
-
-The justification for this exact pairing is strictly computational: JSON aligns identically with the internal data structures natively interpreted by the browser's \textbf{Google V8 JavaScript Execution Engine}. When 2,000 Cartesian floating-point vectors arrive over a local TLS network stream, the browser does not engage in heavy CPU DOM-parsing protocols as it would with XML. The V8 engine instantaneously compiles the JSON payloads straight into contiguous C++ memory structs located natively in the frontend RAM. Thus, standardizing entirely on JSON perfectly mitigates parsing overhead latencies during extreme data transfers.
+The \textbf{Node.js API Backend} is hosted on \textbf{Render}, a robust platform designed for scalable containerized environments. Render automatically binds to the repository and executes the native V8 econometric algorithms upon receiving HTTP requests. To secure the computational pipeline in production, the \texttt{GEMINI\_API\_KEY} and CORS origin restrictions are injected strictly via Render's secure environment secrets panel, completely isolating them from public access. This split-deployment model mathematically guarantees that heavy algorithmic computations on the backend never steal CPU cycles from the frontend rendering threads, maintaining peak 60FPS graphical fluidity for the end user regardless of server load.
 
 \section{Justification of the Technological Stack}
 The decision to implement this natively unified architecture—fusing a React frontend seamlessly into a V8 mathematical backend—is not an arbitrary assembly of popular frameworks, but rather a deliberate orchestration designed to solve the conflicting demands of an interactive econometric application. Traditional data science applications are often built monolithically in Python using frameworks like Streamlit or Dash. While mathematically robust, these monolithic environments suffer from severe UI latency and rigid customization limits when rendering dense, interactive 60FPS Cartesian charts. 
 
-To achieve peak deterministic performance, writing absolute state-of-the-art Bayesian detection algorithms (like PELT) natively in JavaScript showcases an unparalleled mastery of software architecture. Rather than relying on the bloated overhead of external statistical libraries found in Python's \texttt{numpy} and \texttt{ruptures}, the application mathematically parses these algorithms cleanly into Node.js, establishing a pure, singular execution flow.
+To achieve consistent performance, implementing detection algorithms (like PELT) natively in JavaScript demonstrates a strong understanding of software architecture. Rather than relying on the overhead of external statistical libraries found in Python's \texttt{numpy} and \texttt{ruptures}, the application implements these algorithms directly in Node.js, establishing a single, unified execution flow.
 
-Therefore, this single, unified stack optimally aligns with the application's core operational matrix. \textbf{React.js} provides world-class execution for the interactive data UI, utilizing its Virtual DOM to seamlessly recalculate complex \texttt{chart.js} Canvas matrices without freezing the browser during parameter shifts. \textbf{Node.js} acts as the ultimate enterprise traffic controller, absorbing rapid API telemetry and orchestrating HTTP streams recursively and completely asynchronously through its optimized V8 Event Loop, simultaneously running intensely heavy mathematical array calculations natively without the bloat of IPC communication networks.
+Therefore, this single, unified stack aligns well with the application's core requirements. \textbf{React.js} provides efficient rendering for the interactive data UI, utilizing its Virtual DOM to recalculate complex \texttt{chart.js} Canvas elements without freezing the browser during parameter shifts. \textbf{Node.js} serves as the API request handler, processing HTTP requests and running mathematical array calculations natively through its V8 Event Loop, without the overhead of inter-process communication.

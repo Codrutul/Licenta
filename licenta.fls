@@ -327,6 +327,9 @@ INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\sym
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplro7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\palatino\pplr7t.vf
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr8r.tfm
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr7t.tfm
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\palatino\pplr7t.vf
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr8r.tfm
 INPUT .\licenta.toc
 INPUT .\licenta.toc
 INPUT licenta.toc
@@ -355,7 +358,6 @@ INPUT .\chapters\chapter2.tex
 INPUT .\chapters\chapter2.tex
 INPUT .\chapters\chapter2.tex
 INPUT chapters\chapter2.tex
-INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplb7t.tfm
@@ -408,8 +410,6 @@ INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\courier\pcrr7
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\courier\pcrb7t.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\courier\pcrro7t.tfm
-INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\palatino\pplr7t.vf
-INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\palatino\pplr8r.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\courier\pcrb7t.vf
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\courier\pcrb8r.tfm
 INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\courier\pcrr7t.vf
@@ -466,6 +466,9 @@ INPUT .\thesis_images\change_points.png
 INPUT .\thesis_images\change_points.png
 INPUT .\thesis_images\change_points.png
 INPUT .\thesis_images\change_points.png
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\tex\latex\psnfss\omsphv.fd
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\tex\latex\psnfss\omsphv.fd
+INPUT C:\Users\afloa\AppData\Local\Programs\MiKTeX\tex\latex\psnfss\omsphv.fd
 INPUT .\thesis_images\rmse.png
 INPUT .\thesis_images\rmse.png
 INPUT .\thesis_images\rmse.png

@@ -108,17 +108,28 @@
 \pagenumbering{roman} 
 
 \cleardoublepage
-ABSTRACT
+ABSTRACT (EN)
 \vspace{0.5cm}	
 \hrule
 \vspace{0.5cm}	
-%\cleardoublepage
 
-Traditional econometric forecasting and structural break detection often rely on heavy, isolated computational environments, creating significant barriers to entry for non-technical stakeholders and inducing severe latency in web-based interfaces. Furthermore, applying global statistical models across volatile macroeconomic shocks routinely yields highly inaccurate predictions. To resolve this, this thesis introduces a high-performance, decoupled web architecture designed to democratize complex time-series analytics. 
+Traditional econometric forecasting and structural break detection often rely on heavy, isolated computational environments, creating significant barriers to entry for non-technical end users and inducing severe latency in web-based interfaces. Furthermore, applying global statistical models across volatile macroeconomic shocks routinely yields highly inaccurate predictions. To resolve this, this thesis introduces a high-performance, decoupled web architecture designed to democratize complex time-series analytics. 
 
 By natively porting rigorous mathematical algorithms—including Autoregressive Integrated Moving Average (ARIMA), Holt-Winters Exponential Smoothing, and Pruned Exact Linear Time (PELT) structural break detection—directly into the Node.js V8 execution engine, the system eliminates cross-language network bottlenecks and computes robust data science natively in JavaScript. When structural breaks are mathematically identified, the architecture dynamically segments the data, discarding obsolete pre-shock history to drastically improve predictive accuracy (measured via RMSE).
 
-To translate these complex mathematical operations into accessible business intelligence, the presentation layer utilizes the React rendering lifecycle to rapidly calculate interactive Chart.js HTML5 Canvas graphics. Concurrently, the backend pipeline dynamically routes the proven mathematical accuracy gains through the Google Gemini Large Language Model. By employing strict Deterministic Prompt Engineering at a locked temperature of $0.0$, the architecture guarantees hallucination-free semantic insights permanently anchored to mathematical reality. Ultimately, this thesis demonstrates how modern Software Engineering patterns, rigid State Management, and asynchronous API design can successfully converge to execute elite econometric analytics within a standard browser environment.
+To translate these complex mathematical operations into accessible business intelligence, the presentation layer utilizes the React rendering lifecycle to rapidly calculate interactive Chart.js HTML5 Canvas graphics. Concurrently, the backend pipeline dynamically routes the proven mathematical accuracy gains through the Google Gemini Large Language Model. By employing strict Deterministic Prompt Engineering at a locked temperature of $0.0$, the architecture produces consistent, mathematically grounded textual insights. Ultimately, this thesis demonstrates how modern Software Engineering patterns, State Management, and asynchronous API design can converge to deliver advanced econometric analytics within a standard browser environment.
+
+\newpage
+ABSTRACT (RO)
+\vspace{0.5cm}	
+\hrule
+\vspace{0.5cm}	
+
+Prognoza econometrică tradițională și detecția rupturilor structurale se bazează adesea pe medii de calcul greoaie și izolate, creând bariere semnificative la intrare pentru utilizatorii finali non-tehnici și inducând o latență severă în interfețele web. Mai mult, aplicarea modelelor statistice globale peste șocuri macroeconomice volatile produce în mod curent predicții extrem de inexacte. Pentru a rezolva acest lucru, această teză introduce o arhitectură web decuplată, de înaltă performanță, concepută pentru a democratiza analiza complexă a seriilor de timp.
+
+Prin portarea nativă a algoritmilor matematici riguroși—inclusiv Autoregressive Integrated Moving Average (ARIMA), Netezirea Exponențială Holt-Winters și detecția rupturilor structurale Pruned Exact Linear Time (PELT)—direct în motorul de execuție Node.js V8, sistemul elimină blocajele de rețea inter-limbaj și calculează știința datelor robustă nativ în JavaScript. Atunci când rupturile structurale sunt identificate matematic, arhitectura segmentează dinamic datele, eliminând istoricul învechit de dinaintea șocului pentru a îmbunătăți drastic acuratețea predictivă (măsurată prin RMSE).
+
+Pentru a traduce aceste operațiuni matematice complexe în inteligență de afaceri accesibilă, stratul de prezentare utilizează ciclul de viață de randare React pentru a calcula rapid grafice interactive Chart.js HTML5 Canvas. Concomitent, conducta backend rutează dinamic câștigurile de acuratețe matematică dovedite prin Modelul de Limbaj Mare Google Gemini. Prin utilizarea strictă a Ingineriei Deterministe a Prompturilor la o temperatură blocată de $0.0$, arhitectura produce perspective textuale consistente, fundamentate matematic. În cele din urmă, această teză demonstrează modul în care modelele moderne de Inginerie Software, Managementul Stării și designul asincron al API-urilor pot converge pentru a livra analize econometrice avansate într-un mediu standard de browser.
 
 \tableofcontents
 

@@ -3,13 +3,13 @@
 \label{ch:application_design}
 
 \section{Requirements Elicitation and Objective Framework}
-The defining core mandate of this academic thesis software orchestration was to structurally engineer an economic dashboard that drastically obliterates the extreme computational barrier-to-entry associated fundamentally with wielding standard econometric modeling frameworks, while nonetheless preserving unyielding, absolute mathematical rigor underneath the presentation tier. 
+The primary goal of this project was to build an accessible econometric dashboard that lowers the barrier-to-entry for using standard forecasting models, while preserving mathematical rigor. 
 
 \subsection{Functional Operational Requirements}
 \begin{enumerate}
-    \item \textbf{Dynamic Universal Ingestion:} The localized system must intuitively ingest, parse, and structurally process internal localized, comma-separated values (CSV) files capable of harboring massive temporal boundaries without simultaneously mandating remote SQL database tables.
+    \item \textbf{Dynamic Universal Ingestion:} The system must parse and process comma-separated values (CSV) files containing large time-series datasets without requiring remote SQL database tables.
     \item \textbf{Extensible Algorithmic Capabilities:} The application frontend must provide centralized interaction across numerous distinct statistical pathways simultaneously, scaling from standard Simple Moving Averages to Autoregressive matrices natively.
-    \item \textbf{Algorithmic Epoch Detection Execution:} The centralized compute backend must mathematically flag, evaluate, and highlight finite isolated historical epochs that definitively mark fundamental severe macroeconomic failure parameters.
+    \item \textbf{Algorithmic Epoch Detection Execution:} The backend must detect and highlight historical periods that indicate significant macroeconomic structural breaks.
     \item \textbf{Generative Human AI Synthesis Integration:} Real-time integration of a restrictive deterministic Large Language Model (LLM) pipeline expressly structured to ingest Root Mean Squared Error (RMSE) arrays and interpolate differences into grammatical summaries.
 \end{enumerate}
 
@@ -30,21 +30,21 @@ The defining core mandate of this academic thesis software orchestration was to 
 \draw [->, thick] (pelt) -- node[right, font=\scriptsize] {Parameter Request} (ai);
 \draw [->, thick, dashed] (ai) -- node[above, font=\scriptsize] {State Hydration} (idle);
 \end{tikzpicture}
-\caption{The Front-End State Machine Flowchart dictating explicit interface rendering boundaries. Data rigidly flows sequentially from Ingestion down through advanced structural overrides.}
+\caption{The Front-End State Machine Flowchart illustrating the interface rendering stages. Data flows sequentially from Ingestion through the processing stages.}
 \label{fig:state_machine}
 \end{figure}
 
 \section{Ergonomic User Interface Construction}
-Econometric software notoriously forces operators to wade through deeply hostile User Interfaces (UIs) overloaded with hyper-dense control grids, parameter matrices, and overwhelming multi-window popups. 
+Econometric software notoriously forces operators to navigate complex User Interfaces (UIs) overloaded with dense control grids, parameter matrices, and overwhelming multi-window popups. 
 
-To surgically invert this antiquated design ideology, the application UI was fundamentally constructed utilizing a \textbf{Progressive Dark-Mode Aesthetic}. Modeled intrinsically after ultra-premium institutional environments (e.g., Bloomberg Professional Terminals or algorithmic cryptocurrency exchanges), the localized dark color palette severely minimizes optical fatigue during prolonged analytical sessions, fundamentally prioritizing the vibrancy of the illuminated SVG data-vectors.
+To address this conventional design approach, the application UI was constructed utilizing a \textbf{Progressive Dark-Mode Aesthetic}. Modeled after professional institutional environments (e.g., Bloomberg Professional Terminals or algorithmic cryptocurrency exchanges), the dark color palette reduces eye strain during prolonged analytical sessions, prioritizing the visibility of the data visualization elements.
 
 \subsection{Physical Layout Topology}
-The React DOM tree is physically structured into three specialized interactive hemispheres:
+The React DOM tree is structured into three main sections:
 \begin{enumerate}
-    \item \textbf{The Top Header Navigation:} Houses the primary `File Upload` binary input mechanism natively integrated alongside core environmental system states. By minimizing the ingestion UI to a minimal top-bar sequence, immense vertical screen reality is mathematically preserved for charting execution.
-    \item \textbf{The Central Mathematical Canvas:} The physical nexus of the application. More than 65\% of the active viewport is strictly reserved for the Chart.js Canvas Cartesian map, ensuring high-fidelity interaction devoid of screen cramping.
-    \item \textbf{The Analytical Side-Panel Drawer:} A sophisticated vertical toggle matrix occupying the right-hand bound of the environment. Features three exclusive tabs: The \textit{AI Analyst} tier, the \textit{Control Parameter} statistics readout layer, and the raw \textit{Mathematical Array} inspection table.
+    \item \textbf{The Top Header Navigation:} Houses the file upload input alongside core application controls. Keeping the header compact maximises the vertical space available for the chart area.
+    \item \textbf{The Central Mathematical Canvas:} The central element of the application. More than 65\% of the active viewport is reserved for the Chart.js Canvas Cartesian map, ensuring high-fidelity interaction devoid of screen cramping.
+    \item \textbf{The Analytical Side-Panel Drawer:} A collapsible panel on the right side of the interface. Features three tabs: the \textit{AI Analyst} view, the \textit{Control Parameter} statistics panel, and the raw \textit{Mathematical Array} inspection table.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -54,7 +54,7 @@ The React DOM tree is physically structured into three specialized interactive h
     \label{fig:ui_overview}
 \end{figure}
 
-This rigid physical layout topology drastically drops cognitive load. Operators innately understand that input parameters occur vertically atop the environment, central canvas manipulations dictate active visualizations, and the right-hand drawer exists strictly to consume generated logical consequences.
+This layout reduces cognitive load. Users can intuitively locate input controls at the top, the main chart in the centre, and analytical results in the right-hand drawer.
 
 \begin{figure}[H]
 \centering
@@ -96,21 +96,21 @@ This rigid physical layout topology drastically drops cognitive load. Operators 
 \end{figure}
 
 \section{Data Presentation and the HTML5 Canvas Visualization Paradigm}
-Rasterized image transmissions (for instance, commanding standard visualization libraries to construct a basic non-interactive \texttt{.png} file utilizing the standard \texttt{matplotlib} pipeline prior to transferring the crude byte block physically across HTTP network nodes) unequivocally violate UI principles. Resultant raster graphics are mathematically deceased; they operate as immutable image blocks that absolutely prohibit fundamental interactive browser DOM coordinate actions.
+Rasterized image transmissions (for instance, commanding standard visualization libraries to construct a basic non-interactive \texttt{.png} file utilizing the standard \texttt{matplotlib} pipeline prior to transferring the byte block across HTTP network nodes) violate modern UI principles. Resultant raster graphics are static; they operate as immutable image blocks that prohibit interactive browser DOM coordinate actions.
 
-Consequently, the core Cartesian modeling layout within the layout grid is governed radically via the deployment of \textbf{\texttt{Chart.js}}, a thoroughly optimized, HTML5 Canvas analytical dependency.
+Consequently, the core Cartesian modeling layout within the layout grid is built using \textbf{\texttt{Chart.js}}, an optimized HTML5 Canvas visualization library.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{thesis_images/segment_forecast.png}
-    \caption{The implementation of Canvas layouts portraying absolute mathematical data variance. Red Epoch Shocks slice the white temporal plane seamlessly.}
+    \caption{The Canvas chart displaying mathematical data variance. Red vertical lines mark detected structural breaks on the timeline.}
     \label{fig:recharts_pelts}
 \end{figure}
 
-As visibly demonstrated within Figure \ref{fig:recharts_pelts}, a highly sophisticated graphic color psychology meticulously controls the primary HTML5 Canvas rendering engine. When the interacting user explicitly forces a Segmented Mathematical Override implementation, the secondary green dashed projection implicitly visually competes directly alongside the original standard global prediction (blue). 
+As shown in Figure \ref{fig:recharts_pelts}, a consistent color scheme is applied to the Canvas chart. When the user triggers a segmented forecast, the new green dashed projection is displayed alongside the original global prediction (blue). 
 
 \section{Backend Object-Oriented Service Architecture}
-To guarantee enterprise-grade maintainability and testability, the Node.js API environment strictly adheres to the \textbf{SOLID principles of Object-Oriented Design}, specifically prioritizing the \textit{Single Responsibility Principle (SRP)}. Rather than congesting the Express routing middleware with thousands of lines of explicit mathematical calculations, the system was physically decoupled into Singleton Service structural classes. 
+To promote maintainability and testability, the Node.js API environment adheres to the \textbf{SOLID principles of Object-Oriented Design}, specifically prioritizing the \textit{Single Responsibility Principle (SRP)}. Rather than embedding mathematical calculations directly in the Express routing middleware, the system was separated into dedicated Service classes. 
 
 \begin{figure}[H]
 \centering
@@ -161,10 +161,10 @@ To guarantee enterprise-grade maintainability and testability, the Node.js API e
 \label{fig:uml_backend_classes}
 \end{figure}
 
-By rigidly enforcing this \textbf{Router-Service implementation}, the operational logic is totally secluded from the HTTP transportation protocol. The \texttt{ForecastService} mathematically focuses exclusively on generating temporal arrays, completely unaware that it is operating via a web server. The \texttt{ChangePointService} encapsulates all the intense mathematical PELT algorithms logically, structurally protecting the public API while executing complex mathematics flawlessly inside the V8 engine. Finally, the \texttt{AIService} encapsulates the rigid Google SDK bindings, formatting raw arrays into explicit deterministic strings. If the overarching application were ever migrated from Express.js to a drastically different protocol (such as WebSockets or remote gRPC bindings), these fundamental core arithmetic services would remain completely computationally sound, 100\% untouched, and perfectly functional.
+By enforcing this \textbf{Router-Service implementation}, the business logic is decoupled from the HTTP layer. The \texttt{ForecastService} focuses exclusively on generating temporal arrays, unaware that it is operating behind a web server. The \texttt{ChangePointService} encapsulates all PELT algorithms, keeping the public API separate from the mathematical computation inside the V8 engine. Finally, the \texttt{AIService} encapsulates the Google SDK bindings, formatting raw arrays into deterministic prompt strings. If the application were ever migrated from Express.js to a different protocol (such as WebSockets or gRPC), these core services would remain unchanged and fully functional.
 
 \section{Executing Mathematical Prediction Algorithms via Core JavaScript}
-To thoroughly defend critical architectural application latency standards against severe computational bottleneck degradation, multiple routine linear forecasting sub-operations were explicitly coded straight into the core local Node.js compilation context.
+To minimise latency, multiple forecasting operations were implemented directly in Node.js.
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Physical For-Loop Computation Execution for Simple Exponential Smoothing, label=lst:ses_loop]
@@ -188,10 +188,10 @@ exponentialSmoothing(data, periods, alpha) {
 \end{lstlisting}
 \end{minipage}
 
-Guaranteeing foundational equations (Listing \ref{lst:ses_loop}) natively resolve securely and dynamically utilizing the aggressively optimized Google Chrome V8 interpreter definitively enables real-time capability. When frontend browser operators forcefully yank digital slide controllers dynamically sliding quantitative parameters across variable axis thresholds, iterative recalculations rapidly traverse hundreds of integrated matrices practically instantaneously.
+Guaranteeing foundational equations (Listing \ref{lst:ses_loop}) natively resolve within the optimized Google Chrome V8 interpreter enables real-time capability. When frontend browser operators adjust slider controls across variable axis thresholds, iterative recalculations traverse hundreds of integrated matrices practically instantaneously.
 
 \section{Pruned Exact Linear Time (PELT) Boundary Shock Injections}
-Standard macroscopic analytical global evaluation architectures inextricably share a devastating central defect: toxic temporal data contamination feedback loops. To definitively resolve mathematical data pollution, the software infrastructure integrated external bindings bridging toward the empirically verified \textbf{Pruned Exact Linear Time (PELT)} detection method structure. 
+Standard global evaluation approaches share a fundamental limitation: temporal data contamination. To address this, the software infrastructure integrated the empirically verified \textbf{Pruned Exact Linear Time (PELT)} detection method. 
 
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=The Native JavaScript PELT Optimization Algorithm executed natively by V8, label=lst:js_pelt]
@@ -222,12 +222,12 @@ for (let t = 1; t <= n; t++) {
 
 The explicit logic inside Listing \ref{lst:js_pelt} tests millions of hypothetical coordinate division fragments natively until absolute statistical divergence margins are undeniably verified utilizing advanced \textbf{Bayesian Information Criterion (BIC)} parameters. 
 
-This structural imposition is not merely an aesthetic choice; it is an absolute mathematical necessity. By evaluating the entire signal historically through the BIC, the algorithm structurally penalizes overly simplistic linear regressions while simultaneously suppressing volatile hyper-fragmentation. This specifically prevents the algorithm from hallucinating a "structural macroeconomic crash" simply because a minor localized seasonal fluctuation occurred within the dataset. Thus, the V8 telemetry engine only triggers a formal rupture output if the raw physical integrity of the historical epoch is fundamentally compromised.
+This structural imposition is not merely an aesthetic choice; it is an absolute mathematical necessity. By evaluating the entire signal historically through the BIC, the algorithm structurally penalizes overly simplistic linear regressions while simultaneously suppressing volatile hyper-fragmentation. This specifically prevents the algorithm from hallucinating a "structural macroeconomic crash" simply because a minor localized seasonal fluctuation occurred within the dataset. Thus, the V8 engine only flags a change point if the statistical structure of the data has genuinely shifted.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{thesis_images/change_points.png}
-    \caption{The implementation of the V8 JS PELT algorithm identifying catastrophic trend fractures mathematically, rendering literal red indicator lines exclusively inside high-variance windows.}
+    \caption{The PELT algorithm identifying significant structural breaks, rendered as red indicator lines within high-variance windows.}
     \label{fig:pelt_ruptures}
 \end{figure}
 
@@ -236,8 +236,8 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 \begin{tikzpicture}[x=2.2cm, y=-1.3cm, every node/.style={font=\sffamily\scriptsize}]
 % Actor / Lifelines
 \node (client) at (0,0) [draw, rectangle, fill=blue!10, minimum width=2cm, minimum height=0.6cm] {React Client};
-\node (server) at (2,0) [draw, rectangle, fill=orange!10, minimum width=2cm, minimum height=0.6cm] {Node.js Express};
-\node (python) at (4,0) [draw, rectangle, fill=green!10, minimum width=2cm, minimum height=0.6cm] {Math Service};
+\node (server) at (2,0) [draw, rectangle, fill=orange!10, minimum width=2cm, minimum height=0.6cm] {Express Router};
+\node (service) at (4,0) [draw, rectangle, fill=green!10, minimum width=2.4cm, minimum height=0.6cm] {ChangePointService};
 
 % Lifeline dashed drops
 \draw [dashed] (0,0.3) -- (0,5.5);
@@ -251,14 +251,14 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 
 % Messages
 \draw [->, thick] (0.1,1) -- node[above] {POST /api/analyze} (1.9,1);
-\draw [->, thick] (2.1,1.5) -- node[above] {calculatePelt()} (3.9,1.5);
-\draw [->, thick, dashed] (2.1,2) -- node[above] {pass\_by\_ref(Matrix)} (3.9,2);
+\draw [->, thick] (2.1,1.5) -- node[above] {pelt(dataMatrix)} (3.9,1.5);
+\draw [->, thick, dashed] (2.1,2) -- node[above] {Execute via V8} (3.9,2);
 
 % Computation Node
 \node [draw, rectangle, rounded corners, fill=yellow!10, minimum width=1.5cm, align=center] at (4,3) {Calculate \\ Bayesian Limit};
 
-\draw [->, thick, dashed] (3.9,4) -- node[above] {return Array[Breaks]} (2.1,4);
-\draw [->, thick] (4.1,4.5) -- node[right, font=\tiny] {Exit} (4.1,4.8); % Self exit
+\draw [->, thick, dashed] (3.9,4) -- node[above] {return \{changePoints\}} (2.1,4);
+\draw [->, thick] (4.1,4.5) -- node[right, font=\tiny] {Exit Loop} (4.1,4.8); % Self exit
 \draw [->, thick, dashed] (1.9,5) -- node[above] {HTTP 200 OK} (0.1,5);
 
 \end{tikzpicture}
@@ -267,19 +267,19 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 \end{figure}
 
 \section{The Intelligent Segment Data Execution Layer}
-Provided explicitly via exact mathematical coordinate parameters proving precisely where an external macro-environmental historical crash completely wrecked continuous trends, the backend codebase securely triggers its central thesis implementation feature: \textbf{Definitive Mathematical Segmentation Orchestration}.
+Using the change point coordinates identified by the PELT algorithm, the backend triggers the core feature of this thesis: \textbf{Segmented Forecasting}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{thesis_images/rmse.png}
-    \caption{The UI rendering explicit statistical variances, establishing the overwhelming reduction of Root Mean Squared Errors caused directly by truncating obsolete data trajectories utilizing PELT integration.}
+    \caption{The UI rendering explicit statistical variances, establishing the reduction of Root Mean Squared Errors caused by truncating obsolete data trajectories utilizing PELT integration.}
     \label{fig:rmse_table}
 \end{figure}
 
-When activated, specialized routines immediately rip apart the target historical timeline. Evaluated strictly post the final identified integer rupture breakpoint, obsolete pre-shock temporal data blocks are physically eradicated from operational core calculation memory buffers. Visibly captured above in Figure \ref{fig:rmse_table}, implementing this dynamic fragmentation methodology explicitly proves undeniable quantitative superiority—plummeting empirical global Root Mean Squared Error calculation metrics.
+When activated, specialized routines partition the historical timeline. Evaluated from the final identified rupture breakpoint onward, pre-shock temporal data blocks are removed from the active calculation buffer. As shown in Figure \ref{fig:rmse_table}, implementing this segmentation methodology yields measurable improvement---reducing empirical Root Mean Squared Error metrics.
 
 \section{Google Gemini Integration Pipeline Mechanics}
-Modernizing econometric software necessitates addressing non-technical stakeholder comprehension speeds. It is insufficient simply generating raw scalar metrics. Consequently, the Google Gemini API functions natively directly inside the backend proxy matrix as the ultimate application layer interpreter.
+Modernizing econometric software necessitates addressing user comprehension efficiency. It is insufficient to generate raw scalar metrics. Consequently, the Google Gemini API functions directly within the backend proxy matrix as the application layer interpreter.
 
 \begin{lstlisting}[language=JavaScript, caption=Explicit Constraint Modeling System Prompt Parameters, label=lst:gemini_engine]
 const response = await this.ai.models.generateContent({
@@ -310,7 +310,7 @@ const response = await this.ai.models.generateContent({
 \draw [->, thick, dashed] (gemini) -- node[below=0.1cm, fill=none, font=\scriptsize, align=center] {Deterministic \\ Markdown} (react);
 \draw [<-, thick] (nodeAPI) -- node[left=0.1cm, fill=none, font=\scriptsize, align=center] {User HTTPS \\ Trigger} (react);
 \end{tikzpicture}
-\caption{The Generative AI Telemetry Pipeline forcing extreme systematic adherence to mathematical constraints prior to rendering conclusions back to the operator.}
+\caption{The Generative AI Processing Pipeline. Mathematical constraints are enforced before rendering conclusions to the operator.}
 \label{fig:ai_telemetry}
 \end{figure}
 
@@ -324,19 +324,19 @@ Generating Language Models lacks default structural bounds, invoking significant
 \end{figure}
 
 \subsection{Prompt Engineering and Contextual Framing}
-While the physical integration of a Large Language Model (LLM) provides extraordinary interpretative power, raw Artificial Intelligence models are inherently chaotic. If a non-expert user or executive simply fed a massive spreadsheet of raw floating-point numbers into a generic AI without explicit constraints, the AI might unpredictably hallucinate financial trading advice, generate irrelevant historical trivia, or refuse to answer. Therefore, the application strictly utilizes a theoretical computer science concept known as \textbf{Prompt Engineering} to permanently weld invisible, hard-coded guardrails around the generation engine. 
+While integrating a Large Language Model (LLM) provides strong interpretive capabilities, unconstrained AI models can produce unreliable outputs. If a user submits raw numerical data to a generic AI without guidelines, it may generate inaccurate financial advice, irrelevant commentary, or refuse to answer. Therefore, the application uses \textbf{Prompt Engineering} to impose structured constraints on the generation engine. 
 
-Prompt Engineering is the architectural act of writing explicit, programmatic boundary instructions that the AI is physically forced to obey \textit{before} it is allowed to evaluate the mathematical data. To guarantee that stakeholders receive exclusively professional econometric insights, the Node.js backend server autonomously constructs three highly specific prompt architectures based exactly on the user's current graphical context:
+Prompt Engineering is the practice of writing explicit, programmatic boundary instructions that the AI is required to follow \textit{before} it evaluates the mathematical data. To ensure that end users receive professional econometric insights, the Node.js backend constructs three specific prompt templates based on the user's current context:
 
 \begin{itemize}
-    \item \textbf{The Global Overview Payload:} When a user first visualizes a dataset, the system stealthily injects an instruction overriding the AI's default personality: "\textit{You are a strict data assistant. Analyze this global trend using the provided array. Explain the absolute numerical differences in exactly two sentences. Warn the user of negative boundaries immediately. Do not offer financial advice.}" This rigidly restricts the neural network to explaining standard deviations and moving averages, entirely stripping its ability to hallucinate reckless market predictions.
+    \item \textbf{The Global Overview Payload:} When a user first visualizes a dataset, the system programmatically injects an instruction overriding the AI's default personality: "\textit{You are a strict data assistant. Analyze this global trend using the provided array. Explain the absolute numerical differences in exactly two sentences. Warn the user of negative boundaries immediately. Do not offer financial advice.}" This restricts the neural network to explaining standard deviations and moving averages, preventing it from generating unsupported market predictions.
     
-    \item \textbf{The Structural Breakpoint Payload:} If the natively integrated JavaScript PELT algorithm detects a catastrophic trajectory shock (e.g., a stock market crash), the AI pipeline is instantly swapped to a targeted prompt: "\textit{A definitive structural mathematical break has occurred exactly at this specific index. Evaluate the extreme variance within this isolated window.}" This ensures the AI specifically discusses the violent volatility of the temporal crash, rather than getting distracted summarizing the overall 10-year graph.
+    \item \textbf{The Structural Breakpoint Payload:} If the natively integrated JavaScript PELT algorithm detects a significant trajectory shift (e.g., a stock market crash), the AI pipeline is instantly swapped to a targeted prompt: "\textit{A definitive structural mathematical break has occurred exactly at this specific index. Evaluate the extreme variance within this isolated window.}" This ensures the AI specifically discusses the heightened volatility of the temporal event, rather than summarizing the overall 10-year graph.
     
-    \item \textbf{The Segmented Trend Payload:} When the operator interactively slices the data to delete the obsolete pre-shock coordinates, the AI receives its most restrictive instruction: "\textit{Compare the Root Mean Squared Error (RMSE) of the original global forecast versus this new isolated segmented forecast. Explicitly calculate and state the percentage of accuracy gained.}" This forcefully commands the AI to validate the user's graphical decision quantitatively, providing absolute mathematical reassurance to a non-expert operator that recalculating the data was objectively correct.
+    \item \textbf{The Segmented Trend Payload:} When the operator interactively slices the data to delete the obsolete pre-shock coordinates, the AI receives its most restrictive instruction: "\textit{Compare the Root Mean Squared Error (RMSE) of the original global forecast versus this new isolated segmented forecast. Explicitly calculate and state the percentage of accuracy gained.}" This directs the AI to validate the user's graphical decision quantitatively, providing mathematical confirmation to a non-expert operator that recalculating the data was objectively correct.
 \end{itemize}
 
-By structurally embedding these invisible contextual frames securely on the backend server, the front-end operator is never forced to ``chat'' with the AI natively or learn how to write complex prompts themselves. The system autonomously acts as an impenetrable mediator, mathematically ensuring the Generative LLM functions exclusively as a focused, deterministic econometric calculator.
+By structurally embedding these invisible contextual frames securely on the backend server, the front-end operator is never forced to ``chat'' with the AI natively or learn how to write complex prompts themselves. The system autonomously acts as a transparent mediator, ensuring the Generative LLM functions exclusively as a focused, deterministic econometric interpreter.
 
 \section{Extended Analytical Capabilities}
 Beyond the core forecasting and change-point pipeline, the application implements a suite of extended analytical tools that significantly broaden its utility for econometric research without increasing cognitive load on the operator. These features are deliberately accessible through collapsible panels and a persistent toolbar, ensuring the primary canvas always remains the visual focal point.
