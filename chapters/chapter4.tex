@@ -44,13 +44,13 @@ The React DOM tree is structured into three main sections:
 \begin{enumerate}
     \item \textbf{The Top Header Navigation:} Houses the file upload input alongside core application controls. Keeping the header compact maximises the vertical space available for the chart area.
     \item \textbf{The Central Mathematical Canvas:} The central element of the application. More than 65\% of the active viewport is reserved for the Chart.js Canvas Cartesian map, ensuring high-fidelity interaction devoid of screen cramping.
-    \item \textbf{The Analytical Side-Panel Drawer:} A collapsible panel on the right side of the interface. Features three tabs: the \textit{AI Analyst} view, the \textit{Control Parameter} statistics panel, and the raw \textit{Mathematical Array} inspection table.
+    \item \textbf{The Analytical Side-Panel Drawer:} A collapsible panel on the right side of the interface. Features three tabs: the \textit{AI Analyst} view, the \textit{Stats} statistics panel, and the raw \textit{Data Table} inspection view.
 \end{enumerate}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{thesis_images/ui_design.png}
-    \caption{The overall physical architecture of the UI viewport. The dark layout emphasizes the vivid neon Canvas layouts centrally, while explicitly docking analytical capabilities inside the collapsible right-sided navigation drawer.}
+    \caption{The overall physical architecture of the UI viewport during the earlier stages of development. The dark layout emphasizes the central workspace, while docking configuration panels and statistics inside the right-sided panel.}
     \label{fig:ui_overview}
 \end{figure}
 
@@ -63,27 +63,27 @@ This layout reduces cognitive load. Users can intuitively locate input controls 
 \node (app) [draw, rectangle, fill=blue!5, minimum width=4.5cm, minimum height=2cm, text width=4.1cm] {
     \textbf{$\langle\langle$Root$\rangle\rangle$ App::React.FC} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    - state: TimeSeriesData \\ - session: StorageCache \\
+    - timeSeriesData: TimeSeriesData \\ - sessionStorage: Storage \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + handleUpload() \\ + triggerAIAnalysis()
+    + handleFileUpload() \\ + handleClearData()
 };
 
 \node (nav) [draw, rectangle, fill=gray!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below left=1.5cm and 0cm of app] {
-    \textbf{NavigationPanel} \\
+    \textbf{FileUpload} \\
     \rule{\linewidth}{0.4pt}
-    + uploadCSV() \\ + selectColumns()
+    + onFileUpload() \\ + loading: boolean
 };
 
 \node (chart) [draw, rectangle, fill=green!5, minimum width=4cm, minimum height=1.5cm, text width=3.6cm, below=2cm of app] {
     \textbf{ForecastChart} \\
     \rule{\linewidth}{0.4pt}
-    + renderCanvas() \\ + plotPeltBoundaries()
+    + buildOptions() \\ + buildAnnotations()
 };
 
 \node (ai) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=1.5cm, text width=3.1cm, below right=1.5cm and 0cm of app] {
     \textbf{AIAnalysisPanel} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + digestMarkdown() \\ + triggerHydration()
+    + handleGenerate() \\ + MarkdownRenderer()
 };
 
 % Associations (Composition/Aggregation arrows)
@@ -94,7 +94,7 @@ This layout reduces cognitive load. Users can intuitively locate input controls 
 \caption{UML Class Diagram illustrating the React Structural Composition. The \texttt{App} root component securely aggregates all specialized sub-modules utilizing rigid, isolated TypeScript interfaces to prevent variable contamination.}
 \label{fig:uml_class}
 \end{figure}
-
+ 
 \section{Data Presentation and the HTML5 Canvas Visualization Paradigm}
 Rasterized image transmissions (for instance, commanding standard visualization libraries to construct a basic non-interactive \texttt{.png} file utilizing the standard \texttt{matplotlib} pipeline prior to transferring the byte block across HTTP network nodes) violate modern UI principles. Resultant raster graphics are static; they operate as immutable image blocks that prohibit interactive browser DOM coordinate actions.
 
@@ -103,11 +103,11 @@ Consequently, the core Cartesian modeling layout within the layout grid is built
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{thesis_images/segment_forecast.png}
-    \caption{The Canvas chart displaying mathematical data variance. Red vertical lines mark detected structural breaks on the timeline.}
+    \caption{The HTML5 Canvas chart displaying a global Moving Average forecast alongside historical actual data and its corresponding 95\% confidence interval bands.}
     \label{fig:recharts_pelts}
 \end{figure}
-
-As shown in Figure \ref{fig:recharts_pelts}, a consistent color scheme is applied to the Canvas chart. When the user triggers a segmented forecast, the new green dashed projection is displayed alongside the original global prediction (blue). 
+ 
+As shown in Figure \ref{fig:recharts_pelts}, a consistent color scheme is applied to the Canvas chart. The interface renders the historical actual data in blue, the projected global forecast line in purple, and the fitted values in gray, surrounded by the semi-transparent 95\% confidence interval boundaries. 
 
 \section{Backend Object-Oriented Service Architecture}
 To promote maintainability and testability, the Node.js API environment adheres to the \textbf{SOLID principles of Object-Oriented Design}, specifically prioritizing the \textit{Single Responsibility Principle (SRP)}. Rather than embedding mathematical calculations directly in the Express routing middleware, the system was separated into dedicated Service classes. 
@@ -121,7 +121,7 @@ To promote maintainability and testability, the Node.js API environment adheres 
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
     \textit{- upload: MulterInstance} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    \textit{+ post(/analyze)} \qquad \textit{+ handleMultipartForm()}
+    \textit{+ post(/calculate)} \qquad \textit{+ post(/changepoints)}
 };
 
 % Three service nodes below
@@ -129,27 +129,26 @@ To promote maintainability and testability, the Node.js API environment adheres 
     below=1.5cm of router] {
     \textbf{ChangePointService} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + calculatePeltNative() \\
-    + fastCost()~O(1) \\
-    - pruneCandidates()
+    + pelt() \\
+    + segmentStats() \\
+    - segmentForecast()
 };
 
 \node (forecastService) [draw, rectangle, fill=blue!5, minimum width=3.5cm, minimum height=2cm, text width=3.1cm,
     left=0.5cm of peltService] {
     \textbf{ForecastService} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + calculateHoltWinters() \\
-    + calculateNaive() \\
-    - formatOutputMatrix()
+    + holtsWinters() \\
+    + arima() \\
+    + exponentialSmoothing()
 };
 
 \node (aiService) [draw, rectangle, fill=purple!5, minimum width=3.5cm, minimum height=2cm, text width=3.1cm,
     right=0.5cm of peltService] {
     \textbf{AIService} \\
     \rule{\linewidth}{0.4pt}\vspace{0.5mm}
-    + constructPrompt() \\
-    + generateContent() \\
-    - enforceDeterminism()
+    + generateAnalysis() \\
+    - \_initializeAPI()
 };
 
 % Dependency injection arrows
@@ -166,6 +165,7 @@ By enforcing this \textbf{Router-Service implementation}, the business logic is 
 \section{Executing Mathematical Prediction Algorithms via Core JavaScript}
 To minimise latency, multiple forecasting operations were implemented directly in Node.js.
 
+\vspace{1em}
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Physical For-Loop Computation Execution for Simple Exponential Smoothing, label=lst:ses_loop]
 exponentialSmoothing(data, periods, alpha) {
@@ -193,6 +193,7 @@ Guaranteeing foundational equations (Listing \ref{lst:ses_loop}) natively resolv
 \section{Pruned Exact Linear Time (PELT) Boundary Shock Injections}
 Standard global evaluation approaches share a fundamental limitation: temporal data contamination. To address this, the software infrastructure integrated the empirically verified \textbf{Pruned Exact Linear Time (PELT)} detection method. 
 
+\vspace{1em}
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=The Native JavaScript PELT Optimization Algorithm executed natively by V8, label=lst:js_pelt]
 // O(1) OLS-residual cost for segment [s, e] via prefix sums
@@ -227,7 +228,7 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{thesis_images/change_points.png}
-    \caption{The PELT algorithm identifying significant structural breaks, rendered as red indicator lines within high-variance windows.}
+    \caption{The PELT algorithm identifying significant structural breaks, rendered as yellow indicator lines within high-variance windows.}
     \label{fig:pelt_ruptures}
 \end{figure}
 
@@ -240,29 +241,27 @@ This structural imposition is not merely an aesthetic choice; it is an absolute 
 \node (service) at (4,0) [draw, rectangle, fill=green!10, minimum width=2.4cm, minimum height=0.6cm] {ChangePointService};
 
 % Lifeline dashed drops
-\draw [dashed] (0,0.3) -- (0,5.5);
-\draw [dashed] (2,0.3) -- (2,5.5);
-\draw [dashed] (4,0.3) -- (4,5.5);
+\draw [dashed] (0,0.3) -- (0,5.0);
+\draw [dashed] (2,0.3) -- (2,5.0);
+\draw [dashed] (4,0.3) -- (4,5.0);
 
 % Activation boxes
-\draw [fill=blue!20] (-0.1,1) rectangle (0.1,5);
-\draw [fill=orange!20] (1.9,1) rectangle (2.1,5);
-\draw [fill=green!20] (3.9,1.5) rectangle (4.1,4.5);
+\draw [fill=blue!20] (-0.1,1) rectangle (0.1,4.5);
+\draw [fill=orange!20] (1.9,1) rectangle (2.1,4.5);
+\draw [fill=green!20] (3.9,1.5) rectangle (4.1,3.5);
 
 % Messages
-\draw [->, thick] (0.1,1) -- node[above] {POST /api/analyze} (1.9,1);
-\draw [->, thick] (2.1,1.5) -- node[above] {pelt(dataMatrix)} (3.9,1.5);
-\draw [->, thick, dashed] (2.1,2) -- node[above] {Execute via V8} (3.9,2);
+\draw [->, thick] (0.1,1) -- node[above] {POST /api/forecast/changepoints} (1.9,1);
+\draw [->, thick] (2.1,1.5) -- node[above] {pelt(data, penalty)} (3.9,1.5);
 
-% Computation Node
-\node [draw, rectangle, rounded corners, fill=yellow!10, minimum width=1.5cm, align=center] at (4,3) {Calculate \\ Bayesian Limit};
+% Self-call / Internal Loop on Service
+\draw [->, thick] (4.1,2.0) -- ++(0.3,0) -- ++(0,0.8) -- node[right, align=left, font=\tiny] {Run PELT Search\\\& Calculate BIC\\Penalty} (4.1,2.8);
 
-\draw [->, thick, dashed] (3.9,4) -- node[above] {return \{changePoints\}} (2.1,4);
-\draw [->, thick] (4.1,4.5) -- node[right, font=\tiny] {Exit Loop} (4.1,4.8); % Self exit
-\draw [->, thick, dashed] (1.9,5) -- node[above] {HTTP 200 OK} (0.1,5);
+\draw [->, thick, dashed] (3.9,3.5) -- node[above] {return \{changePoints\}} (2.1,3.5);
+\draw [->, thick, dashed] (1.9,4.5) -- node[above] {HTTP 200 OK} (0.1,4.5);
 
 \end{tikzpicture}
-\caption{UML Sequence Diagram demonstrating the strict synchronous request lifecycle. The Express API perfectly halts the HTTP handshake, natively iterating the PELT matrix via imported Service Modules, before returning the boundaries and concluding the packet.}
+\caption{UML Sequence Diagram demonstrating the strict request lifecycle. The Express API handles the HTTP handshake, executing the PELT algorithm via the imported Service Module, before returning the boundaries and concluding the packet.}
 \label{fig:uml_sequence}
 \end{figure}
 
@@ -284,13 +283,10 @@ Modernizing econometric software necessitates addressing user comprehension effi
 \begin{lstlisting}[language=JavaScript, caption=Explicit Constraint Modeling System Prompt Parameters, label=lst:gemini_engine]
 const response = await this.ai.models.generateContent({
   model: 'gemini-2.5-flash',
-  contents: structuredMathematicalPayload,
+  contents: userPrompt,
   config: {
-    systemInstruction: `You are a strict data assistant. Evaluate the explicit 
-    arrays given to you. In exactly 2 sentences, explain the absolute numerical 
-    differences. Crucially, strictly state if this trend is capable of existing 
-    in reality. Warn the user of negative boundaries immediately.`,
-    temperature: 0.0, // Full determinism: greedy decoding only
+    systemInstruction: systemPrompt,
+    temperature: 0.0, // Limit for analytical consistency
   }
 });
 \end{lstlisting}
@@ -329,11 +325,11 @@ While integrating a Large Language Model (LLM) provides strong interpretive capa
 Prompt Engineering is the practice of writing explicit, programmatic boundary instructions that the AI is required to follow \textit{before} it evaluates the mathematical data. To ensure that end users receive professional econometric insights, the Node.js backend constructs three specific prompt templates based on the user's current context:
 
 \begin{itemize}
-    \item \textbf{The Global Overview Payload:} When a user first visualizes a dataset, the system programmatically injects an instruction overriding the AI's default personality: "\textit{You are a strict data assistant. Analyze this global trend using the provided array. Explain the absolute numerical differences in exactly two sentences. Warn the user of negative boundaries immediately. Do not offer financial advice.}" This restricts the neural network to explaining standard deviations and moving averages, preventing it from generating unsupported market predictions.
+    \item \textbf{The Global Overview Payload:} When a user first visualizes a dataset, the system programmatically injects an instruction overriding the AI's default personality: "\textit{You are a helpful data assistant. Write a very simple, 1-paragraph summary of the forecasting results. Just state what the data is doing, how many structural breaks there were, and if a Segmented forecast is provided, which model was more accurate based on RMSE. Conclude with a plain English sentence explaining the final projected value and explicitly evaluate if this result is realistic.}" This restricts the neural network to explaining standard deviations and moving averages, preventing it from generating unsupported market predictions.
     
-    \item \textbf{The Structural Breakpoint Payload:} If the natively integrated JavaScript PELT algorithm detects a significant trajectory shift (e.g., a stock market crash), the AI pipeline is instantly swapped to a targeted prompt: "\textit{A definitive structural mathematical break has occurred exactly at this specific index. Evaluate the extreme variance within this isolated window.}" This ensures the AI specifically discusses the heightened volatility of the temporal event, rather than summarizing the overall 10-year graph.
+    \item \textbf{The Structural Breakpoint Payload:} If the natively integrated JavaScript PELT algorithm detects a significant trajectory shift, the AI pipeline is instantly swapped to a targeted prompt: "\textit{You are a critical economic analyst. For EACH break date provided, write exactly ONE bullet point briefly naming the most likely real-world economic event or shock that caused the regime change, and state how the trend shifted.}" This ensures the AI specifically discusses the heightened volatility of the temporal event, rather than summarizing the overall 10-year graph.
     
-    \item \textbf{The Segmented Trend Payload:} When the operator interactively slices the data to delete the obsolete pre-shock coordinates, the AI receives its most restrictive instruction: "\textit{Compare the Root Mean Squared Error (RMSE) of the original global forecast versus this new isolated segmented forecast. Explicitly calculate and state the percentage of accuracy gained.}" This directs the AI to validate the user's graphical decision quantitatively, providing mathematical confirmation to a non-expert operator that recalculating the data was objectively correct.
+    \item \textbf{The Segmented Trend Payload:} When the operator interactively slices the data to delete the obsolete pre-shock coordinates, the AI receives its most restrictive instruction: "\textit{You are a skeptical, critical economic analyst. Your job is to rigorously evaluate whether the projected forecast is economically plausible. If a Segmented forecast exists, state which model has lower RMSE. Critically assess the projected landing value using real-world domain knowledge and sanity checks.}" This directs the AI to validate the user's graphical decision quantitatively, providing mathematical confirmation to a non-expert operator that recalculating the data was objectively correct.
 \end{itemize}
 
 By structurally embedding these invisible contextual frames securely on the backend server, the front-end operator is never forced to ``chat'' with the AI natively or learn how to write complex prompts themselves. The system autonomously acts as a transparent mediator, ensuring the Generative LLM functions exclusively as a focused, deterministic econometric interpreter.
@@ -359,10 +355,6 @@ Each comparison entry is computed by submitting the same historical dataset to t
 
 This feature enables operators to make evidence-based model selection decisions visually — directly observing, for example, whether an ARIMA projection diverges more aggressively from an Exponential Smoothing baseline during a structural break regime.
 
-\subsection{Date Range Filtering}
-To support analysis of specific sub-periods within a long historical series — such as isolating the post-2008 recovery or the COVID-19 shock window — the \textbf{Date Range Selector} component allows operators to constrain the active visualization window via two dropdown menus corresponding to the start and end dates of the loaded dataset.
-
-Importantly, the date range filter operates exclusively on the visualization layer: it re-slices the in-memory data array passed to the Chart.js canvas without triggering a new API request. This ensures sub-second responsiveness when panning across different temporal windows. A ``Full Range'' reset button re-appears automatically when a filter is active, allowing instant reversion to the complete dataset. The component enforces logical ordering, preventing the selection of an end date earlier than the start date.
 
 \subsection{Custom Annotation Markers}
 Beyond the algorithmically detected PELT change points, operators often need to mark specific exogenous events that are meaningful to their analysis but not mathematically detectable — such as policy announcements, central bank interventions, or geopolitical events. The \textbf{Annotation Markers} panel provides a simple form interface for adding labeled vertical line markers to any date coordinate in the dataset.
@@ -401,4 +393,4 @@ All visualization controls are consolidated within a persistent \textbf{Chart To
     \item \textbf{Export}: A one-click PNG export that calls Chart.js's \texttt{toBase64Image()} method, producing a high-resolution raster export of the current canvas state, automatically timestamped in the filename.
 \end{enumerate}
 
-The toolbar communicates exclusively via a \texttt{ToolbarState} interface managed in the root \texttt{App} component, ensuring that layer visibility changes propagate immediately to the \texttt{ForecastChart} via React's unidirectional state flow without any intermediate API calls.
+Managed inside the \texttt{Forecast\-Chart} component, the toolbar communicates exclusively via a \texttt{Toolbar\-State} interface. This design ensures that layer visibility changes propagate immediately to the visualization canvas via React's unidirectional state flow without intermediate API calls.

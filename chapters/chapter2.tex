@@ -26,7 +26,7 @@ Consequently, the Autocorrelation Function (ACF), denoted as $\rho(k)$, is the n
 Furthermore, the Partial Autocorrelation Function (PACF) isolates the direct correlation between $Y_t$ and $Y_{t-k}$ by mathematically removing the linear dependence on the intermediate lags $Y_{t-1}, Y_{t-2}, \dots, Y_{t-k+1}$. Both the ACF and PACF are critical for diagnosing the mathematical structure of the data before modeling.
 
 \section{Moving Average Models}
-The most fundamental approach to smoothing volatile data, extracting underlying signals, and establishing a baseline forecast is the Moving Average. The application implements both Simple and Weighted Moving Averages to accommodate different temporal behaviors.
+The most fundamental approach to smoothing volatile data, extracting underlying signals, and establishing a baseline forecast is the Moving Average. The application implements the Simple Moving Average, while the Weighted Moving Average is considered as a theoretical extension to accommodate different temporal behaviors.
 
 \subsection{Simple Moving Average (SMA)}
 The Simple Moving Average of order $k$, denoted $SMA(k)$, computes the unweighted arithmetic mean of the previous $k$ data points. For a time series $y_t$, the smoothed value at time $t$, which also serves as the na\"ive forecast $\hat{y}_{t+1}$, is calculated as:
@@ -41,7 +41,7 @@ To understand the smoothing effect mathematically, consider the variance of the 
 This proof demonstrates that the SMA successfully reduces the variance (noise) of the original series by a factor of $k$. However, the primary limitation of the SMA is its equal weighting and the resulting mathematical lag. Because every point in the window is weighted equally at $\frac{1}{k}$, the "center of mass" of the SMA lags the actual data by precisely $\frac{k-1}{2}$ periods. This makes the SMA notoriously slow to respond to structural breaks or rapid trend reversals.
 
 \subsection{Weighted Moving Average (WMA)}
-To mathematically mitigate the lagging effect of the SMA, the Weighted Moving Average (WMA) assigns predefined, decreasing weights to historical data points, ensuring recent data heavily influences the forecast while distant data decays. Let $w_i$ represent the weight applied to the observation $i$ periods ago, where the sum of all weights strictly equals 1: $\sum_{i=1}^{k} w_i = 1$. The formula is:
+Although not implemented in the final application, the Weighted Moving Average (WMA) represents a direct theoretical evolution and improvement over the SMA by mathematically mitigating the lagging effect. The WMA assigns predefined, decreasing weights to historical data points, ensuring recent data heavily influences the forecast while distant data decays. Let $w_i$ represent the weight applied to the observation $i$ periods ago, where the sum of all weights strictly equals 1: $\sum_{i=1}^{k} w_i = 1$. The formula is:
 \begin{equation}
     \hat{y}_{t+1} = \sum_{i=1}^{k} w_i y_{t-i+1}
 \end{equation}
@@ -179,7 +179,7 @@ The goal of a multiple change point algorithm is to jointly estimate both the nu
 \end{equation}
 where:
 \begin{itemize}
-    \item $\mathcal{C}(\cdot)$ is a predefined cost function measuring the fit of the data within a specific segment. Common cost functions include the negative log-likelihood or the residual sum of squares (variance).
+    \item $\mathcal{C}(\cdot)$ is a predefined cost function measuring the fit of the data within a specific segment. Common choices in the literature include the negative log-likelihood or the residual sum of squares assuming a constant mean within each segment (a mean-shift cost). However, for economic time series that exhibit sustained trends, the implementation in this application uses an Ordinary Least Squares (OLS) residual cost, which fits a linear trend (slope and intercept) within each segment. This detects \textit{structural breaks in trend} rather than simple mean shifts—a critical distinction, since a mean-shift cost would fragment a steadily growing series (such as GDP) into many artificially flat segments, whereas the OLS cost only introduces a break when a new slope fits significantly better (Bai and Perron, 1998).
     \item $\beta f(m)$ is a penalty term designed to guard against overfitting. Without a penalty ($\beta = 0$), the algorithm would trivially place a change point at every single data coordinate to drive the cost to zero. 
 \end{itemize}
 

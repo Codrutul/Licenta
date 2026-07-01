@@ -306,7 +306,7 @@ class ChangePointService {
       });
     }
 
-    // ── Whole-series baseline RMSE, evaluated on the LAST SEGMENT only ──────
+    // Whole-series baseline RMSE, evaluated on the LAST SEGMENT only
     // We run the model on the full data, then extract the fitted values that
     // correspond to the last segment's index range and compute RMSE there.
     // This gives an apples-to-apples comparison:

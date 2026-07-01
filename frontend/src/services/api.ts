@@ -11,8 +11,8 @@ const api = axios.create({
 
 /**
  * @interface TimeSeriesData
- * @description Central data structure representing the fully parsed historical dataset.
- * Contains both the raw coordinate arrays for plotting and computed statistical moments.
+ * @description Data structure representing the historical dataset.
+ * Contains the coordinate arrays for plotting and computed statistics.
  */
 
 export interface TimeSeriesData {
@@ -66,7 +66,7 @@ export interface ForecastResult {
 
 /**
  * @interface DecompositionResult
- * @description Represents the extraction of structural components (Trend, Seasonal, Residual) from the time series using Python's statsmodels.
+ * @description Represents the extraction of Trend, Seasonal, and Residual components from the time series.
  */
 export interface DecompositionResult {
     trend: (number | null)[];
@@ -78,7 +78,7 @@ export interface DecompositionResult {
 
 /**
  * @function uploadCSV
- * @description Transmits the user's local CSV file to the Node.js backend for ingestion, structural validation, and base mathematical parsing.
+ * @description Transmits the CSV file to the Node.js backend for parsing.
  */
 
 export const uploadCSV = async (file: File): Promise<TimeSeriesData> => {
@@ -123,7 +123,7 @@ export const decompose = async (
     return response.data.result;
 };
 
-// ── Change-Point Detection ────────────────────────────────────────────────────
+// Change-Point Detection
 
 export interface SegmentStats {
     index: number;

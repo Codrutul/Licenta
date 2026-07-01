@@ -48,9 +48,9 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}Stationarity and Invertibility Roots}{10}{subsection.2.4.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.5}Change Point Detection (CPD) Mathematics}{10}{section.2.5}\protected@file@percent }
 \citation{Killick2012}
-\citation{Schwarz1978}
 \@writefile{toc}{\contentsline {section}{\numberline {2.6}The Pruned Exact Linear Time (PELT) Algorithm}{11}{section.2.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.6.1}Mathematical Proof of Pruning Logic}{11}{subsection.2.6.1}\protected@file@percent }
+\citation{Schwarz1978}
 \@writefile{toc}{\contentsline {section}{\numberline {2.7}Derivation of the Bayesian Information Criterion (BIC)}{12}{section.2.7}\protected@file@percent }
 \citation{Vaswani2017}
 \@writefile{toc}{\contentsline {section}{\numberline {2.8}Segmented Forecasting Mechanics and RMSE Validation}{13}{section.2.8}\protected@file@percent }
@@ -66,8 +66,8 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}The React.js Framework and Virtual DOM Architecture}{16}{subsection.3.2.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces The React Component Tree Architecture. State changes cascade downwards strictly unidirectionally, utilizing the reconciliation algorithm to isolate coordinate renders specifically to the \texttt  {<ForecastChart>} without breaking the root.}}{17}{figure.3.2}\protected@file@percent }
 \newlabel{fig:react_tree}{{3.2}{17}{The React Component Tree Architecture. State changes cascade downwards strictly unidirectionally, utilizing the reconciliation algorithm to isolate coordinate renders specifically to the \texttt {<ForecastChart>} without breaking the root}{figure.3.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces The Final Scientific UI Design constructed in React. Notice the extreme density of the vectors which require the Canvas's rapid diffing capabilities to render fluidly.}}{17}{figure.3.3}\protected@file@percent }
-\newlabel{fig:react_ui_render}{{3.3}{17}{The Final Scientific UI Design constructed in React. Notice the extreme density of the vectors which require the Canvas's rapid diffing capabilities to render fluidly}{figure.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces The Final Scientific UI Design constructed in React. The interface utilizes a structured dark-themed grid layout with a dedicated Canvas area ready for data ingestion.}}{17}{figure.3.3}\protected@file@percent }
+\newlabel{fig:react_ui_render}{{3.3}{17}{The Final Scientific UI Design constructed in React. The interface utilizes a structured dark-themed grid layout with a dedicated Canvas area ready for data ingestion}{figure.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Static Type Enforcement via TypeScript Constructs}{17}{subsection.3.2.2}\protected@file@percent }
 \newlabel{lst:ts_interface}{{3.1}{18}{Formal TypeScript Interface Dictating Network Transfer Protocols}{lstlisting.3.1}{}}
 \@writefile{lol}{\contentsline {lstlisting}{\numberline {3.1}Formal TypeScript Interface Dictating Network Transfer Protocols}{18}{lstlisting.3.1}\protected@file@percent }
@@ -87,59 +87,58 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3.5}Comprehensive Application Dependencies}{21}{section.3.5}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Explicit Technological Dependencies Segregated by Execution Environment}}{22}{table.3.1}\protected@file@percent }
 \newlabel{tab:dependencies}{{3.1}{22}{Explicit Technological Dependencies Segregated by Execution Environment}{table.3.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Security Architecture and Environment Isolation}{22}{section.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Security Architecture and Environment Isolation}{23}{section.3.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3.7}Cloud Infrastructure and CI/CD Deployment}{23}{section.3.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3.8}Justification of the Technological Stack}{23}{section.3.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}The Application Design, Features, and Implementation}{24}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}The Application Design, Features, and Implementation}{25}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{ch:application_design}{{4}{24}{The Application Design, Features, and Implementation}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Requirements Elicitation and Objective Framework}{24}{section.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Functional Operational Requirements}{24}{subsection.4.1.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The Front-End State Machine Flowchart illustrating the interface rendering stages. Data flows sequentially from Ingestion through the processing stages.}}{25}{figure.4.1}\protected@file@percent }
-\newlabel{fig:state_machine}{{4.1}{25}{The Front-End State Machine Flowchart illustrating the interface rendering stages. Data flows sequentially from Ingestion through the processing stages}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Ergonomic User Interface Construction}{25}{section.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Physical Layout Topology}{25}{subsection.4.2.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces The overall physical architecture of the UI viewport. The dark layout emphasizes the vivid neon Canvas layouts centrally, while explicitly docking analytical capabilities inside the collapsible right-sided navigation drawer.}}{26}{figure.4.2}\protected@file@percent }
-\newlabel{fig:ui_overview}{{4.2}{26}{The overall physical architecture of the UI viewport. The dark layout emphasizes the vivid neon Canvas layouts centrally, while explicitly docking analytical capabilities inside the collapsible right-sided navigation drawer}{figure.4.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces UML Class Diagram illustrating the React Structural Composition. The \texttt  {App} root component securely aggregates all specialized sub-modules utilizing rigid, isolated TypeScript interfaces to prevent variable contamination.}}{26}{figure.4.3}\protected@file@percent }
-\newlabel{fig:uml_class}{{4.3}{26}{UML Class Diagram illustrating the React Structural Composition. The \texttt {App} root component securely aggregates all specialized sub-modules utilizing rigid, isolated TypeScript interfaces to prevent variable contamination}{figure.4.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Data Presentation and the HTML5 Canvas Visualization Paradigm}{26}{section.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces The Canvas chart displaying mathematical data variance. Red vertical lines mark detected structural breaks on the timeline.}}{27}{figure.4.4}\protected@file@percent }
-\newlabel{fig:recharts_pelts}{{4.4}{27}{The Canvas chart displaying mathematical data variance. Red vertical lines mark detected structural breaks on the timeline}{figure.4.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Backend Object-Oriented Service Architecture}{27}{section.4.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes.}}{28}{figure.4.5}\protected@file@percent }
-\newlabel{fig:uml_backend_classes}{{4.5}{28}{UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes}{figure.4.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Executing Mathematical Prediction Algorithms via Core JavaScript}{28}{section.4.5}\protected@file@percent }
-\newlabel{lst:ses_loop}{{4.1}{28}{Physical For-Loop Computation Execution for Simple Exponential Smoothing}{lstlisting.4.1}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.1}Physical For-Loop Computation Execution for Simple Exponential Smoothing}{28}{lstlisting.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Pruned Exact Linear Time (PELT) Boundary Shock Injections}{29}{section.4.6}\protected@file@percent }
-\newlabel{lst:js_pelt}{{4.2}{29}{The Native JavaScript PELT Optimization Algorithm executed natively by V8}{lstlisting.4.2}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.2}The Native JavaScript PELT Optimization Algorithm executed natively by V8}{29}{lstlisting.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces The PELT algorithm identifying significant structural breaks, rendered as red indicator lines within high-variance windows.}}{30}{figure.4.6}\protected@file@percent }
-\newlabel{fig:pelt_ruptures}{{4.6}{30}{The PELT algorithm identifying significant structural breaks, rendered as red indicator lines within high-variance windows}{figure.4.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces UML Sequence Diagram demonstrating the strict synchronous request lifecycle. The Express API perfectly halts the HTTP handshake, natively iterating the PELT matrix via imported Service Modules, before returning the boundaries and concluding the packet.}}{30}{figure.4.7}\protected@file@percent }
-\newlabel{fig:uml_sequence}{{4.7}{30}{UML Sequence Diagram demonstrating the strict synchronous request lifecycle. The Express API perfectly halts the HTTP handshake, natively iterating the PELT matrix via imported Service Modules, before returning the boundaries and concluding the packet}{figure.4.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}The Intelligent Segment Data Execution Layer}{30}{section.4.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces The UI rendering explicit statistical variances, establishing the reduction of Root Mean Squared Errors caused by truncating obsolete data trajectories utilizing PELT integration.}}{31}{figure.4.8}\protected@file@percent }
-\newlabel{fig:rmse_table}{{4.8}{31}{The UI rendering explicit statistical variances, establishing the reduction of Root Mean Squared Errors caused by truncating obsolete data trajectories utilizing PELT integration}{figure.4.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.8}Google Gemini Integration Pipeline Mechanics}{31}{section.4.8}\protected@file@percent }
-\newlabel{lst:gemini_engine}{{4.3}{31}{Explicit Constraint Modeling System Prompt Parameters}{lstlisting.4.3}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.3}Explicit Constraint Modeling System Prompt Parameters}{31}{lstlisting.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces The Generative AI Processing Pipeline. Mathematical constraints are enforced before rendering conclusions to the operator.}}{32}{figure.4.9}\protected@file@percent }
-\newlabel{fig:ai_telemetry}{{4.9}{32}{The Generative AI Processing Pipeline. Mathematical constraints are enforced before rendering conclusions to the operator}{figure.4.9}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces The final AI Analytical Drawer producing strict, formal interpretations evaluating Segment overrides based exactly on internally generated matrix parameters.}}{32}{figure.4.10}\protected@file@percent }
-\newlabel{fig:ai_drawer_final}{{4.10}{32}{The final AI Analytical Drawer producing strict, formal interpretations evaluating Segment overrides based exactly on internally generated matrix parameters}{figure.4.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.1}Prompt Engineering and Contextual Framing}{32}{subsection.4.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.9}Extended Analytical Capabilities}{33}{section.4.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.1}Time Series Decomposition}{33}{subsection.4.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.2}Multi-Model Comparison}{34}{subsection.4.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.3}Date Range Filtering}{34}{subsection.4.9.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.4}Custom Annotation Markers}{34}{subsection.4.9.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.5}Curated Sample Datasets}{35}{subsection.4.9.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Built-in Sample Datasets Available for Immediate Analysis}}{35}{table.4.1}\protected@file@percent }
-\newlabel{tab:sample_datasets}{{4.1}{35}{Built-in Sample Datasets Available for Immediate Analysis}{table.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.6}Interactive Chart Toolbar}{35}{subsection.4.9.6}\protected@file@percent }
+\newlabel{ch:application_design}{{4}{25}{The Application Design, Features, and Implementation}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Requirements Elicitation and Objective Framework}{25}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Functional Operational Requirements}{25}{subsection.4.1.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The Front-End State Machine Flowchart illustrating the interface rendering stages. Data flows sequentially from Ingestion through the processing stages.}}{26}{figure.4.1}\protected@file@percent }
+\newlabel{fig:state_machine}{{4.1}{26}{The Front-End State Machine Flowchart illustrating the interface rendering stages. Data flows sequentially from Ingestion through the processing stages}{figure.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Ergonomic User Interface Construction}{26}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Physical Layout Topology}{26}{subsection.4.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces The overall physical architecture of the UI viewport during the earlier stages of development. The dark layout emphasizes the central workspace, while docking configuration panels and statistics inside the right-sided panel.}}{27}{figure.4.2}\protected@file@percent }
+\newlabel{fig:ui_overview}{{4.2}{27}{The overall physical architecture of the UI viewport during the earlier stages of development. The dark layout emphasizes the central workspace, while docking configuration panels and statistics inside the right-sided panel}{figure.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces UML Class Diagram illustrating the React Structural Composition. The \texttt  {App} root component securely aggregates all specialized sub-modules utilizing rigid, isolated TypeScript interfaces to prevent variable contamination.}}{27}{figure.4.3}\protected@file@percent }
+\newlabel{fig:uml_class}{{4.3}{27}{UML Class Diagram illustrating the React Structural Composition. The \texttt {App} root component securely aggregates all specialized sub-modules utilizing rigid, isolated TypeScript interfaces to prevent variable contamination}{figure.4.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Data Presentation and the HTML5 Canvas Visualization Paradigm}{27}{section.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces The HTML5 Canvas chart displaying a global Moving Average forecast alongside historical actual data and its corresponding 95\% confidence interval bands.}}{28}{figure.4.4}\protected@file@percent }
+\newlabel{fig:recharts_pelts}{{4.4}{28}{The HTML5 Canvas chart displaying a global Moving Average forecast alongside historical actual data and its corresponding 95\% confidence interval bands}{figure.4.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Backend Object-Oriented Service Architecture}{28}{section.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes.}}{29}{figure.4.5}\protected@file@percent }
+\newlabel{fig:uml_backend_classes}{{4.5}{29}{UML Class Diagram mapping the Backend Architectural Pattern. The Express Router acts exclusively as a traffic controller, utilizing Dependency Injection to trigger heavy computational methods living in isolated Service Classes}{figure.4.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Executing Mathematical Prediction Algorithms via Core JavaScript}{29}{section.4.5}\protected@file@percent }
+\newlabel{lst:ses_loop}{{4.1}{29}{Physical For-Loop Computation Execution for Simple Exponential Smoothing}{lstlisting.4.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.1}Physical For-Loop Computation Execution for Simple Exponential Smoothing}{29}{lstlisting.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Pruned Exact Linear Time (PELT) Boundary Shock Injections}{30}{section.4.6}\protected@file@percent }
+\newlabel{lst:js_pelt}{{4.2}{30}{The Native JavaScript PELT Optimization Algorithm executed natively by V8}{lstlisting.4.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.2}The Native JavaScript PELT Optimization Algorithm executed natively by V8}{30}{lstlisting.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces The PELT algorithm identifying significant structural breaks, rendered as yellow indicator lines within high-variance windows.}}{31}{figure.4.6}\protected@file@percent }
+\newlabel{fig:pelt_ruptures}{{4.6}{31}{The PELT algorithm identifying significant structural breaks, rendered as yellow indicator lines within high-variance windows}{figure.4.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces UML Sequence Diagram demonstrating the strict request lifecycle. The Express API handles the HTTP handshake, executing the PELT algorithm via the imported Service Module, before returning the boundaries and concluding the packet.}}{31}{figure.4.7}\protected@file@percent }
+\newlabel{fig:uml_sequence}{{4.7}{31}{UML Sequence Diagram demonstrating the strict request lifecycle. The Express API handles the HTTP handshake, executing the PELT algorithm via the imported Service Module, before returning the boundaries and concluding the packet}{figure.4.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}The Intelligent Segment Data Execution Layer}{31}{section.4.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces The UI rendering explicit statistical variances, establishing the reduction of Root Mean Squared Errors caused by truncating obsolete data trajectories utilizing PELT integration.}}{32}{figure.4.8}\protected@file@percent }
+\newlabel{fig:rmse_table}{{4.8}{32}{The UI rendering explicit statistical variances, establishing the reduction of Root Mean Squared Errors caused by truncating obsolete data trajectories utilizing PELT integration}{figure.4.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.8}Google Gemini Integration Pipeline Mechanics}{32}{section.4.8}\protected@file@percent }
+\newlabel{lst:gemini_engine}{{4.3}{32}{Explicit Constraint Modeling System Prompt Parameters}{lstlisting.4.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.3}Explicit Constraint Modeling System Prompt Parameters}{32}{lstlisting.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces The Generative AI Processing Pipeline. Mathematical constraints are enforced before rendering conclusions to the operator.}}{33}{figure.4.9}\protected@file@percent }
+\newlabel{fig:ai_telemetry}{{4.9}{33}{The Generative AI Processing Pipeline. Mathematical constraints are enforced before rendering conclusions to the operator}{figure.4.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces The final AI Analytical Drawer producing strict, formal interpretations evaluating Segment overrides based exactly on internally generated matrix parameters.}}{33}{figure.4.10}\protected@file@percent }
+\newlabel{fig:ai_drawer_final}{{4.10}{33}{The final AI Analytical Drawer producing strict, formal interpretations evaluating Segment overrides based exactly on internally generated matrix parameters}{figure.4.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.1}Prompt Engineering and Contextual Framing}{33}{subsection.4.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.9}Extended Analytical Capabilities}{34}{section.4.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.1}Time Series Decomposition}{34}{subsection.4.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.2}Multi-Model Comparison}{35}{subsection.4.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.3}Custom Annotation Markers}{35}{subsection.4.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.4}Curated Sample Datasets}{36}{subsection.4.9.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Built-in Sample Datasets Available for Immediate Analysis}}{36}{table.4.1}\protected@file@percent }
+\newlabel{tab:sample_datasets}{{4.1}{36}{Built-in Sample Datasets Available for Immediate Analysis}{table.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.5}Interactive Chart Toolbar}{36}{subsection.4.9.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusions and Future Development}{37}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -150,7 +149,8 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Real-Time WebSocket Ingestion}{38}{subsection.5.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Distributed Micro-Service Execution}{38}{subsection.5.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Integration of Deep Learning Frameworks}{39}{subsection.5.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}Final Remarks}{39}{section.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Declaration of Generative AI and Developer Assistance Tools}{39}{section.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Final Remarks}{39}{section.5.5}\protected@file@percent }
 \bibcite{BaiPerron1998}{1}
 \bibcite{BoxJenkins1970}{2}
 \bibcite{ClementsHendry1998}{3}
@@ -165,4 +165,4 @@
 \bibcite{Vaswani2017}{12}
 \bibcite{Wold1938}{13}
 \@writefile{toc}{\contentsline {chapter}{Bibliography}{40}{chapter*.2}\protected@file@percent }
-\gdef \@abspage@last{46}
+\gdef \@abspage@last{47}

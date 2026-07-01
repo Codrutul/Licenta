@@ -37,7 +37,7 @@ The diagram presented in Figure \ref{fig:sys_arch} represents the exact telemetr
 The client-facing frontend represents the user's entire interactive experience with the mathematical engine. The primary requirement for the frontend was fluidity: the capability to instantly visualize thousands of Cartesian coordinates, dynamically toggle scientific hyper-parameters (such as smoothing alphas or autoregressive thresholds), and selectively overlay structural break markers without causing the browser thread to hang or the Document Object Model (DOM) to crash.
 
 \subsection{The React.js Framework and Virtual DOM Architecture}
-React.js (Version 18) was selected as the foundational user interface library over prominent alternatives such as Angular or Vue.js. The justification for this decision is rooted deeply in how modern browsers handle graphical rendering computations.
+React.js (Version 19) was selected as the foundational user interface library over prominent alternatives such as Angular or Vue.js. The justification for this decision is rooted deeply in how modern browsers handle graphical rendering computations.
 
 In traditional vanilla web development, manipulating the actual physical DOM is an extraordinarily expensive computational task. If an economic operator adjusts a visual slider to modify an Exponential Smoothing decay parameter from $0.2$ to $0.8$, the underlying mathematical data array changes its entire geometric trajectory. If the browser were forced to manually traverse the physical DOM tree utilizing \texttt{document.getElementById()} to delete the old SVG nodes and repaint 1,000 new interactive coordinate points across the grid, it would trigger a severe rendering bottleneck, resulting in visible UI stuttering and total unresponsiveness. 
 
@@ -52,7 +52,7 @@ React circumvents this performance degradation entirely via its proprietary \tex
     edge from parent/.style={draw, -latex}
 ]
 \node[box, fill=blue!20, font=\sffamily\small\bfseries] {App.tsx (Root Provider)}
-    child {node[box] {Data Ingestion \\ \textit{$\langle$NavigationPanel$\rangle$}}}
+    child {node[box] {Data Ingestion \\ \textit{$\langle$FileUpload$\rangle$}}}
     child {node[box] {Active Visualization \\ \textit{$\langle$ForecastChart$\rangle$}}
         child {node[box] {Chart.js \texttt{$\langle$Line$\rangle$} \\ \textit{Global Forecast}}}
         child {node[box] {Chart.js \textit{Plugin} \\ \textit{PELT Annotations}}}
@@ -67,8 +67,8 @@ As quantitatively analyzed via the component flow (Figure \ref{fig:react_tree}),
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{thesis_images/ui_design.png}
-    \caption{The Final Scientific UI Design constructed in React. Notice the extreme density of the vectors which require the Canvas's rapid diffing capabilities to render fluidly.}
+    \includegraphics[width=0.9\textwidth]{thesis_images/final_ui_design.png}
+    \caption{The Final Scientific UI Design constructed in React. The interface utilizes a structured dark-themed grid layout with a dedicated Canvas area ready for data ingestion.}
     \label{fig:react_ui_render}
 \end{figure}
 
@@ -163,9 +163,9 @@ To ensure a high level of code maintainability, the application codebase follows
 % UML Class Nodes
 \node (route) [draw, rectangle, minimum width=4cm, minimum height=1.5cm, fill=black!5] {\textbf{ForecastRouter} \\ \textit{Express.js Middleware} \\ Receives HTTP Post};
 
-\node (forecastService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below left=2cm and 0.5cm of route, fill=blue!5] {\textbf{ForecastService} \\ \textit{+ calculateHoltWinters()}};
-\node (peltService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below=2cm of route, fill=orange!5] {\textbf{ChangePointService} \\ \textit{+ detectRuptures()}};
-\node (aiService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below right=2cm and 0.5cm of route, fill=green!5] {\textbf{AIService} \\ \textit{+ generator()}};
+\node (forecastService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below left=2cm and 0.5cm of route, fill=blue!5] {\textbf{ForecastService} \\ \textit{+ holtsWinters()}};
+\node (peltService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below=2cm of route, fill=orange!5] {\textbf{ChangePointService} \\ \textit{+ pelt()}};
+\node (aiService) [draw, rectangle, minimum width=5cm, minimum height=1cm, below right=2cm and 0.5cm of route, fill=green!5] {\textbf{AIService} \\ \textit{+ generateAnalysis()}};
 
 \draw [->, thick] (route) edge[bend right=20] (forecastService);
 \draw [->, thick] (route) -- (peltService);
@@ -180,24 +180,41 @@ As modeled in the Unified Modeling Language (UML) structural diagram (Figure \re
 \section{Algorithmic Porting: The Native V8 PELT Mathematical Loop}
 Rather than connecting standard web platforms to external analytical environments via Inter-Process Communication (IPC) pipelines, the key design decision of this architecture is natively porting \textbf{Pruned Exact Linear Time (PELT)} logic directly into JavaScript. By reimplementing Python-based array operations as native V8 loops stored inside the same process memory, the mathematical computation avoids serialization overhead entirely.
 
+\vspace{1em}
 \noindent\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=JavaScript, caption=Native V8 Execution Loop for PELT Math Validation, label=lst:js_ipc]
-const analyzeChangePoints = (data) => {
-  return new Promise((resolve) => {
-    // Array preprocessing inside isolated native loops
-    const baseVector = Array.from(data).map(coord => coord.value);
-    
-    // Asynchronous delegation to prevent main-thread UI stuttering
-    setImmediate(() => {
-        const breakPoints = calculatePelt(baseVector);
-        resolve({ changePoints: breakPoints });
-    });
-  });
-};
+pelt(data, penaltyMultiplier = null, minLen = null) {
+  const n = data.length;
+  const F = new Array(n + 1).fill(Infinity);
+  const cp = new Array(n + 1).fill(-1);
+  F[0] = -beta;
+  let candidates = [0];
+
+  for (let t = 1; t <= n; t++) {
+    for (const s of candidates) {
+      if ((t - s) < minSegLen && s !== 0) continue;
+      const cost = F[s] + fastCost(s, t - 1) + beta;
+      if (cost < F[t]) {
+        F[t] = cost;
+        cp[t] = s;
+      }
+    }
+    // PELT Pruning: discard sub-optimal candidates
+    const newCandidates = [];
+    for (const s of candidates) {
+      if (F[s] + fastCost(s, t - 1) < F[t]) {
+        newCandidates.push(s);
+      }
+    }
+    if (t >= minSegLen) newCandidates.push(t);
+    candidates = newCandidates;
+  }
+  return { changePoints: backtrack(cp), cost: F[n] };
+}
 \end{lstlisting}
 \end{minipage}
 
-Node.js instantly converts the massive multi-thousand coordinate temporal matrix into an array struct, iterating natively inside memory without paying the extreme penalty of serializing payloads as JSON strings across external runtime pipelines. V8 computes the detection logic and resolves the Promise back to the HTTP handler.
+The V8 engine optimizes the dense double-loop and array indexing, executing the mathematical pruning steps natively inside the same process memory. This design entirely avoids the performance and serialization overhead that would be introduced by serializing the time series payload as JSON strings across external processes or analytical environments. The computed change-point indexes are returned synchronously to the Express HTTP handler.
 
 \section{Comprehensive Application Dependencies}
 To successfully intertwine rapid Virtual DOM manipulations, asynchronous server orchestration, and dense mathematical modeling, the application locks its versions to tested open-source dependencies. Table \ref{tab:dependencies} categorizes the external libraries used across both environments.
@@ -213,12 +230,16 @@ To successfully intertwine rapid Virtual DOM manipulations, asynchronous server 
         \midrule
         \textbf{Frontend (React)} 
         & \texttt{react-chartjs-2} & Declarative HTML5 Canvas Cartesian engine engineered specifically for rapid browser repainting. \\
+        & \texttt{chart.js} & Core HTML5 Canvas charting library providing the underlying rendering engine for visual plots. \\
+        & \texttt{chartjs-plugin-zoom} & Enables interactive zoom and pan operations directly on the Cartesian chart view. \\
         & \texttt{axios} & Promise-based HTTP client for sending JSON request payloads between the client and the Node proxy. \\
         & \texttt{react-markdown} & Renders the Gemini LLM analytical output from raw Markdown strings into structured HTML inside the AI panel. \\
         & \texttt{chartjs-plugin-annotation} & Overlays vertical change point markers and regime boundary lines directly onto the Chart.js canvas. \\
         \midrule
         \textbf{Backend (Node.js)} 
         & \texttt{express} & Lightweight core networking middleware defining the structural API route logic. \\
+        & \texttt{cors} & Enforces Cross-Origin Resource Sharing (CORS) security policies across router boundaries. \\
+        & \texttt{dotenv} & Restricts environment variable access by loading secret keys strictly from local configuration files. \\
         & \texttt{multer} & Multi-part memory-buffering ingestion mechanism strictly parsing raw user CSV payloads. \\
         & \texttt{csv-parser} & Streams raw CSV byte buffers into computable JSON floating-point matrices synchronously. \\
         & \texttt{@google/genai} & The official Google HTTP protocol binding integrating the `gemini-2.5-flash` model. \\

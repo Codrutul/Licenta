@@ -165,7 +165,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
 
     return (
         <>
-            {/* ── Trigger button in the toolbar ── */}
+
             <button
                 className="btn btn-primary"
                 onClick={() => setOpen(true)}
@@ -187,7 +187,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                 )}
             </button>
 
-            {/* ── Modal overlay ── */}
+
             {open && (
                 <div
                     ref={backdropRef}
@@ -195,7 +195,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                     onClick={(e) => { if (e.target === backdropRef.current) setOpen(false); }}
                 >
                     <div className="forecast-modal">
-                        {/* Header */}
+
                         <div className="forecast-modal-header">
                             <div>
                                 <div className="forecast-modal-title">Configure Forecast</div>
@@ -209,7 +209,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                             </button>
                         </div>
 
-                        {/* Body */}
+
                         <div className="forecast-modal-body">
                             {/* Model selector */}
                             <div className="forecast-modal-section">
@@ -255,7 +255,7 @@ const ForecastControls: React.FC<ForecastControlsProps> = ({
                             </div>
                         </div>
 
-                        {/* Footer */}
+
                         <div className="forecast-modal-footer">
                             <button className="btn btn-secondary" onClick={() => setOpen(false)}>Cancel</button>
                             <button

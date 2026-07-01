@@ -2,9 +2,8 @@ const { GoogleGenAI } = require('@google/genai');
 /**
  * AI Service for Economic Interpretations
  * @class AIService
- * @description Provides a robust backend integration layer linking the Time Series Visualizer to Google Gen AI (Gemini).
- * Translates complex mathematical arrays (from internal forecast algorithms and changepoint detections) into
- * human-readable, formal economic analysis reports using specialized LLM system instructions.
+ * @description Connects the application to Google Gen AI (Gemini).
+ * Converts forecast algorithms and changepoint detections into readable economic analysis reports.
  */
 class AIService {
   constructor() {
@@ -41,7 +40,7 @@ class AIService {
    * @param {number} payload.segmentRMSE - The In-Sample RMSE of the localized sub-segment model
    * @param {number} payload.segmentForecastEnd - The terminal value of the localized projection trajectory
    * @param {string} payload.segmentGrowthRate - The calculated total growth trajectory across the forecast horizon
-   * @returns {Promise<string>} An extensively formatted Markdown string containing the generative AI's diagnostic report
+   * @returns {Promise<string>} A Markdown string containing the AI's diagnostic report
    * @throws {Error} Throws if the Gemini generative process fails or API key is absent
    */
   async generateAnalysis(payload) {
@@ -128,7 +127,7 @@ Please write the economic analysis report based strictly on these metrics.`;
         contents: userPrompt,
         config: {
           systemInstruction: systemPrompt,
-          temperature: 0.0, // Strict deterministic limit for analytical consistency
+          temperature: 0.0, // Limit for analytical consistency
         }
       });
       return response.text;

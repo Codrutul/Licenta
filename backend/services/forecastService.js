@@ -147,7 +147,7 @@ class ForecastService {
       return this.holtsLinearTrend(data, periods, alpha, beta);
     }
 
-    // ── Initialisation (classical approach) ───────────────────────
+    // Initialisation
     // Level: mean of first season
     let L = 0;
     for (let i = 0; i < m; i++) L += data[i];
@@ -172,7 +172,7 @@ class ForecastService {
       S[i] = sum / numCompleteSeasons - overallMean;
     }
 
-    // ── Update equations ──────────────────────────────────────────
+    // Update equations
     const fittedValues = [];
     for (let t = 0; t < data.length; t++) {
       const sIdx = ((t - m) % m + m) % m; // seasonal index (stays non-negative)
@@ -185,7 +185,7 @@ class ForecastService {
       S[t % m] = gamma * (data[t] - L) + (1 - gamma) * S[t % m];
     }
 
-    // ── Forecast ──────────────────────────────────────────────────
+    // Forecast
     const forecast = [];
     for (let h = 1; h <= periods; h++) {
       const sIdx = ((data.length - m + h - 1) % m + m) % m;
@@ -217,7 +217,7 @@ class ForecastService {
       const d = Number(params.d) || 1;
       const q = Number(params.q) || 1;
 
-      // ── Step 1: Difference the series d times ──────────────────
+      // Step 1: Difference the series d times
       let diffData = [...data];
       const diffHistory = []; // store each level for undifferencing
       for (let i = 0; i < d; i++) {
@@ -230,7 +230,7 @@ class ForecastService {
         throw new Error('Not enough data after differencing for the chosen (p,d,q).');
       }
 
-      // ── Step 2: Fit AR(p) coefficients via Yule-Walker OLS ─────
+      // Step 2: Fit AR(p) coefficients via Yule-Walker OLS
       // Build design matrix X (each row = p lagged values) and response y
       const numObs = n - p;
       const X = [];
@@ -243,7 +243,7 @@ class ForecastService {
       // OLS: phi = (X'X)^{-1} X'y
       const arCoeffs = this._ols(X, y, p);
 
-      // ── Step 3: Compute AR residuals and fit MA(q) ─────────────
+      // Step 3: Compute AR residuals and fit MA(q)
       const arResiduals = [];
       for (let i = 0; i < numObs; i++) {
         const xRow = X[i];
@@ -264,7 +264,7 @@ class ForecastService {
         ? this._ols(XmaList, ymaList, q)
         : new Array(q).fill(0);
 
-      // ── Step 4: Generate in-sample fitted values (differenced scale) ──
+      // Step 4: Generate in-sample fitted values (differenced scale)
       const diffFitted = [];
       const fittedResiduals = [...arResiduals]; // reuse AR residuals for MA feed
       for (let i = 0; i < numObs; i++) {
@@ -279,7 +279,7 @@ class ForecastService {
         diffFitted.push(val);
       }
 
-      // ── Step 5: Forecast on differenced scale ──────────────────
+      // Step 5: Forecast on differenced scale
       const diffForecast = [];
       const forecastBuffer = [...diffData]; // grows as we forecast
       const residualBuffer = [...arResiduals]; // grows (out-of-sample residuals = 0)
@@ -300,7 +300,7 @@ class ForecastService {
         residualBuffer.push(0); // out-of-sample innovation = 0
       }
 
-      // ── Step 6: Invert differencing ────────────────────────────
+      // Step 6: Invert differencing
       // Integrate forecast back to original scale
       let finalForecast = [...diffForecast];
       for (let i = d - 1; i >= 0; i--) {

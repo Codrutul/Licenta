@@ -129,7 +129,7 @@ function App() {
                     const dec = await decompose(data.values);
                     setDecomposition(dec);
                 } catch {
-                    // non-critical
+
                 } finally {
                     setDecomposeLoading(false);
                 }
@@ -205,7 +205,7 @@ function App() {
 
     const handleClearComparisons = () => setComparisons([]);
 
-    // ── Change-point handlers ──────────────────────────────────────────────────
+    // Change-point handlers
     const handleDetectChangePoints = async (penaltyMultiplier: number) => {
         if (!timeSeriesData) return;
         setCpLoading(true);
@@ -310,7 +310,7 @@ function App() {
             </header>
 
             <main>
-                {/* Control panel */}
+
                 <div className="control-panel">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                         {timeSeriesData && (
@@ -379,7 +379,7 @@ function App() {
                 {error && <div className="error-banner">Error: {error}</div>}
 
                 <div className="main-content">
-                    {/* Left: Chart + tools */}
+
                     <div className="chart-column">
                         <ForecastChart
                             dates={timeSeriesData?.dates || []}
@@ -440,7 +440,7 @@ function App() {
                         />
                     </div>
 
-                    {/* Right sidebar */}
+
                     <div className="sidebar">
                         <div className="sidebar-tabs">
                             <button

@@ -2,259 +2,120 @@
 
 **Bachelor Thesis Project - Afloarei Codrin**
 
-A lightweight web application for time series forecasting with interactive visualizations and AI-powered interpretation (coming soon). Designed for non-technical users to easily understand and interpret forecasts.
+A high-performance web architecture for time series forecasting featuring interactive visualizations, mathematical structural break detection, and deterministic generative AI interpretation. Designed to democratize complex econometric analytics for non-technical users without sacrificing mathematical rigor.
 
-## 🌟 Features
+## Core Features
 
-### Time Series Forecasting
-- **Multiple Algorithms**: 
-  - Moving Average
-  - Exponential Smoothing
-  - Holt's Linear Trend Method
-  - ARIMA (AutoRegressive Integrated Moving Average)
-- **CSV Upload**: Easy data import with automatic column detection
-- **Configurable Forecast Horizon**: Predict 1-50 periods ahead
-- **Accuracy Metrics**: RMSE, MAE, MAPE calculations
+### High-Speed Time Series Forecasting
+- **Native V8 Execution:** All econometric algorithms are coded directly in JavaScript, entirely eliminating slow cross-language network calls to Python microservices.
+- **Supported Models:** Moving Average, Exponential Smoothing, Holt's Linear Trend, Holt-Winters (Triple ES), and ARIMA (AutoRegressive Integrated Moving Average).
+- **Statistical Rigor:** Comprehensive tracking of RMSE, MAE, MAPE, and auto-scaling Confidence Intervals.
+
+### Structural Break Detection (PELT)
+- **Mathematical Integrity:** Utilizes the Pruned Exact Linear Time (PELT) algorithm and Bayesian Information Criterion (BIC) to identify definitive regime shifts in the historical data.
+- **Segmented Forecasting:** When a shock is detected, the system intelligently segments the data, discarding obsolete pre-shock history to dramatically improve predictive accuracy.
+
+### Generative AI Analyst (Google Gemini)
+- **Automated Interpretation:** Translates complex mathematical arrays and structural breaks into formal, human-readable economic analysis reports.
+- **Deterministic Guardrails:** Employs strict Prompt Engineering with a locked API temperature (`0.0`) to prevent LLM hallucinations and enforce analytical consistency.
 
 ### Interactive Visualizations
-- **Chart.js Integration**: Smooth, responsive, and interactive charts
-- **Dual Dataset View**: Actual vs Forecast comparison
-- **Hover Tooltips**: Inspect individual data points
-- **Modern UI**: Premium dark theme with glassmorphism effects
+- **Chart.js Integration:** High-fidelity, 60FPS cartesian rendering utilizing HTML5 Canvas.
+- **Dual Dataset View:** Overlay multiple forecast models directly over actual historical data for instant visual comparison.
+- **Modern UI:** Professional, progressive dark-mode interface designed to minimize eye strain.
 
-### Quick Statistics
-- Last actual value
-- Projected next value
-- Growth rate percentage
-- Model accuracy metrics
-
-### AI Analysis Engine (Placeholder)
-- Future integration point for natural language explanations
-- AI-powered trend interpretation
-- Forecast insights and recommendations
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
+- **Google Gemini API Key** (Required for the AI Analyst feature)
 
-### Easy Setup (Recommended)
+### Setup
 
-Run both backend and frontend with a single command:
-
+1. **Clone and Install:**
 ```bash
-# Install all dependencies
+# Install all dependencies across backend and frontend
 npm run install:all
-
-# Start both servers
-npm run dev
 ```
 
-The backend server will start on `http://localhost:3001` and the frontend on `http://localhost:5173`
+2. **Environment Variables:**
+Create a `.env` file in the `backend/` directory:
+```env
+PORT=3001
+CORS_ORIGIN=http://localhost:5173
+GEMINI_API_KEY=your_google_api_key_here
+```
 
-### Manual Setup
-
-If you prefer to run servers separately:
-
-#### Backend Setup
-
+3. **Start the Application:**
 ```bash
-cd backend
-npm install
+# Start both backend and frontend concurrently
 npm run dev
 ```
 
-The backend server will start on `http://localhost:3001`
-
-#### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend will start on `http://localhost:5173` (or the next available port)
+The backend server will start on `http://localhost:3001` and the frontend UI on `http://localhost:5173`.
 
 ### Testing with Sample Data
+A sample CSV file (`sample_data.csv`) is provided in the root directory. 
+1. Open the UI at `localhost:5173`.
+2. Click "Upload .csv file" and select `sample_data.csv`.
+3. Experiment with generating Global Forecasts, detecting Change Points, and triggering the AI Analyst.
 
-A sample CSV file (`sample_data.csv`) is provided in the root directory. Use this to test the application:
+## Project Structure
 
-1. Start both backend and frontend servers
-2. Click "Upload .csv file" button
-3. Select `sample_data.csv`
-4. Choose a forecasting model
-5. Set forecast horizon (e.g., 6 periods)
-6. Click "Calculate Forecast"
-
-## 📊 Forecasting Algorithms
-
-### Moving Average
-Simple moving average forecast based on the last N observations. Best for stable time series without strong trends.
-
-**Parameters:**
-- Window size (default: 3)
-
-### Exponential Smoothing
-Weighted average giving more importance to recent observations. Automatically optimizes the smoothing parameter (alpha).
-
-**Parameters:**
-- Alpha (auto-optimized by default)
-
-### Holt's Linear Trend
-Double exponential smoothing that captures both level and trend. Ideal for time series with linear trends.
-
-**Parameters:**
-- Alpha: Level smoothing (default: 0.2)
-- Beta: Trend smoothing (default: 0.1)
-
-### ARIMA
-AutoRegressive Integrated Moving Average model using differencing and autoregressive components.
-
-**Parameters:**
-- p: Autoregressive order (default: 2)
-- d: Differencing order (default: 1)
-- q: Moving average order (default: 1)
-
-## 🏗️ Project Structure
-
-```
+```text
 .
 ├── backend/
-│   ├── server.js              # Express server
+│   ├── server.js                   # Express server & Middleware
 │   ├── routes/
-│   │   └── forecast.js        # API endpoints
+│   │   ├── forecast.js             # Routes for math algorithms
+│   │   └── ai.js                   # Routes for Gemini integration
 │   ├── services/
-│   │   └── forecastService.js # Forecasting algorithms
+│   │   ├── forecastService.js      # Core ARIMA/Holt-Winters logic
+│   │   ├── changePointService.js   # PELT algorithm logic
+│   │   └── aiService.js            # LLM Prompt Engineering
 │   └── utils/
-│       └── dataProcessor.js   # CSV parsing & statistics
+│       └── dataProcessor.js        # CSV parsing & dataset statistics
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── App.tsx            # Main application
-│   │   ├── components/        # React components
-│   │   ├── services/          # API client
-│   │   └── styles/            # CSS files
+│   │   ├── App.tsx                 # Main React Application
+│   │   ├── components/             # Reusable UI Modules
+│   │   ├── services/               # Axios API client
+│   │   └── styles/                 # Application CSS
 │   └── package.json
 │
-└── sample_data.csv            # Sample time series data
+└── sample_data.csv                 # Testing data
 ```
 
-## 🔌 API Endpoints
+## Core API Endpoints
 
-### POST `/api/forecast/upload`
-Upload and parse CSV file
+### Mathematical Computations (/api/forecast)
+- `POST /upload` - Ingests and structuralizes raw CSV data.
+- `POST /calculate` - Calculates global projections using the selected mathematical model.
+- `POST /changepoints` - Executes the PELT algorithm to flag historical epochs.
+- `POST /segment-forecast` - Runs targeted forecasting exclusively on isolated data segments.
+- `POST /decompose` - Extracts structural components (Trend, Seasonal, Residual).
 
-**Request:** Multipart form data with CSV file
-**Response:** Parsed time series data with statistics
+### Generative AI (/api/ai)
+- `POST /analyze` - Generates the deterministic economic report based on mathematical payloads.
 
-### POST `/api/forecast/calculate`
-Calculate forecast using selected model
+## Future Enhancements
+While the core architecture is complete, future iterations could explore:
+- [ ] Upgrading the backend engines to support deep-learning architectures (e.g., LSTM neural networks).
+- [ ] User authentication and saved workspace sessions.
+- [ ] Support for multiple simultaneous time-series ingestions (Multivariate forecasting).
+- [ ] PDF export functionality for the generated charts and AI reports.
 
-**Request:**
-```json
-{
-  "data": [1250, 1280, 1310, ...],
-  "model": "moving_average",
-  "periods": 6,
-  "parameters": {}
-}
-```
+## CSV Format Requirements
+The system intuitively ingests comma-separated values. At minimum, the CSV requires:
+- **Date column**: e.g., date, time, timestamp, period.
+- **Value column**: Numeric column containing the primary dataset.
 
-**Response:**
-```json
-{
-  "success": true,
-  "result": {
-    "method": "Moving Average",
-    "forecast": [2410, 2420, ...],
-    "fittedValues": [...],
-    "parameters": { "window": 3 },
-    "accuracy": {
-      "rmse": 15.23,
-      "mae": 12.45,
-      "mape": 0.56
-    },
-    "stats": {
-      "lastValue": 2400,
-      "projectedValue": 2410,
-      "growthRate": "0.42"
-    }
-  }
-}
-```
-
-### GET `/api/forecast/health`
-Health check endpoint
-
-## 🎨 Technology Stack
-
-### Backend
-- **Express.js**: Web framework
-- **simple-statistics**: Statistical calculations
-- **csv-parser**: CSV file parsing
-- **multer**: File upload handling
-- **cors**: Cross-origin resource sharing
-
-### Frontend
-- **React 19**: UI framework
-- **TypeScript**: Type safety
-- **Vite**: Build tool
-- **Chart.js**: Interactive charts
-- **Axios**: HTTP client
-
-## 📚 Research Methodology
-
-This application supports a user study comparing:
-1. **Static charts** - Non-interactive visualizations
-2. **Interactive charts** - Hover, zoom, toggle features
-3. **AI-enhanced charts** - With natural language explanations (future)
-
-The goal is to assess how different visualization features impact users' ability to:
-- Understand forecast trends
-- Make data-driven decisions
-- Trust model predictions
-- Interpret statistical results
-
-## 🔮 Future Enhancements
-
-- [ ] AI-powered natural language explanations
-- [ ] Multiple time series support
-- [ ] Advanced ARIMA parameter optimization
-- [ ] Seasonal decomposition
-- [ ] Confidence intervals
-- [ ] Model comparison view
-- [ ] User authentication
-- [ ] Saved forecast history
-- [ ] PDF export with charts and analysis
-
-## 📝 CSV Format Requirements
-
-Your CSV file should have:
-- **Date column**: Any column with date, time, timestamp, period, year, month
-- **Value column**: Numeric column with your time series values
-
-Example:
-```csv
-date,value
-2024-01-01,1250
-2024-01-08,1280
-2024-01-15,1310
-```
-
-The application automatically detects column types.
-
-## 🤝 Contributing
-
-This is a bachelor thesis project. For questions or collaboration:
+## Contributing
+**Bachelor Thesis Project**
 - **Author**: Afloarei Codrin
 - **Topic**: Web Tool for Time Series Forecast Visualizer + AI Interpreter
 
-## 📄 License
-
+## License
 MIT License - Created for academic purposes.
-
----
-
-**Research Question**: How does combining interactive time series visualizations with AI-generated explanations improve non-technical users' ability to interpret and understand forecasts?
